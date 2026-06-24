@@ -16,7 +16,7 @@ type RedirectIfAuthenticatedProps = {
  */
 export function RedirectIfAuthenticated({
   children,
-  redirectTo = appRoutes.main._self.path,
+  redirectTo = appRoutes.home._self.path,
 }: RedirectIfAuthenticatedProps) {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuthSelector();

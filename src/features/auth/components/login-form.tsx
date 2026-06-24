@@ -40,7 +40,7 @@ export function LoginForm() {
     authService.persistSession(session.user, session.token);
     dispatch(setCredentials(session));
     toast.success("Welcome back!");
-    router.push(appRoutes.main._self.path);
+    router.push(appRoutes.home._self.path);
   };
 
   return (

@@ -8,10 +8,7 @@ import { appEnv } from "@/lib/utils/env";
 /** App-facing page routes */
 export const appRoutes = {
   home: {
-    _self: { path: "/home", label: "Home" },
-  },
-  main: {
-    _self: { path: "/", label: "Dashboard" },
+    _self: { path: "/", label: "Home" },
   },
   auth: {
     _self: { path: "/auth", label: "Auth" },
@@ -29,6 +26,14 @@ export const appRoutes = {
   },
   profile: {
     _self: { path: "/profile", label: "Profile" },
+  },
+  /** Authenticated app header navigation */
+  nav: {
+    home: { _self: { path: "/", label: "Home" } },
+    matches: { _self: { path: "/matches", label: "Matches" } },
+    myJobs: { _self: { path: "/my-jobs", label: "My Jobs" } },
+    invites: { _self: { path: "/invites", label: "Invites" } },
+    events: { _self: { path: "/events", label: "Events" } },
   },
   docs: {
     _self: { path: "/privacy", label: "Privacy" },
