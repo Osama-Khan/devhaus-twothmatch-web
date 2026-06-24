@@ -2,12 +2,17 @@
 
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { isDarkModeEnabled } from "@/lib/theme/theme-config";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Moon02Icon, Sun03Icon } from "@hugeicons/core-free-icons";
 
 /** Toggle between light and dark themes */
 export function ThemeSwitcher() {
   const { resolvedTheme, setTheme } = useTheme();
+
+  if (!isDarkModeEnabled) {
+    return null;
+  }
 
   return (
     <Button

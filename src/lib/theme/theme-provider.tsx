@@ -2,6 +2,7 @@
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import type { ThemeProviderProps } from "next-themes";
+import { isDarkModeEnabled } from "@/lib/theme/theme-config";
 
 /**
  * Wraps next-themes with app defaults.
@@ -11,8 +12,9 @@ export function AppThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      defaultTheme={isDarkModeEnabled ? "system" : "light"}
+      enableSystem={isDarkModeEnabled}
+      forcedTheme={isDarkModeEnabled ? undefined : "light"}
       disableTransitionOnChange
       {...props}
     >

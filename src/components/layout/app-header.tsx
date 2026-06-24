@@ -12,13 +12,17 @@ export function AppHeader() {
   const { isAuthenticated, user, isLoading } = useAuthSelector();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+    <header className="sticky top-0 z-50 border-b border-border bg-card">
+      <div className="mx-auto flex mt-10 mb-6 max-w-7xl items-center justify-between px-4">
         <Link
           href={appRoutes.main._self.path}
           className="text-sm font-semibold tracking-tight"
         >
-          {APP_NAME}
+          <img
+            src="/img/logo-wd.svg"
+            alt={APP_NAME}
+            height={42}
+          />
         </Link>
 
         <nav className="flex items-center gap-2">

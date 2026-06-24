@@ -13,7 +13,7 @@ type AuthLayoutProps = {
 export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="flex min-h-full flex-col">
-      <header className="flex items-center justify-between px-4 py-4">
+      <header className="flex items-center justify-between border-b border-border bg-card px-4 py-4">
         <Link
           href={appRoutes.home._self.path}
           className="text-sm font-semibold"
