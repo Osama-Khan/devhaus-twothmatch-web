@@ -1,0 +1,6 @@
+/** Additional base styles beyond Tailwind defaults */
+@layer base {
+  ::selection {
+    @apply bg-primary/20;
+  }
+}

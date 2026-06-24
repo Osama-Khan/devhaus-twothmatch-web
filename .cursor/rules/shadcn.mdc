@@ -1,0 +1,36 @@
+---
+description: Shadcn UI and styling conventions for TwothMatch
+globs:
+  - "src/components/**/*.tsx"
+  - "src/features/**/*.tsx"
+alwaysApply: false
+---
+
+# Shadcn & UI Conventions
+
+## Component location
+
+- Shadcn primitives live in `src/components/ui/` — no business logic
+- App chrome (header, footer, layout) in `src/components/layout/`
+- Domain UI in `src/features/<domain>/components/`
+
+## Styling
+
+- Use semantic Tailwind tokens: `bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-destructive`, etc.
+- Do not use raw hex colors or arbitrary color values in components
+- Use `cn()` from `@/lib/utils` for conditional classes
+
+## Documentation
+
+- Add JSDoc (`/** */`) to exported functions, types, and non-obvious variables
+- Avoid filler comments that restate what the code already says
+
+## Forms
+
+- Define Zod schemas in `features/<name>/form/`
+- Use React Hook Form with `@hookform/resolvers/zod`
+- Return `AppResponseType<T>` from client API calls
+
+## Routes
+
+- Use constants from `@/lib/routes` — never hardcode path strings
