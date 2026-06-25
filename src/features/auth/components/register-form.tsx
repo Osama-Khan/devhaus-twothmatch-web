@@ -137,7 +137,7 @@ export function RegisterForm() {
           registration={register("confirmPassword")}
         />
 
-        <Button type="submit" disabled={isSubmitting} size="lg" className="w-full">
+        <Button type="submit" disabled={isSubmitting} className="w-full">
           {isSubmitting ? "Signing up…" : "Sign Up"}
         </Button>
       </form>
