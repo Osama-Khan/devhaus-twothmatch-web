@@ -3,6 +3,7 @@
 import { AppThemeProvider } from "@/lib/theme/theme-provider";
 import { StoreProvider } from "@/lib/store/providers";
 import { Toaster } from "@/components/ui/sonner";
+import { ProfileSetupLock } from "@/features/onboarding/utils/profile-setup-lock";
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <AppThemeProvider>
       <StoreProvider>
+        <ProfileSetupLock />
         {children}
         <Toaster richColors closeButton position="top-right" />
       </StoreProvider>

@@ -2,13 +2,11 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { appRoutes } from "@/lib/routes";
 import { useAuthSelector } from "@/lib/store/hooks";
+import { getPostAuthPath } from "@/features/onboarding/utils/get-post-auth-path";
 
 type RedirectIfAuthenticatedProps = {
   children: React.ReactNode;
-  /** Where to send already-authenticated users */
-  redirectTo?: string;
 };
 
 /**
@@ -16,16 +14,15 @@ type RedirectIfAuthenticatedProps = {
  */
 export function RedirectIfAuthenticated({
   children,
-  redirectTo = appRoutes.home._self.path,
 }: RedirectIfAuthenticatedProps) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuthSelector();
+  const { isAuthenticated, isLoading, user } = useAuthSelector();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.replace(redirectTo);
+    if (!isLoading && isAuthenticated && user) {
+      router.replace(getPostAuthPath(user));
     }
-  }, [isAuthenticated, isLoading, redirectTo, router]);
+  }, [isAuthenticated, isLoading, router, user]);
 
   if (isLoading || isAuthenticated) {
     return null;

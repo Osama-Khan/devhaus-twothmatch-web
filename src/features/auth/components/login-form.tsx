@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { appEnv } from "@/lib/utils/env";
 import { appRoutes } from "@/lib/routes";
+import { getPostAuthPath } from "@/features/onboarding/utils/get-post-auth-path";
 import { cn } from "@/lib/utils";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { setCredentials } from "@/lib/store/auth-slice";
@@ -71,7 +72,7 @@ export function LoginForm() {
     authService.persistSession(session.user, session.token);
     dispatch(setCredentials(session));
     toast.success("Welcome back!");
-    router.push(appRoutes.home._self.path);
+    router.push(getPostAuthPath(session.user));
   };
 
   const handleSocialLogin = (provider: string) => {

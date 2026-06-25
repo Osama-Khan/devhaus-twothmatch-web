@@ -27,6 +27,10 @@ export const appRoutes = {
   profile: {
     _self: { path: "/profile", label: "Profile" },
   },
+  onboarding: {
+    _self: { path: "/onboarding", label: "Onboarding" },
+    verifying: { _self: { path: "/verifying", label: "Verifying" } },
+  },
   /** Authenticated app header navigation */
   nav: {
     home: { _self: { path: "/", label: "Home" } },

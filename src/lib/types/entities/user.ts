@@ -52,6 +52,8 @@ export type ProfileMeResponse = {
     avatar?: string;
   };
   completionPercent: number;
+  isProfileComplete?: boolean;
+  isProfileVerified?: boolean;
   completionSections?: unknown[];
   jobPreferences?: unknown;
   locations?: unknown[];

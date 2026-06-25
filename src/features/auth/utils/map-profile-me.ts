@@ -13,6 +13,8 @@ export function mergeProfileMe(
     fullName: profile.profile.fullName ?? baseUser.fullName,
     avatarUrl: profile.profile.avatar ?? baseUser.avatarUrl,
     completionPercent: profile.completionPercent,
+    isProfileComplete: profile.isProfileComplete ?? baseUser.isProfileComplete,
+    isProfileVerified: profile.isProfileVerified ?? baseUser.isProfileVerified,
   };
 }
 
