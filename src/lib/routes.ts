@@ -38,6 +38,7 @@ export const appRoutes = {
   docs: {
     _self: { path: "/privacy", label: "Privacy" },
     privacy: { _self: { path: "/privacy", label: "Privacy Policy" } },
+    terms: { _self: { path: "/terms", label: "Terms & Conditions" } },
   },
 } as const;
 

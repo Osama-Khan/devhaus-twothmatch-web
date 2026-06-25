@@ -24,9 +24,15 @@ export const appEnv = {
   /** Application display name */
   appName: process.env.NEXT_PUBLIC_APP_NAME ?? "TwothMatch",
 
-  /** When false, registration UI is hidden */
-  isRegistrationAllowed:
-    process.env.NEXT_PUBLIC_IS_REGISTRATION_ALLOWED !== "false",
+  /** Privacy policy URL */
+  privacyPolicyUrl:
+    process.env.NEXT_PUBLIC_PRIVACY_POLICY_URL ??
+    "https://www.twothmatch.co.uk/privacy-policy",
+
+  /** Terms and conditions URL */
+  termsAndConditionsUrl:
+    process.env.NEXT_PUBLIC_TERMS_AND_CONDITIONS_URL ??
+    "https://www.twothmatch.co.uk/terms-and-conditions",
 } as const;
 
 /**

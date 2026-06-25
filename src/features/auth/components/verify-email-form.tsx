@@ -1,13 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { toast } from "sonner";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { appRoutes } from "@/lib/routes";
 import { isSuccessResponse } from "@/lib/types/response";
 import {
@@ -21,18 +26,25 @@ export function VerifyEmailForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailFromQuery = searchParams.get("email") ?? "";
+  const [isResending, setIsResending] = useState(false);
 
   const {
     register,
     handleSubmit,
-    getValues,
+    control,
+    setValue,
+    setError,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<VerifyEmailFormData>({
     resolver: zodResolver(verifyEmailSchema),
     defaultValues: {
       email: emailFromQuery,
+      code: "",
     },
   });
+
+  const code = useWatch({ control, name: "code" }) ?? "";
 
   const onSubmit = async (data: VerifyEmailFormData) => {
     const response = await authService.verifyEmail(data);
@@ -46,78 +58,101 @@ export function VerifyEmailForm() {
     router.push(appRoutes.auth.login._self.path);
   };
 
+  const onFormSubmit = handleSubmit(onSubmit, (fieldErrors) => {
+    if (fieldErrors.code) {
+      setError("code", { message: fieldErrors.code.message });
+    }
+  });
+
   const onResend = async () => {
-    const email = getValues("email");
-    if (!email) {
-      toast.error("Enter your email first");
+    if (!emailFromQuery) {
+      toast.error("Missing email address. Please sign up again.");
       return;
     }
 
-    const response = await authService.resendOtp(email);
+    setIsResending(true);
+
+    const response = await authService.resendOtp(emailFromQuery);
+
+    setIsResending(false);
+
     if (!isSuccessResponse(response)) {
       toast.error(response.error);
       return;
     }
 
-    toast.success(response.data.message ?? "OTP sent");
+    toast.success(response.data.message ?? "Verification code sent");
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Verify email</h1>
+    <div className="rounded-3xl bg-card px-6 py-8 shadow-[0_8px_32px_rgba(39,38,67,0.08)] sm:px-8">
+      <div className="flex flex-col gap-2 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          Verification Code
+        </h1>
         <p className="text-sm text-muted-foreground">
-          Enter the 6-digit code sent to your email
+          Please enter the verification code you received
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            aria-invalid={Boolean(errors.email)}
-            {...register("email")}
-          />
-          {errors.email && (
-            <p className="text-sm text-destructive">{errors.email.message}</p>
-          )}
-        </div>
+      <form onSubmit={onFormSubmit} className="mt-8 flex flex-col gap-6">
+        <input type="hidden" {...register("email")} />
+        <input type="hidden" {...register("code")} />
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="code">Verification code</Label>
-          <Input
-            id="code"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            placeholder="123456"
+        <div className="flex flex-col items-center gap-4">
+          <InputOTP
+            maxLength={6}
+            pattern={REGEXP_ONLY_DIGITS}
+            value={code}
+            onChange={(value) => {
+              setValue("code", value, { shouldValidate: false });
+              clearErrors("code");
+            }}
             aria-invalid={Boolean(errors.code)}
-            {...register("code")}
-          />
+          >
+            <InputOTPGroup aria-invalid={Boolean(errors.code)}>
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+            </InputOTPGroup>
+            <InputOTPSeparator />
+            <InputOTPGroup aria-invalid={Boolean(errors.code)}>
+              <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
+            </InputOTPGroup>
+          </InputOTP>
+
           {errors.code && (
             <p className="text-sm text-destructive">{errors.code.message}</p>
           )}
+
+          <p className="text-center text-xs text-muted-foreground">
+            Code is valid for 5 minutes or 3 attempts
+          </p>
         </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? "Verifying…" : "Verify email"}
+        <div className="flex justify-center">
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={isResending}
+            onClick={() => void onResend()}
+            className="h-10 rounded-4xl px-6 text-sm font-semibold"
+          >
+            {isResending ? "Sending…" : "Resend Code"}
+          </Button>
+        </div>
+
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          size="lg"
+          className="h-11 w-full rounded-4xl text-base"
+        >
+          {isSubmitting ? "Submitting…" : "Submit"}
         </Button>
       </form>
-
-      <Button type="button" variant="outline" onClick={() => void onResend()}>
-        Resend code
-      </Button>
-
-      <p className="text-center text-sm text-muted-foreground">
-        <Link
-          href={appRoutes.auth.login._self.path}
-          className="font-medium text-foreground underline-offset-4 hover:underline"
-        >
-          Back to sign in
-        </Link>
-      </p>
     </div>
   );
 }
