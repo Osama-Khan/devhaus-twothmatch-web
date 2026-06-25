@@ -1,0 +1,74 @@
+---
+description: TwothMatch Web architecture, routing, auth, theme, and feature conventions
+alwaysApply: true
+---
+
+# TwothMatch Web Conventions
+
+## Stack
+
+Next.js App Router · TypeScript · Tailwind v4 + shadcn · Redux (auth) · React Hook Form + Zod · external JWT API
+
+## Project layout
+
+```
+src/
+  app/                    # routes & layouts (App Router)
+    (main)/               # authenticated app — includes AppHeader
+    auth/                 # login, register, verify-email
+  components/
+    ui/                   # shadcn primitives
+    layout/               # header, providers shell, placeholders
+  features/<domain>/      # domain UI, forms, services, hooks
+  lib/                    # routes, store, theme, shared utils, API
+```
+
+Feature modules: `components/`, `form/` (Zod), `services/`, `hooks/`, `utils/` as needed.
+
+## Routing
+
+- All paths from `@/lib/routes` — never hardcode strings
+- `appRoutes.home` → `/` (feed; no separate marketing landing)
+- `appRoutes.nav.*` → header tabs: `/`, `/matches`, `/my-jobs`, `/invites`, `/events`
+- `appRoutes.auth.*`, `appRoutes.profile`, `externalApiRoutes` + `apiPath()` for API
+- New app pages go under `src/app/(main)/` so they inherit the authenticated header layout
+- Placeholder pages: use `PlaceholderPage` from `@/components/layout/placeholder-page`
+
+## Auth
+
+- Session in Redux + `token-storage`; hydrate via `StoreProvider`
+- Post-login redirect: `appRoutes.home._self.path`
+- Auth pages wrap with `RedirectIfAuthenticated`; protect client routes with `useRequireAuth` when needed
+- `AppHeader` is for signed-in app chrome only — `(main)/layout.tsx`; do not add unauthenticated fallbacks there
+
+## Theme
+
+- **Single source of truth**: hex CSS variables in `src/app/globals.css`
+- Do not add a TypeScript palette mirror unless JS-only consumers (charts) require it
+- **Light mode only** for now: `isDarkModeEnabled = false` in `lib/theme/theme-config.ts`
+- Provider: `AppThemeProvider` (`next-themes`, `forcedTheme="light"`)
+- Brand tokens (edit in `:root` only):
+
+| Token                | Hex       | Role              |
+| -------------------- | --------- | ----------------- |
+| `--background`       | `#f4f4f4` | Page canvas       |
+| `--card`             | `#ffffff` | Elevated surfaces |
+| `--primary`          | `#955ace` | Brand purple      |
+| `--muted`            | `#e0e0e0` | Subtle fills      |
+| `--foreground`       | `#272643` | Headings          |
+| `--muted-foreground` | `#6e6e88` | Secondary text    |
+| `--border`           | `#e2e2e2` | Hairlines         |
+
+## Forms & API
+
+- Zod schemas in `features/<name>/form/`
+- Client services return `AppResponseType<T>` from `@/lib/types/response`
+- API paths via `externalApiRoutes` + `apiPath()`
+
+## Design
+
+- Match elevation: gray page + white cards/header — see `shadcn.mdc` for token usage in components
+
+## Documentation
+
+JSDoc on exported functions, types, and non-obvious variables. Keep diffs focused; don't refactor unrelated code.

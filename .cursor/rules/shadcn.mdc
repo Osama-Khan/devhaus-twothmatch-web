@@ -1,36 +1,54 @@
 ---
-description: Shadcn UI and styling conventions for TwothMatch
+description: Shadcn UI primitives, Tailwind tokens, and component styling for TwothMatch
 globs:
   - "src/components/**/*.tsx"
   - "src/features/**/*.tsx"
 alwaysApply: false
 ---
 
-# Shadcn & UI Conventions
+# Shadcn & UI Styling
 
-## Component location
+## Where code lives
 
-- Shadcn primitives live in `src/components/ui/` — no business logic
-- App chrome (header, footer, layout) in `src/components/layout/`
-- Domain UI in `src/features/<domain>/components/`
+- Primitives: `src/components/ui/` — presentation only, no business logic
+- App chrome: `src/components/layout/` — header, layout shells, shared chrome
+- Domain UI: `src/features/<domain>/components/`
 
-## Styling
+## Colors — tokens only in components
 
-- Use semantic Tailwind tokens: `bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-destructive`, etc.
-- Do not use raw hex colors or arbitrary color values in components
-- Use `cn()` from `@/lib/utils` for conditional classes
+Use semantic Tailwind classes, never raw hex/oklch in TSX:
+
+- Page canvas: `bg-background`
+- Elevated surfaces (cards, header, dialogs, inputs, outline buttons): `bg-card`
+- Subtle fills / ghost hover: `bg-muted`, `hover:bg-muted`
+- Text: `text-foreground`, `text-muted-foreground`, `text-primary`, `text-destructive`
+- Borders: `border-border`, `border-input`
+- Actions: `bg-primary text-primary-foreground`, `bg-secondary text-secondary-foreground`
+
+Edit actual color values only in `src/app/globals.css` (`:root` CSS variables, hex).
+
+## Elevation model
+
+| Surface | Token | Use for |
+|---------|-------|---------|
+| Page | `bg-background` | Body, main layout areas |
+| Raised | `bg-card` | Cards, header, popovers, inputs, outline buttons |
+| Subtle | `bg-muted` | Insets, ghost hover, notification btn bg uses `bg-background` on card |
+
+## Components
+
+- Conditional classes: `cn()` from `@/lib/utils`
+- **Button**: prefer existing variants (`default`, `outline`, `secondary`, `ghost`, `destructive`); outline uses `bg-card hover:bg-muted`
+- **Input**: `bg-card border-input` — white fields on gray page canvas
+- **Icons**: `@hugeicons/react` + `@hugeicons/core-free-icons`; default `strokeWidth={2}`
+- **Dialogs/alerts**: use shadcn primitives; surfaces use `bg-popover` / `bg-card`
+
+## CSS / theming notes
+
+- Theme tokens live in `globals.css`; `@theme inline` bridges vars to Tailwind
+- Use `color-mix(in srgb, …)` if mixing CSS vars in arbitrary values — not `oklch`
+- Dark mode exists in CSS but is disabled via `isDarkModeEnabled` in `theme-config.ts`
 
 ## Documentation
 
-- Add JSDoc (`/** */`) to exported functions, types, and non-obvious variables
-- Avoid filler comments that restate what the code already says
-
-## Forms
-
-- Define Zod schemas in `features/<name>/form/`
-- Use React Hook Form with `@hookform/resolvers/zod`
-- Return `AppResponseType<T>` from client API calls
-
-## Routes
-
-- Use constants from `@/lib/routes` — never hardcode path strings
+Add JSDoc on exported functions, types, and non-obvious props. Skip comments that restate the code.
