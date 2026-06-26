@@ -36,19 +36,19 @@ export function AboutYourBusinessStep({ onContinue }: AboutYourBusinessStepProps
   };
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold tracking-tight text-foreground">
         About Your Business
       </h1>
 
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-4">
         <FieldLabel className="text-sm font-semibold text-foreground">
           Type of Clinic
         </FieldLabel>
         <div
           role="radiogroup"
           aria-label="Type of Clinic"
-          className="flex flex-col gap-2.5"
+          className="flex flex-col gap-3"
         >
           {CLINIC_TYPE_OPTIONS.map((option) => (
             <OnboardingSelectOption

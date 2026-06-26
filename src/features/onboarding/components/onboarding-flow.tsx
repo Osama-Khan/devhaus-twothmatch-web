@@ -18,19 +18,17 @@ export function OnboardingFlow() {
       case 1:
         return <AboutYourBusinessStep onContinue={goToNextStep} />;
       default:
-        return (
-          <>WIP</>
-        );
+        return <>WIP</>;
     }
   };
 
   return (
-    <div className="w-full max-w-lg rounded-3xl bg-card px-6 py-8 shadow-[0_8px_32px_rgba(39,38,67,0.08)] sm:px-8">
+    <div className="w-full max-w-lg">
       <OnboardingStepper
         currentStep={currentStep}
         totalSteps={ONBOARDING_TOTAL_STEPS}
       />
-      <div className="mt-8">{renderStep()}</div>
+      <div className="mt-8 rounded-3xl bg-card p-6 shadow-lg">{renderStep()}</div>
     </div>
   );
 }

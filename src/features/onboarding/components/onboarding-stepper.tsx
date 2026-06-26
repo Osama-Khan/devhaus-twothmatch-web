@@ -47,7 +47,7 @@ export function OnboardingStepper({
               key={step}
               aria-hidden
               className={cn(
-                "h-2.5 w-14 rounded-full",
+                "h-2.5 grow rounded-full",
                 state === "done" && "bg-primary",
                 state === "active" && "bg-primary",
                 state === "upcoming" && "bg-muted"
