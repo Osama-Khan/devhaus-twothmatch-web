@@ -11,3 +11,46 @@ export const CLINIC_TYPE_OPTIONS: ReadonlyArray<{
   { value: "nhs", label: "NHS Clinic" },
   { value: "mixed", label: "Mixed Clinic" },
 ];
+
+export const PARKING_OPTIONS = [
+  "On-site parking",
+  "Street parking",
+  "Nearby car park",
+  "No parking",
+] as const;
+
+export const DOCUMENTS_REQUIRED_OPTIONS = [
+  "GDC certificate",
+  "DBS check",
+  "Indemnity insurance",
+  "Right to work",
+] as const;
+
+export const YEARS_OF_EXPERIENCE_OPTIONS = [
+  "0-1 years",
+  "1-3 years",
+  "3-5 years",
+  "5+ years",
+] as const;
+
+export const SKILLS_SOFTWARE_OPTIONS = [
+  "Dentrix",
+  "SOE Exact",
+  "R4",
+  "Excel / Microsoft Office",
+] as const;
+
+export const BENEFITS_OFFERED_OPTIONS = [
+  "Pension scheme",
+  "CPD allowance",
+  "Flexible hours",
+  "Free parking",
+  "Health insurance",
+] as const;
+
+export const WORKLOAD_STYLE_OPTIONS = [
+  "Fast-paced",
+  "Steady / balanced",
+  "Relaxed",
+  "Mixed",
+] as const;

@@ -1,38 +1,28 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { useRef } from "react";
 import {
   AddTeamIcon,
-  ArrowRight01Icon,
   UserAdd01Icon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { FieldLabel } from "@/components/ui/field";
-import {
-  InputGroup,
-  InputGroupAddon,
-} from "@/components/ui/input-group";
-import {
-  CLINIC_TYPE_OPTIONS,
-  type ClinicType,
-} from "@/features/onboarding/constants";
+import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
+import { CLINIC_TYPE_OPTIONS } from "@/features/onboarding/constants";
 import { OnboardingSelectOption } from "@/features/onboarding/components/onboarding-select-option";
 import { OnboardingUploadZone } from "@/features/onboarding/components/onboarding-upload-zone";
-
-type AboutYourBusinessStepProps = {
-  onContinue: () => void;
-};
+import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
 
 /** Step 1 — clinic type, media uploads, and logo */
-export function AboutYourBusinessStep({ onContinue }: AboutYourBusinessStepProps) {
+export function AboutYourBusinessStep({
+  data,
+  onChange,
+}: OnboardingStepProps) {
   const logoInputRef = useRef<HTMLInputElement>(null);
-  const [clinicType, setClinicType] = useState<ClinicType>("nhs");
-  const [logoFileName, setLogoFileName] = useState("Choose File");
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    setLogoFileName(file?.name ?? "Choose File");
+    onChange("logoFileName", file?.name ?? "Choose File");
   };
 
   return (
@@ -54,8 +44,8 @@ export function AboutYourBusinessStep({ onContinue }: AboutYourBusinessStepProps
             <OnboardingSelectOption
               key={option.value}
               label={option.label}
-              selected={clinicType === option.value}
-              onSelect={() => setClinicType(option.value)}
+              selected={data.clinicType === option.value}
+              onSelect={() => onChange("clinicType", option.value)}
             />
           ))}
         </div>
@@ -68,11 +58,15 @@ export function AboutYourBusinessStep({ onContinue }: AboutYourBusinessStepProps
             icon={UserAdd01Icon}
             title="Add Pictures of Clinic"
             description="Max file size 8MB (.jpeg or .png only)"
+            onFilesSelected={(files) =>
+              onChange("clinicPictureCount", files.length)
+            }
           />
           <OnboardingUploadZone
             icon={AddTeamIcon}
             title="Add Team Photos"
             description="Max file size 8MB (.jpeg or .png only)"
+            onFilesSelected={(files) => onChange("teamPhotoCount", files.length)}
           />
         </div>
       </section>
@@ -90,7 +84,9 @@ export function AboutYourBusinessStep({ onContinue }: AboutYourBusinessStepProps
           onChange={handleLogoChange}
         />
         <InputGroup className="flex flex-row items-center justify-between">
-          <InputGroupAddon className="text-foreground">{logoFileName}</InputGroupAddon>
+          <InputGroupAddon className="text-foreground">
+            {data.logoFileName}
+          </InputGroupAddon>
           <InputGroupAddon align="inline-end">
             <Button
               type="button"
@@ -103,11 +99,6 @@ export function AboutYourBusinessStep({ onContinue }: AboutYourBusinessStepProps
           </InputGroupAddon>
         </InputGroup>
       </section>
-
-      <Button type="button" className="w-full" onClick={onContinue}>
-        Continue
-        <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
-      </Button>
     </div>
   );
 }
