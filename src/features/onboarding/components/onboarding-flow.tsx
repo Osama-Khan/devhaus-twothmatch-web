@@ -25,6 +25,7 @@ import { isOnboardingStepComplete } from "@/features/onboarding/utils/is-onboard
 export function OnboardingFlow() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(createInitialOnboardingFormData);
+  const [validatedSteps, setValidatedSteps] = useState<Set<number>>(() => new Set());
 
   const updateField = useCallback(
     <K extends keyof OnboardingFormData>(
@@ -42,6 +43,7 @@ export function OnboardingFlow() {
 
   const goToNextStep = () => {
     if (!isOnboardingStepComplete(currentStep, formData)) {
+      setValidatedSteps((previous) => new Set(previous).add(currentStep));
       return;
     }
 
@@ -60,6 +62,7 @@ export function OnboardingFlow() {
   const stepProps = {
     data: formData,
     onChange: updateField,
+    showValidation: validatedSteps.has(currentStep),
   };
 
   const renderStep = () => {

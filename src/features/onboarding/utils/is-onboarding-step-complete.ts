@@ -1,14 +1,16 @@
 import type { OnboardingFormData } from "@/features/onboarding/types/onboarding-form";
-
-function hasText(value: string): boolean {
-  return value.trim().length > 0;
-}
+import {
+  onboardingAddressSchema,
+  onboardingStep2Schema,
+} from "@/features/onboarding/form/onboarding-step-schemas";
 
 function isLogoSelected(data: OnboardingFormData): boolean {
-  return data.logoFileName.trim().length > 0 && data.logoFileName !== "Choose File";
+  return (
+    data.logoFileName.trim().length > 0 && data.logoFileName !== "Choose File"
+  );
 }
 
-/** Whether the current step has all required fields filled */
+/** Whether the current step has all required fields filled and valid */
 export function isOnboardingStepComplete(
   step: number,
   data: OnboardingFormData
@@ -17,9 +19,16 @@ export function isOnboardingStepComplete(
     case 1:
       return Boolean(data.clinicType) && isLogoSelected(data);
     case 2:
-      return hasText(data.clinicWebsite) && hasText(data.phoneNumber);
+      return onboardingStep2Schema.safeParse({
+        clinicWebsite: data.clinicWebsite,
+        phoneNumber: data.phoneNumber,
+      }).success;
     case 3:
-      return hasText(data.address);
+      return onboardingAddressSchema.safeParse({
+        address: data.address,
+        latitude: data.latitude,
+        longitude: data.longitude,
+      }).success;
     default:
       return true;
   }

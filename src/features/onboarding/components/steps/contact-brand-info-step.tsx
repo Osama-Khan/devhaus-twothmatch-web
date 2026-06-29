@@ -1,9 +1,13 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
+import {
+  getClinicWebsiteError,
+  getPhoneNumberError,
+} from "@/features/onboarding/form/onboarding-step-schemas";
 
 type RequiredFieldLabelProps = {
   htmlFor: string;
@@ -12,17 +16,17 @@ type RequiredFieldLabelProps = {
 
 function RequiredFieldLabel({ htmlFor, children }: RequiredFieldLabelProps) {
   return (
-    <FieldLabel htmlFor={htmlFor}>
+    <FieldLabel htmlFor={htmlFor} className="gap-0">
       {children} <span className="text-destructive">*</span>
     </FieldLabel>
   );
 }
 
 /** Step 2 — clinic website, social links, phone, and visibility */
-export function ContactBrandInfoStep({
-  data,
-  onChange,
-}: OnboardingStepProps) {
+export function ContactBrandInfoStep({ data, onChange }: OnboardingStepProps) {
+  const clinicWebsiteError = getClinicWebsiteError(data.clinicWebsite);
+  const phoneNumberError = getPhoneNumberError(data.phoneNumber);
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold tracking-tight text-foreground">
@@ -30,7 +34,7 @@ export function ContactBrandInfoStep({
       </h1>
 
       <div className="flex flex-col gap-5">
-        <Field>
+        <Field data-invalid={Boolean(clinicWebsiteError)}>
           <RequiredFieldLabel htmlFor="clinicWebsite">
             Clinic Website Link
           </RequiredFieldLabel>
@@ -38,9 +42,26 @@ export function ContactBrandInfoStep({
             id="clinicWebsite"
             type="url"
             placeholder="Enter"
+            aria-invalid={Boolean(clinicWebsiteError)}
             value={data.clinicWebsite}
             onChange={(event) => onChange("clinicWebsite", event.target.value)}
           />
+          <FieldError>{clinicWebsiteError}</FieldError>
+        </Field>
+
+        <Field data-invalid={Boolean(phoneNumberError)}>
+          <RequiredFieldLabel htmlFor="phoneNumber">
+            Phone Number
+          </RequiredFieldLabel>
+          <Input
+            id="phoneNumber"
+            type="tel"
+            placeholder="Enter"
+            aria-invalid={Boolean(phoneNumberError)}
+            value={data.phoneNumber}
+            onChange={(event) => onChange("phoneNumber", event.target.value)}
+          />
+          <FieldError>{phoneNumberError}</FieldError>
         </Field>
 
         <Field>
@@ -73,19 +94,6 @@ export function ContactBrandInfoStep({
             placeholder="Enter"
             value={data.linkedin}
             onChange={(event) => onChange("linkedin", event.target.value)}
-          />
-        </Field>
-
-        <Field>
-          <RequiredFieldLabel htmlFor="phoneNumber">
-            Phone Number
-          </RequiredFieldLabel>
-          <Input
-            id="phoneNumber"
-            type="tel"
-            placeholder="Enter"
-            value={data.phoneNumber}
-            onChange={(event) => onChange("phoneNumber", event.target.value)}
           />
         </Field>
 

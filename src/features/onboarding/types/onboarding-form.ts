@@ -38,6 +38,7 @@ export type OnboardingStepProps = {
     field: K,
     value: OnboardingFormData[K]
   ) => void;
+  showValidation?: boolean;
 };
 
 /** Default empty onboarding form state */

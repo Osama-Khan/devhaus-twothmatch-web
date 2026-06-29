@@ -5,7 +5,7 @@ import { useDebounceValue } from "usehooks-ts";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Location01Icon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import {
   InputGroup,
   InputGroupAddon,
@@ -18,6 +18,8 @@ import {
   searchNominatimPlaces,
 } from "@/features/location/services/nominatim-service";
 import type { NominatimPlace } from "@/features/location/types/nominatim";
+import { hasCoordinates } from "@/features/location/utils/has-coordinates";
+import { getAddressError } from "@/features/onboarding/form/onboarding-step-schemas";
 import { cn } from "@/lib/utils";
 
 export type AddressLocationValue = {
@@ -31,18 +33,6 @@ type AddressLocationFieldProps = {
   value: AddressLocationValue;
   onChange: (value: AddressLocationValue) => void;
 };
-
-function hasCoordinates(value: AddressLocationValue): value is AddressLocationValue & {
-  latitude: number;
-  longitude: number;
-} {
-  return (
-    value.latitude != null &&
-    value.longitude != null &&
-    Number.isFinite(value.latitude) &&
-    Number.isFinite(value.longitude)
-  );
-}
 
 /** Address input with Nominatim suggestions, geolocation, and map preview */
 export function AddressLocationField({
@@ -194,8 +184,10 @@ export function AddressLocationField({
     value.address.trim().length >= 3 &&
     (isSearching || suggestions.length > 0);
 
+  const addressError = getAddressError(value);
+
   return (
-    <Field>
+    <Field data-invalid={Boolean(addressError)}>
       <FieldLabel htmlFor="address">Address</FieldLabel>
 
       <div ref={containerRef} className="relative">
@@ -209,6 +201,7 @@ export function AddressLocationField({
             aria-expanded={showSuggestions}
             aria-controls={listboxId}
             aria-autocomplete="list"
+            aria-invalid={Boolean(addressError)}
             value={value.address}
             onChange={(event) => handleAddressChange(event.target.value)}
             onFocus={() => setIsSuggestionsOpen(true)}
@@ -263,12 +256,14 @@ export function AddressLocationField({
         ) : null}
       </div>
 
+      <FieldError>{addressError}</FieldError>
+
       {hasCoordinates(value) ? (
         <div className="mt-3 space-y-2">
           <p className="text-sm font-medium text-muted-foreground">Map</p>
           <LeafletMap
-            latitude={value.latitude}
-            longitude={value.longitude}
+            latitude={value.latitude!}
+            longitude={value.longitude!}
           />
         </div>
       ) : null}
