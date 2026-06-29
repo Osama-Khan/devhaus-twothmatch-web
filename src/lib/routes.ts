@@ -67,7 +67,10 @@ export const externalApiRoutes = {
     me: { _self: { path: "/profile/me" } },
   },
   config: {
-    public: { _self: { path: "/config/public" } },
+    byType: { _self: { path: "/config" } },
+  },
+  settings: {
+    byType: { _self: { path: "/settings" } },
   },
 } as const;
 
