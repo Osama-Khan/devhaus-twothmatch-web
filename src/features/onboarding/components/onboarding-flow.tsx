@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { OnboardingStepper } from "@/features/onboarding/components/onboarding-stepper";
 import { AboutYourBusinessStep } from "@/features/onboarding/components/steps/about-your-business-step";
 import { ContactBrandInfoStep } from "@/features/onboarding/components/steps/contact-brand-info-step";
@@ -19,6 +19,7 @@ import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { isOnboardingStepComplete } from "@/features/onboarding/utils/is-onboarding-step-complete";
 
 /** Seven-step onboarding wizard with shared form state */
 export function OnboardingFlow() {
@@ -40,12 +41,21 @@ export function OnboardingFlow() {
   };
 
   const goToNextStep = () => {
+    if (!isOnboardingStepComplete(currentStep, formData)) {
+      return;
+    }
+
     if (currentStep === ONBOARDING_TOTAL_STEPS) {
       toast.success("Profile saved.");
       return;
     }
     setCurrentStep((step) => Math.min(step + 1, ONBOARDING_TOTAL_STEPS));
   };
+
+  const canContinue = useMemo(
+    () => isOnboardingStepComplete(currentStep, formData),
+    [currentStep, formData]
+  );
 
   const stepProps = {
     data: formData,
@@ -89,7 +99,7 @@ export function OnboardingFlow() {
         <Button size="icon" variant="outline" className={cn(currentStep === 1 && "hidden")} onClick={goToPreviousStep}>
           <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
         </Button>
-        <Button className="grow" onClick={goToNextStep}>
+        <Button className="grow" onClick={goToNextStep} disabled={!canContinue}>
           {currentStep === ONBOARDING_TOTAL_STEPS ? "Publish" : "Continue"}
           {currentStep !== ONBOARDING_TOTAL_STEPS && <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />}
         </Button>
