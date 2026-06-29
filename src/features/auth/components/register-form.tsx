@@ -6,26 +6,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  RequiredFieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { appRoutes } from "@/lib/routes";
 import { isSuccessResponse } from "@/lib/types/response";
 import { registerSchema, type RegisterFormData } from "@/features/auth/form";
 import { authService } from "@/features/auth/services/auth-service";
 import { PasswordField } from "@/features/auth/components/password-field";
-
-type RequiredFieldLabelProps = {
-  htmlFor: string;
-  children: React.ReactNode;
-};
-
-function RequiredFieldLabel({ htmlFor, children }: RequiredFieldLabelProps) {
-  return (
-    <FieldLabel htmlFor={htmlFor}>
-      {children} <span className="text-destructive">*</span>
-    </FieldLabel>
-  );
-}
 
 /** Registration form — POST `/auth/signup`, then email verification */
 export function RegisterForm() {

@@ -115,6 +115,19 @@ function FieldLabel({
   );
 }
 
+/** Form field label with a required-field asterisk. */
+function RequiredFieldLabel({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof FieldLabel>) {
+  return (
+    <FieldLabel className={cn("gap-0", className)} {...props}>
+      {children} <span className="text-destructive">*</span>
+    </FieldLabel>
+  );
+}
+
 function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -227,6 +240,7 @@ function FieldError({
 export {
   Field,
   FieldLabel,
+  RequiredFieldLabel,
   FieldDescription,
   FieldError,
   FieldGroup,

@@ -3,7 +3,12 @@
 import { useRef } from "react";
 import { UserAdd01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldLabel,
+  RequiredFieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 import { CLINIC_TYPE_OPTIONS } from "@/features/onboarding/constants";
@@ -11,19 +16,6 @@ import { OnboardingSelectOption } from "@/features/onboarding/components/onboard
 import { OnboardingUploadZone } from "@/features/onboarding/components/onboarding-upload-zone";
 import { getClinicNameError } from "@/features/onboarding/form/onboarding-step-schemas";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
-
-type RequiredFieldLabelProps = {
-  htmlFor: string;
-  children: React.ReactNode;
-};
-
-function RequiredFieldLabel({ htmlFor, children }: RequiredFieldLabelProps) {
-  return (
-    <FieldLabel htmlFor={htmlFor} className="gap-0">
-      {children} <span className="text-destructive">*</span>
-    </FieldLabel>
-  );
-}
 
 /** Step 1 — clinic name, type, media uploads, and logo */
 export function AboutYourBusinessStep({
