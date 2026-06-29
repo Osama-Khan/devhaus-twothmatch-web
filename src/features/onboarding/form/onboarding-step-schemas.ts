@@ -76,7 +76,7 @@ export const onboardingPostcodeSchema = z
 /** Step 1 required fields */
 export const onboardingStep1Schema = z.object({
   clinicName: z.string().trim().min(1, "Clinic name is required"),
-  clinicType: z.enum(["private", "nhs", "mixed"]),
+  clinicType: z.string().trim().min(1, "Clinic type is required"),
   logoFileName: z
     .string()
     .trim()

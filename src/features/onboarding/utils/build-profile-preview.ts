@@ -55,7 +55,7 @@ function buildMeta(data: OnboardingFormData): ProfilePreviewMetaItem[] {
     },
     {
       label: "Clinic type",
-      value: getClinicTypeLabel(data.clinicType),
+      value: getClinicTypeLabel(data),
     },
     {
       label: "Contact",

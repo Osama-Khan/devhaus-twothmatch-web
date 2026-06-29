@@ -11,11 +11,10 @@ function configByTypePath(type: ConfigType): string {
 }
 
 /**
- * Client-side config metadata service — calls the external V2 backend API.
- * No auth required.
+ * Client-side config metadata service. No auth required.
  */
 export const configService = {
-  /** GET `/v2/config/{type}` — returns metadata rows for a known config key */
+  /** GET `/config/{type}` — returns metadata rows for a known config key */
   getByType(type: ConfigType): Promise<AppResponseType<ConfigByTypeResponse>> {
     return apiFetcher.get<ConfigByTypeResponse>(configByTypePath(type), {
       skipAuth: true,

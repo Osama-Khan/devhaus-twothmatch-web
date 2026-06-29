@@ -1,18 +1,16 @@
 "use client";
 
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import { UserAdd01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldError,
-  FieldLabel,
   RequiredFieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
-import { CLINIC_TYPE_OPTIONS } from "@/features/onboarding/constants";
-import { OnboardingSelectOption } from "@/features/onboarding/components/onboarding-select-option";
+import { ClinicTypeSelect } from "@/features/onboarding/components/clinic-type-select";
 import { OnboardingUploadZone } from "@/features/onboarding/components/onboarding-upload-zone";
 import { getClinicNameError } from "@/features/onboarding/form/onboarding-step-schemas";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
@@ -29,6 +27,14 @@ export function AboutYourBusinessStep({
     showValidation && data.logoFileName === "Choose File"
       ? "Logo is required"
       : null;
+
+  const handleClinicTypeSelect = useCallback(
+    ({ id, name }: { id: string; name: string }) => {
+      onChange("clinicType", id);
+      onChange("clinicTypeName", name);
+    },
+    [onChange]
+  );
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -54,25 +60,11 @@ export function AboutYourBusinessStep({
         <FieldError>{clinicNameError}</FieldError>
       </Field>
 
-      <section className="flex flex-col gap-4">
-        <FieldLabel>
-          Type of Clinic
-        </FieldLabel>
-        <div
-          role="radiogroup"
-          aria-label="Type of Clinic"
-          className="flex flex-col gap-3"
-        >
-          {CLINIC_TYPE_OPTIONS.map((option) => (
-            <OnboardingSelectOption
-              key={option.value}
-              label={option.label}
-              selected={data.clinicType === option.value}
-              onSelect={() => onChange("clinicType", option.value)}
-            />
-          ))}
-        </div>
-      </section>
+      <ClinicTypeSelect
+        value={data.clinicType}
+        onSelect={handleClinicTypeSelect}
+        showValidation={showValidation}
+      />
 
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold text-foreground">Upload Media</h2>
