@@ -66,6 +66,13 @@ export const onboardingAddressSchema = z
     path: ["address"],
   });
 
+/** Required UK postcode */
+export const onboardingPostcodeSchema = z
+  .string()
+  .trim()
+  .min(1, "Postcode is required")
+  .regex(/^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i, "Enter a valid UK postcode");
+
 /** Step 1 required fields */
 export const onboardingStep1Schema = z.object({
   clinicName: z.string().trim().min(1, "Clinic name is required"),
@@ -94,7 +101,7 @@ function firstZodErrorMessage(
   return result.error.issues[0]?.message ?? null;
 }
 
-/** Inline clinic name error — shown only after the user starts typing */
+/** Inline clinic name error */
 export function getClinicNameError(value: string): string | null {
   if (!value.trim()) {
     return null;
@@ -114,7 +121,7 @@ export function getClinicWebsiteError(value: string): string | null {
   return firstZodErrorMessage(clinicWebsiteSchema.safeParse(value));
 }
 
-/** Inline phone error — shown only after the user starts typing */
+/** Inline phone error */
 export function getPhoneNumberError(value: string): string | null {
   if (!value.trim()) {
     return null;
@@ -123,7 +130,7 @@ export function getPhoneNumberError(value: string): string | null {
   return firstZodErrorMessage(gbPhoneFormatSchema.safeParse(value));
 }
 
-/** Inline address error — shown only after the user starts typing */
+/** Inline address error */
 export function getAddressError(data: {
   address: string;
   latitude: number | null;
@@ -134,4 +141,13 @@ export function getAddressError(data: {
   }
 
   return firstZodErrorMessage(onboardingAddressSchema.safeParse(data));
+}
+
+/** Inline postcode error */
+export function getPostcodeError(value: string): string | null {
+  if (!value.trim()) {
+    return null;
+  }
+
+  return firstZodErrorMessage(onboardingPostcodeSchema.safeParse(value));
 }
