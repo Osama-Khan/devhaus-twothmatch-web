@@ -16,6 +16,7 @@ import { APP_NAME } from "@/lib/constants/app";
 import { useAuthSelector } from "@/lib/store/hooks";
 import { cn } from "@/lib/utils";
 import { NotificationsButton } from "./notifications-button";
+import Image from "next/image";
 
 type NavItem = {
   href: string;
@@ -93,7 +94,7 @@ export function AppHeader() {
             href={appRoutes.home._self.path}
             className="text-sm font-semibold tracking-tight"
           >
-            <img src="/img/logo-wd.svg" alt={APP_NAME} height={42} />
+            <Image src="/img/logo-wd.svg" alt={APP_NAME} height={42} />
           </Link>
         </div>
 
@@ -119,7 +120,7 @@ export function AppHeader() {
           >
             <div className="size-9 shrink-0 overflow-hidden rounded-full bg-muted">
               {user?.avatarUrl ? (
-                <img
+                <Image
                   src={user.avatarUrl}
                   alt=""
                   className="size-full object-cover"
