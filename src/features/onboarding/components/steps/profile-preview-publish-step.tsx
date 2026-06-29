@@ -14,13 +14,17 @@ type ProfilePreviewPublishStepProps = {
   onAddPhotos: () => void;
 };
 
-/** Step 7 — live preview of saved onboarding data before publish */
+/** Step 4 — live preview of saved onboarding data before publish */
 export function ProfilePreviewPublishStep({
   data,
   onAddPhotos,
 }: ProfilePreviewPublishStepProps) {
   const { user } = useAuthSelector();
-  const practiceName = user?.fullName ?? user?.email ?? "Your Practice";
+  const practiceName =
+    data.clinicName.trim() ||
+    user?.fullName ||
+    user?.email ||
+    "Your Practice";
 
   const preview = useMemo(
     () => buildProfilePreview(data, practiceName),

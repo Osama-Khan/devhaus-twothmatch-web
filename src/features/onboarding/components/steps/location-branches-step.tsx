@@ -35,6 +35,18 @@ export function LocationBranchesStep({
         />
 
         <Field>
+          <FieldLabel htmlFor="postcode">Postcode</FieldLabel>
+          <Input
+            id="postcode"
+            type="text"
+            placeholder="Enter"
+            autoComplete="postal-code"
+            value={data.postcode}
+            onChange={(event) => onChange("postcode", event.target.value)}
+          />
+        </Field>
+
+        <Field>
           <FieldLabel htmlFor="locationPhone">Phone</FieldLabel>
           <Input
             id="locationPhone"
@@ -71,16 +83,43 @@ export function LocationBranchesStep({
         </h2>
 
         <Field>
-          <FieldLabel htmlFor="branchManagerContact">
-            Contact Number
-          </FieldLabel>
+          <FieldLabel htmlFor="branchManagerName">Name</FieldLabel>
+          <Input
+            id="branchManagerName"
+            type="text"
+            placeholder="Enter"
+            autoComplete="name"
+            value={data.branchManagerName}
+            onChange={(event) =>
+              onChange("branchManagerName", event.target.value)
+            }
+          />
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor="branchManagerContact">Phone</FieldLabel>
           <Input
             id="branchManagerContact"
             type="tel"
             placeholder="Enter"
+            autoComplete="tel"
             value={data.branchManagerContact}
             onChange={(event) =>
               onChange("branchManagerContact", event.target.value)
+            }
+          />
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor="branchManagerEmail">Email</FieldLabel>
+          <Input
+            id="branchManagerEmail"
+            type="email"
+            placeholder="Enter"
+            autoComplete="email"
+            value={data.branchManagerEmail}
+            onChange={(event) =>
+              onChange("branchManagerEmail", event.target.value)
             }
           />
         </Field>

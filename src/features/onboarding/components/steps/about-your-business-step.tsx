@@ -1,24 +1,42 @@
 "use client";
 
 import { useRef } from "react";
-import {
-  AddTeamIcon,
-  UserAdd01Icon,
-} from "@hugeicons/core-free-icons";
+import { UserAdd01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
-import { FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 import { CLINIC_TYPE_OPTIONS } from "@/features/onboarding/constants";
 import { OnboardingSelectOption } from "@/features/onboarding/components/onboarding-select-option";
 import { OnboardingUploadZone } from "@/features/onboarding/components/onboarding-upload-zone";
+import { getClinicNameError } from "@/features/onboarding/form/onboarding-step-schemas";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
 
-/** Step 1 — clinic type, media uploads, and logo */
+type RequiredFieldLabelProps = {
+  htmlFor: string;
+  children: React.ReactNode;
+};
+
+function RequiredFieldLabel({ htmlFor, children }: RequiredFieldLabelProps) {
+  return (
+    <FieldLabel htmlFor={htmlFor} className="gap-0">
+      {children} <span className="text-destructive">*</span>
+    </FieldLabel>
+  );
+}
+
+/** Step 1 — clinic name, type, media uploads, and logo */
 export function AboutYourBusinessStep({
   data,
   onChange,
+  showValidation = false,
 }: OnboardingStepProps) {
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const clinicNameError = getClinicNameError(data.clinicName);
+  const logoError =
+    showValidation && data.logoFileName === "Choose File"
+      ? "Logo is required"
+      : null;
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -31,8 +49,21 @@ export function AboutYourBusinessStep({
         About Your Business
       </h1>
 
+      <Field data-invalid={Boolean(clinicNameError)}>
+        <RequiredFieldLabel htmlFor="clinicName">Clinic Name</RequiredFieldLabel>
+        <Input
+          id="clinicName"
+          type="text"
+          placeholder="Enter"
+          aria-invalid={Boolean(clinicNameError)}
+          value={data.clinicName}
+          onChange={(event) => onChange("clinicName", event.target.value)}
+        />
+        <FieldError>{clinicNameError}</FieldError>
+      </Field>
+
       <section className="flex flex-col gap-4">
-        <FieldLabel className="text-sm font-semibold text-foreground">
+        <FieldLabel>
           Type of Clinic
         </FieldLabel>
         <div
@@ -53,28 +84,18 @@ export function AboutYourBusinessStep({
 
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold text-foreground">Upload Media</h2>
-        <div className="flex flex-col gap-3">
-          <OnboardingUploadZone
-            icon={UserAdd01Icon}
-            title="Add Pictures of Clinic"
-            description="Max file size 8MB (.jpeg or .png only)"
-            onFilesSelected={(files) =>
-              onChange("clinicPictureCount", files.length)
-            }
-          />
-          <OnboardingUploadZone
-            icon={AddTeamIcon}
-            title="Add Team Photos"
-            description="Max file size 8MB (.jpeg or .png only)"
-            onFilesSelected={(files) => onChange("teamPhotoCount", files.length)}
-          />
-        </div>
+        <OnboardingUploadZone
+          icon={UserAdd01Icon}
+          title="Add Pictures of Clinic"
+          description="Max file size 10MB (.jpeg or .png only)"
+          onFilesSelected={(files) =>
+            onChange("clinicPictureCount", files.length)
+          }
+        />
       </section>
 
       <section className="flex flex-col gap-3">
-        <FieldLabel htmlFor="logo-upload" className="text-sm font-semibold">
-          Upload Logo
-        </FieldLabel>
+        <RequiredFieldLabel htmlFor="logo-upload">Upload Logo</RequiredFieldLabel>
         <input
           id="logo-upload"
           ref={logoInputRef}
@@ -98,6 +119,7 @@ export function AboutYourBusinessStep({
             </Button>
           </InputGroupAddon>
         </InputGroup>
+        <FieldError>{logoError}</FieldError>
       </section>
     </div>
   );

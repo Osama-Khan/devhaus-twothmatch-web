@@ -5,9 +5,6 @@ import { OnboardingStepper } from "@/features/onboarding/components/onboarding-s
 import { AboutYourBusinessStep } from "@/features/onboarding/components/steps/about-your-business-step";
 import { ContactBrandInfoStep } from "@/features/onboarding/components/steps/contact-brand-info-step";
 import { LocationBranchesStep } from "@/features/onboarding/components/steps/location-branches-step";
-import { ComplianceRequirementsStep } from "@/features/onboarding/components/steps/compliance-requirements-step";
-import { PaymentsInvoicingStep } from "@/features/onboarding/components/steps/payments-invoicing-step";
-import { CultureWorkEnvironmentStep } from "@/features/onboarding/components/steps/culture-work-environment-step";
 import { ProfilePreviewPublishStep } from "@/features/onboarding/components/steps/profile-preview-publish-step";
 import { ONBOARDING_TOTAL_STEPS } from "@/features/onboarding/constants";
 import {
@@ -21,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { isOnboardingStepComplete } from "@/features/onboarding/utils/is-onboarding-step-complete";
 
-/** Seven-step onboarding wizard with shared form state */
+/** Four-step onboarding wizard with shared form state */
 export function OnboardingFlow() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(createInitialOnboardingFormData);
@@ -74,12 +71,6 @@ export function OnboardingFlow() {
       case 3:
         return <LocationBranchesStep {...stepProps} />;
       case 4:
-        return <ComplianceRequirementsStep {...stepProps} />;
-      case 5:
-        return <PaymentsInvoicingStep {...stepProps} />;
-      case 6:
-        return <CultureWorkEnvironmentStep {...stepProps} />;
-      case 7:
         return (
           <ProfilePreviewPublishStep
             data={formData}

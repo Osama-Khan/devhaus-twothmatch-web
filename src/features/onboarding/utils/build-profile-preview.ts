@@ -92,8 +92,8 @@ export function buildProfilePreview(
   data: OnboardingFormData,
   practiceName: string
 ): ProfilePreviewModel {
-  const name = withFallback(practiceName, "Your Practice");
-  const locationSummary = [data.address, data.publicTransport]
+  const name = withFallback(data.clinicName || practiceName, "Your Practice");
+  const locationSummary = [data.address, data.postcode, data.publicTransport]
     .map((part) => part.trim())
     .filter(Boolean)
     .join(", ");
@@ -106,6 +106,6 @@ export function buildProfilePreview(
     meta: buildMeta(data),
     hasLogo: data.logoFileName !== "Choose File",
     logoInitial: name.charAt(0).toUpperCase(),
-    photoCount: data.clinicPictureCount + data.teamPhotoCount,
+    photoCount: data.clinicPictureCount,
   };
 }

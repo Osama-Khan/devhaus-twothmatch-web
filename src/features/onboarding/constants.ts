@@ -1,5 +1,5 @@
-/** Total steps in the profile onboarding flow */
-export const ONBOARDING_TOTAL_STEPS = 7;
+/** Total steps in the active profile onboarding flow */
+export const ONBOARDING_TOTAL_STEPS = 4;
 
 export type ClinicType = "private" | "nhs" | "mixed";
 

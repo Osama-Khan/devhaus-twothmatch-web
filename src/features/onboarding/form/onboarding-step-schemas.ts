@@ -66,6 +66,18 @@ export const onboardingAddressSchema = z
     path: ["address"],
   });
 
+/** Step 1 required fields */
+export const onboardingStep1Schema = z.object({
+  clinicName: z.string().trim().min(1, "Clinic name is required"),
+  clinicType: z.enum(["private", "nhs", "mixed"]),
+  logoFileName: z
+    .string()
+    .trim()
+    .refine((value) => value.length > 0 && value !== "Choose File", {
+      message: "Logo is required",
+    }),
+});
+
 /** Step 2 required fields */
 export const onboardingStep2Schema = z.object({
   clinicWebsite: clinicWebsiteSchema,
@@ -80,6 +92,17 @@ function firstZodErrorMessage(
   }
 
   return result.error.issues[0]?.message ?? null;
+}
+
+/** Inline clinic name error — shown only after the user starts typing */
+export function getClinicNameError(value: string): string | null {
+  if (!value.trim()) {
+    return null;
+  }
+
+  return firstZodErrorMessage(
+    z.string().trim().min(1, "Clinic name is required").safeParse(value)
+  );
 }
 
 /** Inline website error — shown only after the user starts typing */

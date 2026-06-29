@@ -1,14 +1,9 @@
 import type { OnboardingFormData } from "@/features/onboarding/types/onboarding-form";
 import {
   onboardingAddressSchema,
+  onboardingStep1Schema,
   onboardingStep2Schema,
 } from "@/features/onboarding/form/onboarding-step-schemas";
-
-function isLogoSelected(data: OnboardingFormData): boolean {
-  return (
-    data.logoFileName.trim().length > 0 && data.logoFileName !== "Choose File"
-  );
-}
 
 /** Whether the current step has all required fields filled and valid */
 export function isOnboardingStepComplete(
@@ -17,7 +12,11 @@ export function isOnboardingStepComplete(
 ): boolean {
   switch (step) {
     case 1:
-      return Boolean(data.clinicType) && isLogoSelected(data);
+      return onboardingStep1Schema.safeParse({
+        clinicName: data.clinicName,
+        clinicType: data.clinicType,
+        logoFileName: data.logoFileName,
+      }).success;
     case 2:
       return onboardingStep2Schema.safeParse({
         clinicWebsite: data.clinicWebsite,

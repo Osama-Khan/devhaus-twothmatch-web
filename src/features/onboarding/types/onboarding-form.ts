@@ -2,10 +2,10 @@ import type { ClinicType } from "@/features/onboarding/constants";
 
 /** Collected onboarding answers across all seven steps */
 export type OnboardingFormData = {
+  clinicName: string;
   clinicType: ClinicType;
   logoFileName: string;
   clinicPictureCount: number;
-  teamPhotoCount: number;
   clinicWebsite: string;
   instagram: string;
   facebook: string;
@@ -16,10 +16,13 @@ export type OnboardingFormData = {
   addressPlaceId: string;
   latitude: number | null;
   longitude: number | null;
+  postcode: string;
   locationPhone: string;
   parking: string;
   publicTransport: string;
+  branchManagerName: string;
   branchManagerContact: string;
+  branchManagerEmail: string;
   documentsRequired: string;
   yearsOfExperience: string;
   skillsSoftwareRequired: string;
@@ -44,10 +47,10 @@ export type OnboardingStepProps = {
 /** Default empty onboarding form state */
 export function createInitialOnboardingFormData(): OnboardingFormData {
   return {
+    clinicName: "",
     clinicType: "nhs",
     logoFileName: "Choose File",
     clinicPictureCount: 0,
-    teamPhotoCount: 0,
     clinicWebsite: "",
     instagram: "",
     facebook: "",
@@ -58,10 +61,13 @@ export function createInitialOnboardingFormData(): OnboardingFormData {
     addressPlaceId: "",
     latitude: null,
     longitude: null,
+    postcode: "",
     locationPhone: "",
     parking: "",
     publicTransport: "",
+    branchManagerName: "",
     branchManagerContact: "",
+    branchManagerEmail: "",
     documentsRequired: "",
     yearsOfExperience: "",
     skillsSoftwareRequired: "",
