@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { OnboardingSelectField } from "@/features/onboarding/components/onboarding-select-field";
 import { PARKING_OPTIONS } from "@/features/onboarding/constants";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
+import { AddressLocationField } from "@/features/location/components/address-location-field";
 
 /** Step 3 — location details and branch manager contact */
 export function LocationBranchesStep({
@@ -18,16 +19,20 @@ export function LocationBranchesStep({
           Location &amp; Branches
         </h1>
 
-        <Field>
-          <FieldLabel htmlFor="address">Address</FieldLabel>
-          <Input
-            id="address"
-            type="text"
-            placeholder="Enter"
-            value={data.address}
-            onChange={(event) => onChange("address", event.target.value)}
-          />
-        </Field>
+        <AddressLocationField
+          value={{
+            address: data.address,
+            addressPlaceId: data.addressPlaceId,
+            latitude: data.latitude,
+            longitude: data.longitude,
+          }}
+          onChange={(value) => {
+            onChange("address", value.address);
+            onChange("addressPlaceId", value.addressPlaceId);
+            onChange("latitude", value.latitude);
+            onChange("longitude", value.longitude);
+          }}
+        />
 
         <Field>
           <FieldLabel htmlFor="locationPhone">Phone</FieldLabel>

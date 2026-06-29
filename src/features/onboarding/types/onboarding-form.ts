@@ -13,6 +13,9 @@ export type OnboardingFormData = {
   phoneNumber: string;
   hideFromPublic: boolean;
   address: string;
+  addressPlaceId: string;
+  latitude: number | null;
+  longitude: number | null;
   locationPhone: string;
   parking: string;
   publicTransport: string;
@@ -51,6 +54,9 @@ export function createInitialOnboardingFormData(): OnboardingFormData {
     phoneNumber: "",
     hideFromPublic: true,
     address: "",
+    addressPlaceId: "",
+    latitude: null,
+    longitude: null,
     locationPhone: "",
     parking: "",
     publicTransport: "",
