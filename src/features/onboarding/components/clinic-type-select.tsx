@@ -47,8 +47,9 @@ export function ClinicTypeSelect({
         <div
           role="radiogroup"
           aria-label="Type of Clinic"
-          className="flex flex-col gap-3"
+          className="flex flex-col gap-3 max-h-64 overflow-y-auto border-t border-b border-border"
         >
+          <div className="h-8"></div>
           {items.map((option) => (
             <OnboardingSelectOption
               key={option.id}
@@ -57,6 +58,7 @@ export function ClinicTypeSelect({
               onSelect={() => onSelect({ id: option.id, name: option.name })}
             />
           ))}
+          <div className="h-8"></div>
         </div>
       )}
       <FieldError>{validationError}</FieldError>
