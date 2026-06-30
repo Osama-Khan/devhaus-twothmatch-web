@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import { UserAdd01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -11,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 import { ClinicTypeSelect } from "@/features/onboarding/components/clinic-type-select";
-import { OnboardingUploadZone } from "@/features/onboarding/components/onboarding-upload-zone";
+import { ClinicPictureAlbum } from "@/features/onboarding/components/clinic-picture-album";
 import { getClinicNameError } from "@/features/onboarding/form/onboarding-step-schemas";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
 
@@ -42,6 +41,18 @@ export function AboutYourBusinessStep({
     onChange("logoFileName", file?.name ?? "Choose File");
   };
 
+  const handleClinicPicturesSelected = (files: FileList) => {
+    const merged = [...data.clinicPictureFiles, ...Array.from(files)];
+    onChange("clinicPictureFiles", merged);
+    onChange("clinicPictureCount", merged.length);
+  };
+
+  const handleRemoveClinicPicture = (index: number) => {
+    const nextFiles = data.clinicPictureFiles.filter((_, fileIndex) => fileIndex !== index);
+    onChange("clinicPictureFiles", nextFiles);
+    onChange("clinicPictureCount", nextFiles.length);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold tracking-tight text-foreground">
@@ -69,14 +80,10 @@ export function AboutYourBusinessStep({
 
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold text-foreground">Upload Media</h2>
-        <OnboardingUploadZone
-          icon={UserAdd01Icon}
-          title="Add Pictures of Clinic"
-          description="Max file size 10MB (.jpeg or .png only)"
-          onFilesSelected={(files) => {
-            onChange("clinicPictureFiles", Array.from(files));
-            onChange("clinicPictureCount", files.length);
-          }}
+        <ClinicPictureAlbum
+          files={data.clinicPictureFiles}
+          onFilesSelected={handleClinicPicturesSelected}
+          onRemove={handleRemoveClinicPicture}
         />
       </section>
 
