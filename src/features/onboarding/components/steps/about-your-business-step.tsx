@@ -38,6 +38,7 @@ export function AboutYourBusinessStep({
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    onChange("logoFile", file ?? null);
     onChange("logoFileName", file?.name ?? "Choose File");
   };
 
@@ -72,9 +73,10 @@ export function AboutYourBusinessStep({
           icon={UserAdd01Icon}
           title="Add Pictures of Clinic"
           description="Max file size 10MB (.jpeg or .png only)"
-          onFilesSelected={(files) =>
-            onChange("clinicPictureCount", files.length)
-          }
+          onFilesSelected={(files) => {
+            onChange("clinicPictureFiles", Array.from(files));
+            onChange("clinicPictureCount", files.length);
+          }}
         />
       </section>
 

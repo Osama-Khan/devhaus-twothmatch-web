@@ -1,32 +1,39 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { OnboardingStepper } from "@/features/onboarding/components/onboarding-stepper";
 import { AboutYourBusinessStep } from "@/features/onboarding/components/steps/about-your-business-step";
 import { ContactBrandInfoStep } from "@/features/onboarding/components/steps/contact-brand-info-step";
 import { LocationBranchesStep } from "@/features/onboarding/components/steps/location-branches-step";
 import { ProfilePreviewPublishStep } from "@/features/onboarding/components/steps/profile-preview-publish-step";
+import { OnboardingPublishDialog } from "@/features/onboarding/components/onboarding-publish-dialog";
 import { ONBOARDING_TOTAL_STEPS } from "@/features/onboarding/constants";
+import { publishOnboarding } from "@/features/onboarding/services/publish-onboarding";
 import {
   createInitialOnboardingFormData,
   type OnboardingFormData,
 } from "@/features/onboarding/types/onboarding-form";
+import type { OnboardingPublishStep } from "@/features/onboarding/types/onboarding-publish-step";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import {
-  buildPendingOnboardingUploads,
-  buildUpdateProfileRequest,
-} from "@/features/onboarding/utils/build-update-profile-request";
 import { isOnboardingStepComplete } from "@/features/onboarding/utils/is-onboarding-step-complete";
+
+const DONE_STEP_CLOSE_DELAY_MS = 800;
 
 /** Four-step onboarding wizard with shared form state */
 export function OnboardingFlow() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(createInitialOnboardingFormData);
   const [validatedSteps, setValidatedSteps] = useState<Set<number>>(() => new Set());
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishStep, setPublishStep] =
+    useState<OnboardingPublishStep>("clinic-images");
+  const closeDialogTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
   const updateField = useCallback(
     <K extends keyof OnboardingFormData>(
@@ -37,6 +44,42 @@ export function OnboardingFlow() {
     },
     []
   );
+
+  const clearCloseDialogTimeout = useCallback(() => {
+    if (closeDialogTimeoutRef.current) {
+      clearTimeout(closeDialogTimeoutRef.current);
+      closeDialogTimeoutRef.current = null;
+    }
+  }, []);
+
+  const closePublishDialog = useCallback(() => {
+    clearCloseDialogTimeout();
+    setIsPublishing(false);
+    setPublishStep("clinic-images");
+  }, [clearCloseDialogTimeout]);
+
+  const startPublish = useCallback(async () => {
+    setIsPublishing(true);
+    setPublishStep("clinic-images");
+
+    const result = await publishOnboarding(formData, setPublishStep);
+
+    if (result.error) {
+      toast.error(result.error);
+      closePublishDialog();
+      return;
+    }
+
+    closeDialogTimeoutRef.current = setTimeout(() => {
+      closePublishDialog();
+    }, DONE_STEP_CLOSE_DELAY_MS);
+  }, [closePublishDialog, formData]);
+
+  useEffect(() => {
+    return () => {
+      clearCloseDialogTimeout();
+    };
+  }, [clearCloseDialogTimeout]);
 
   const goToPreviousStep = () => {
     setCurrentStep((step) => Math.max(step - 1, 1));
@@ -49,15 +92,10 @@ export function OnboardingFlow() {
     }
 
     if (currentStep === ONBOARDING_TOTAL_STEPS) {
-      const requestBody = buildUpdateProfileRequest(formData);
-      const pendingUploads = buildPendingOnboardingUploads(formData);
-
-      console.log("[onboarding] PUT /profile request body:", requestBody);
-      console.log("[onboarding] Pending file uploads:", pendingUploads);
-
-      toast.success("Profile saved.");
+      void startPublish();
       return;
     }
+
     setCurrentStep((step) => Math.min(step + 1, ONBOARDING_TOTAL_STEPS));
   };
 
@@ -93,21 +131,37 @@ export function OnboardingFlow() {
   };
 
   return (
-    <div className="w-full max-w-lg flex flex-col gap-8 grow">
-      <OnboardingStepper
-        currentStep={currentStep}
-        totalSteps={ONBOARDING_TOTAL_STEPS}
-      />
-      <div className="rounded-3xl bg-card p-6 shadow-lg">{renderStep()}</div>
-      <div className="flex flex-row gap-2">
-        <Button size="icon" variant="outline" className={cn(currentStep === 1 && "hidden")} onClick={goToPreviousStep}>
-          <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
-        </Button>
-        <Button className="grow" onClick={goToNextStep} disabled={!canContinue}>
-          {currentStep === ONBOARDING_TOTAL_STEPS ? "Publish" : "Continue"}
-          {currentStep !== ONBOARDING_TOTAL_STEPS && <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />}
-        </Button>
+    <>
+      <div className="w-full max-w-lg flex flex-col gap-8 grow">
+        <OnboardingStepper
+          currentStep={currentStep}
+          totalSteps={ONBOARDING_TOTAL_STEPS}
+        />
+        <div className="rounded-3xl bg-card p-6 shadow-lg">{renderStep()}</div>
+        <div className="flex flex-row gap-2">
+          <Button
+            size="icon"
+            variant="outline"
+            className={cn(currentStep === 1 && "hidden")}
+            onClick={goToPreviousStep}
+            disabled={isPublishing}
+          >
+            <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
+          </Button>
+          <Button
+            className="grow"
+            onClick={goToNextStep}
+            disabled={!canContinue || isPublishing}
+          >
+            {currentStep === ONBOARDING_TOTAL_STEPS ? "Publish" : "Continue"}
+            {currentStep !== ONBOARDING_TOTAL_STEPS && (
+              <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
+            )}
+          </Button>
+        </div>
       </div>
-    </div>
+
+      <OnboardingPublishDialog open={isPublishing} currentStep={publishStep} />
+    </>
   );
 }

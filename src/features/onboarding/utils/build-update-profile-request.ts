@@ -2,8 +2,13 @@ import { clinicWebsiteSchema } from "@/features/onboarding/form/onboarding-step-
 import type { OnboardingFormData } from "@/features/onboarding/types/onboarding-form";
 import type {
   UpdateProfileLocation,
+  UpdateProfileMedia,
   UpdateProfileRequest,
 } from "@/features/profile/types/update-profile-request";
+
+type BuildUpdateProfileRequestOptions = {
+  media?: UpdateProfileMedia[];
+};
 
 function optionalString(value: string): string | undefined {
   const trimmed = value.trim();
@@ -58,7 +63,8 @@ function buildLocation(data: OnboardingFormData): UpdateProfileLocation {
  * Maps onboarding form data into the PUT `/profile` request body for practice setup.
  */
 export function buildUpdateProfileRequest(
-  data: OnboardingFormData
+  data: OnboardingFormData,
+  options: BuildUpdateProfileRequestOptions = {}
 ): UpdateProfileRequest {
   const websiteResult = clinicWebsiteSchema.safeParse(data.clinicWebsite);
   const website = websiteResult.success
@@ -89,17 +95,9 @@ export function buildUpdateProfileRequest(
     request.linkedin = linkedin;
   }
 
-  return request;
-}
+  if (options.media?.length) {
+    request.media = options.media;
+  }
 
-/**
- * File uploads collected during onboarding that are not yet included in
- * `buildUpdateProfileRequest` until media URLs are available.
- */
-export function buildPendingOnboardingUploads(data: OnboardingFormData) {
-  return {
-    logoFileName:
-      data.logoFileName !== "Choose File" ? data.logoFileName : null,
-    clinicPictureCount: data.clinicPictureCount,
-  };
+  return request;
 }

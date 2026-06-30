@@ -47,8 +47,6 @@ export function ProfilePreviewCard({
         </p>
       </div>
 
-      <p className="mt-4 text-2xl font-semibold text-primary">{preview.rate}</p>
-
       {preview.requirements.length > 0 ? (
         <div className="mt-5">
           <h3 className="text-sm font-semibold text-foreground">

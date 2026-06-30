@@ -6,7 +6,9 @@ export type OnboardingFormData = {
   /** Display label for the selected clinic type */
   clinicTypeName: string;
   logoFileName: string;
+  logoFile: File | null;
   clinicPictureCount: number;
+  clinicPictureFiles: File[];
   clinicWebsite: string;
   instagram: string;
   facebook: string;
@@ -52,7 +54,9 @@ export function createInitialOnboardingFormData(): OnboardingFormData {
     clinicType: "",
     clinicTypeName: "",
     logoFileName: "Choose File",
+    logoFile: null,
     clinicPictureCount: 0,
+    clinicPictureFiles: [],
     clinicWebsite: "",
     instagram: "",
     facebook: "",
