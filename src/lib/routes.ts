@@ -66,6 +66,9 @@ export const externalApiRoutes = {
   profile: {
     _self: { path: "/profile" },
   },
+  upload: {
+    _self: { path: "/upload" },
+  },
   config: {
     byType: { _self: { path: "/config" } },
   },

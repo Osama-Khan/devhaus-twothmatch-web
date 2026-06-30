@@ -47,7 +47,7 @@ export class ApiFetcher {
 
     const headers = new Headers(customHeaders);
 
-    if (body !== undefined && !headers.has("Content-Type")) {
+    if (body !== undefined && !(body instanceof FormData) && !headers.has("Content-Type")) {
       headers.set("Content-Type", "application/json");
     }
 
@@ -60,11 +60,18 @@ export class ApiFetcher {
 
     const url = `${this.baseUrl}${apiPath(path)}`;
 
+    const requestBody =
+      body === undefined
+        ? undefined
+        : body instanceof FormData
+          ? body
+          : JSON.stringify(body);
+
     try {
       const response = await fetch(url, {
         ...rest,
         headers,
-        body: body !== undefined ? JSON.stringify(body) : undefined,
+        body: requestBody,
       });
 
       const json = (await response.json().catch(() => null)) as
