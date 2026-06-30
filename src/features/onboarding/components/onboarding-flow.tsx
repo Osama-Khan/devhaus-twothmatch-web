@@ -16,6 +16,10 @@ import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import {
+  buildPendingOnboardingUploads,
+  buildUpdateProfileRequest,
+} from "@/features/onboarding/utils/build-update-profile-request";
 import { isOnboardingStepComplete } from "@/features/onboarding/utils/is-onboarding-step-complete";
 
 /** Four-step onboarding wizard with shared form state */
@@ -45,6 +49,12 @@ export function OnboardingFlow() {
     }
 
     if (currentStep === ONBOARDING_TOTAL_STEPS) {
+      const requestBody = buildUpdateProfileRequest(formData);
+      const pendingUploads = buildPendingOnboardingUploads(formData);
+
+      console.log("[onboarding] PUT /profile request body:", requestBody);
+      console.log("[onboarding] Pending file uploads:", pendingUploads);
+
       toast.success("Profile saved.");
       return;
     }

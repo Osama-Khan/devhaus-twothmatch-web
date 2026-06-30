@@ -52,10 +52,10 @@ export const authService = {
     );
   },
 
-  /** GET `/profile/me` — validates JWT and returns unified profile */
+  /** GET `/profile` — validates JWT and returns unified profile */
   getProfileMe(): Promise<AppResponseType<ProfileMeResponse>> {
     return apiFetcher.get<ProfileMeResponse>(
-      externalApiRoutes.profile.me._self.path
+      externalApiRoutes.profile._self.path
     );
   },
 
