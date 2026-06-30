@@ -9,6 +9,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
 import { OnboardingUploadZone } from "@/features/onboarding/components/onboarding-upload-zone";
+import { MAX_CLINIC_PICTURES } from "@/features/onboarding/constants";
 import { cn } from "@/lib/utils";
 
 const CLINIC_PICTURE_TILE_CLASS = "size-20 shrink-0 rounded-xl";
@@ -39,6 +40,8 @@ export function ClinicPictureAlbum({
     };
   }, [files]);
 
+  const canAddMore = files.length < MAX_CLINIC_PICTURES;
+
   const handleAddMoreChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selected = event.target.files;
     if (selected?.length) {
@@ -53,7 +56,7 @@ export function ClinicPictureAlbum({
         className={className}
         icon={UserAdd01Icon}
         title="Add Pictures of Clinic"
-        description="Max file size 10MB (.jpeg or .png only)"
+        description="Up to 5 images, max 10MB each (.jpeg or .png only)"
         onFilesSelected={onFilesSelected}
       />
     );
@@ -102,21 +105,23 @@ export function ClinicPictureAlbum({
         className="sr-only"
         onChange={handleAddMoreChange}
       />
-      <button
-        type="button"
-        aria-label="Add more clinic pictures"
-        onClick={() => addInputRef.current?.click()}
-        className={cn(
-          CLINIC_PICTURE_TILE_CLASS,
-          "flex items-center justify-center bg-muted/50 transition-colors hover:bg-muted/70"
-        )}
-      >
-        <HugeiconsIcon
-          icon={Add01Icon}
-          strokeWidth={2}
-          className="size-6 text-primary"
-        />
-      </button>
+      {canAddMore ? (
+        <button
+          type="button"
+          aria-label="Add more clinic pictures"
+          onClick={() => addInputRef.current?.click()}
+          className={cn(
+            CLINIC_PICTURE_TILE_CLASS,
+            "flex items-center justify-center bg-muted/50 transition-colors hover:bg-muted/70"
+          )}
+        >
+          <HugeiconsIcon
+            icon={Add01Icon}
+            strokeWidth={2}
+            className="size-6 text-primary"
+          />
+        </button>
+      ) : null}
       <div className="w-4 shrink-0"></div>
     </div>
   );

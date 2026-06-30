@@ -11,8 +11,10 @@ import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 import { ClinicTypeSelect } from "@/features/onboarding/components/clinic-type-select";
 import { ClinicPictureAlbum } from "@/features/onboarding/components/clinic-picture-album";
+import { appendClinicPictureFiles } from "@/features/onboarding/utils/clinic-picture-files";
 import { getClinicNameError } from "@/features/onboarding/form/onboarding-step-schemas";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
+import { toast } from "sonner";
 
 /** Step 1 — clinic name, type, media uploads, and logo */
 export function AboutYourBusinessStep({
@@ -42,9 +44,17 @@ export function AboutYourBusinessStep({
   };
 
   const handleClinicPicturesSelected = (files: FileList) => {
-    const merged = [...data.clinicPictureFiles, ...Array.from(files)];
-    onChange("clinicPictureFiles", merged);
-    onChange("clinicPictureCount", merged.length);
+    const { files: nextFiles, skippedCount } = appendClinicPictureFiles(
+      data.clinicPictureFiles,
+      Array.from(files)
+    );
+
+    if (skippedCount > 0) {
+      toast.error("You've reached the maximum number of clinic images.");
+    }
+
+    onChange("clinicPictureFiles", nextFiles);
+    onChange("clinicPictureCount", nextFiles.length);
   };
 
   const handleRemoveClinicPicture = (index: number) => {

@@ -1,6 +1,9 @@
 /** Total steps in the active profile onboarding flow */
 export const ONBOARDING_TOTAL_STEPS = 4;
 
+/** Maximum clinic photos allowed during onboarding */
+export const MAX_CLINIC_PICTURES = 5;
+
 export const PARKING_OPTIONS = [
   "On-site parking",
   "Street parking",
