@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { OnboardingStepper } from "@/features/onboarding/components/onboarding-stepper";
 import { AboutYourBusinessStep } from "@/features/onboarding/components/steps/about-your-business-step";
 import { ContactBrandInfoStep } from "@/features/onboarding/components/steps/contact-brand-info-step";
@@ -19,12 +20,18 @@ import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { appRoutes } from "@/lib/routes";
+import { useAppDispatch, useAuthSelector } from "@/lib/store/hooks";
+import { syncProfileSetupComplete } from "@/features/onboarding/utils/sync-profile-setup-complete";
 import { isOnboardingStepComplete } from "@/features/onboarding/utils/is-onboarding-step-complete";
 
 const DONE_STEP_CLOSE_DELAY_MS = 800;
 
 /** Four-step onboarding wizard with shared form state */
 export function OnboardingFlow() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { user } = useAuthSelector();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(createInitialOnboardingFormData);
   const [validatedSteps, setValidatedSteps] = useState<Set<number>>(() => new Set());
@@ -71,9 +78,14 @@ export function OnboardingFlow() {
     }
 
     closeDialogTimeoutRef.current = setTimeout(() => {
+      if (user) {
+        syncProfileSetupComplete(dispatch, user);
+      }
+
       closePublishDialog();
+      router.replace(appRoutes.onboarding.verifying._self.path);
     }, DONE_STEP_CLOSE_DELAY_MS);
-  }, [closePublishDialog, formData]);
+  }, [closePublishDialog, dispatch, formData, router, user]);
 
   useEffect(() => {
     return () => {
