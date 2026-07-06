@@ -13,6 +13,19 @@ import type {
   ProfileWorkExperience,
 } from "@/features/profile/types/profile-shared";
 
+/** Shared profile status fields returned on GET `/profile` */
+type ProfileStatusFields = {
+  profileCompletion: boolean;
+  completionPercent: number;
+  isVerified: boolean;
+  verifiedOn: string | null;
+  verifiedComment: string | null;
+  rejectedOn: string | null;
+  rejectedComment: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 /** Candidate profile core fields from GET `/profile` */
 export type CandidateProfile = {
   id: string;
@@ -23,22 +36,32 @@ export type CandidateProfile = {
   currentStatus?: string;
   linkedinUrl?: string;
   aboutMe?: string;
-  profileCompletion?: boolean;
-  isVerified?: boolean;
-  completionPercent?: number;
-  avatar?: string;
-};
+  avatar?: string | null;
+} & Partial<ProfileStatusFields>;
 
 /** Practice profile core fields from GET `/profile` */
 export type PracticeProfile = {
   id: string;
   userId: string;
-  clinicType?: ProfileConfigRef | null;
-  about?: string;
-  website?: string;
-  phoneNumber?: string;
-  fullName?: string;
-  avatar?: string;
+  about: string | null;
+  website: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  linkedin: string | null;
+  phoneNumber: string | null;
+  hideFromPublic: boolean;
+  profileCompletion: boolean;
+  completionPercent: number;
+  isVerified: boolean;
+  verifiedOn: string | null;
+  verifiedComment: string | null;
+  rejectedOn: string | null;
+  rejectedComment: string | null;
+  createdAt: string;
+  updatedAt: string;
+  fullName: string;
+  avatar: string | null;
+  clinicType: ProfileConfigRef | null;
 };
 
 /** Full candidate profile payload from GET `/profile` */

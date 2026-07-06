@@ -1,9 +1,6 @@
-/** Onboarding completion breakdown returned with GET `/profile` */
+/** Completion section status returned with GET `/profile` */
 export type ProfileCompletionSection = {
   key: string;
-  label: string;
-  weight: number;
-  score: number;
   complete: boolean;
 };
 
@@ -13,6 +10,8 @@ export type ProfileMedia = {
   userId: string;
   kind: string;
   url: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 /** Identity document row attached to a profile */
@@ -114,8 +113,16 @@ export type ProfileAvailabilitySlot = {
 export type ProfileLocation = {
   id: string;
   userId: string;
-  address?: string;
-  postcode?: string;
-  latitude?: string;
-  longitude?: string;
+  address: string;
+  postcode: string;
+  phone: string | null;
+  parking: string | null;
+  publicTransport: string | null;
+  practiceManagerName: string | null;
+  email: string | null;
+  practiceManagerPhone: string | null;
+  latitude: string;
+  longitude: string;
+  createdAt: string;
+  updatedAt: string;
 };

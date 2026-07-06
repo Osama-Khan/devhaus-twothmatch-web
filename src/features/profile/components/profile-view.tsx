@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { useRequireAuth } from "@/features/auth/hooks/use-require-auth";
 
-/** Authenticated profile view backed by `/profile/me` hydration */
+/** Authenticated profile view backed by GET `/profile` hydration */
 export function ProfileView() {
   const { isLoading } = useRequireAuth();
   const { user, logout } = useAuth();

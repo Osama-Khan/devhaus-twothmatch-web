@@ -1,8 +1,7 @@
-import { ACCESS_TOKEN_KEY, USER_SNAPSHOT_KEY } from "@/lib/constants/app";
-import type { User } from "@/lib/types/entities";
+import { ACCESS_TOKEN_KEY } from "@/lib/constants/app";
 
 /**
- * Client-side JWT and user snapshot persistence.
+ * Client-side JWT persistence.
  * Tokens live in localStorage until cookie-based SSR auth is implemented.
  */
 
@@ -22,27 +21,9 @@ export function clearAccessToken(): void {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
 }
 
-/** Read cached user snapshot */
-export function getUserSnapshot(): User | null {
-  if (typeof window === "undefined") return null;
-  const raw = localStorage.getItem(USER_SNAPSHOT_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as User;
-  } catch {
-    return null;
-  }
-}
-
-/** Cache user snapshot for faster initial render */
-export function setUserSnapshot(user: User): void {
-  localStorage.setItem(USER_SNAPSHOT_KEY, JSON.stringify(user));
-}
-
 /** Clear all auth-related storage */
 export function clearAuthStorage(): void {
   clearAccessToken();
-  localStorage.removeItem(USER_SNAPSHOT_KEY);
 }
 
 /** Whether a token exists in storage */

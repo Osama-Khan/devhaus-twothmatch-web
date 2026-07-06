@@ -3,8 +3,6 @@ export {
   clearAuthStorage,
   clearAccessToken,
   getAccessToken,
-  getUserSnapshot,
   hasStoredToken,
   setAccessToken,
-  setUserSnapshot,
 } from "./token-storage";

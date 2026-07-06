@@ -69,7 +69,7 @@ export function LoginForm() {
     }
 
     const session = authService.mapLoginResponse(response.data);
-    authService.persistSession(session.user, session.token);
+    authService.persistAccessToken(session.token);
     dispatch(setCredentials(session));
     toast.success("Welcome back!");
     router.push(getPostAuthPath(session.user));
