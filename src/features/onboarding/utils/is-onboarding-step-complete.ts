@@ -1,6 +1,7 @@
 import type { OnboardingFormData } from "@/features/onboarding/types/onboarding-form";
 import {
   onboardingAddressSchema,
+  onboardingPostcodeSchema,
   onboardingStep1Schema,
   onboardingStep2Schema,
 } from "@/features/onboarding/form/onboarding-step-schemas";
@@ -23,11 +24,14 @@ export function isOnboardingStepComplete(
         phoneNumber: data.phoneNumber,
       }).success;
     case 3:
-      return onboardingAddressSchema.safeParse({
-        address: data.address,
-        latitude: data.latitude,
-        longitude: data.longitude,
-      }).success;
+      return (
+        onboardingAddressSchema.safeParse({
+          address: data.address,
+          latitude: data.latitude,
+          longitude: data.longitude,
+        }).success &&
+        onboardingPostcodeSchema.safeParse(data.postcode).success
+      );
     default:
       return true;
   }

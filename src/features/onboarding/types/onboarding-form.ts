@@ -1,11 +1,14 @@
-import type { ClinicType } from "@/features/onboarding/constants";
-
 /** Collected onboarding answers across all seven steps */
 export type OnboardingFormData = {
   clinicName: string;
-  clinicType: ClinicType;
+  /** Config item id from `types_of_clinics` */
+  clinicType: string;
+  /** Display label for the selected clinic type */
+  clinicTypeName: string;
   logoFileName: string;
+  logoFile: File | null;
   clinicPictureCount: number;
+  clinicPictureFiles: File[];
   clinicWebsite: string;
   instagram: string;
   facebook: string;
@@ -48,9 +51,12 @@ export type OnboardingStepProps = {
 export function createInitialOnboardingFormData(): OnboardingFormData {
   return {
     clinicName: "",
-    clinicType: "nhs",
+    clinicType: "",
+    clinicTypeName: "",
     logoFileName: "Choose File",
+    logoFile: null,
     clinicPictureCount: 0,
+    clinicPictureFiles: [],
     clinicWebsite: "",
     instagram: "",
     facebook: "",

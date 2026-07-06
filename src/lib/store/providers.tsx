@@ -8,14 +8,10 @@ import {
   setAuthLoading,
   setCredentials,
 } from "@/lib/store/auth-slice";
-import {
-  clearAuthStorage,
-  getAccessToken,
-  getUserSnapshot,
-  setUserSnapshot,
-} from "@/lib/services/token-storage";
-import { authService } from "@/features/auth/services/auth-service";
-import { mergeProfileMe } from "@/features/auth/utils/map-profile-me";
+import { clearAuthStorage, getAccessToken } from "@/lib/services/token-storage";
+import { profileService } from "@/features/profile/services/profile-service";
+import { createUserFromProfile } from "@/features/auth/utils/map-profile-response";
+import { useAppSelector } from "@/lib/store/hooks";
 import { isSuccessResponse } from "@/lib/types/response";
 import { logger } from "@/lib/utils/logger";
 
@@ -26,7 +22,7 @@ type StoreProviderProps = {
 };
 
 /**
- * Hydrates Redux from localStorage, then validates JWT via GET `/profile/me`.
+ * Hydrates Redux from the stored JWT via GET `/profile`.
  */
 function AuthHydrator({ store }: { store: AppStore }) {
   const hydrated = useRef(false);
@@ -36,29 +32,20 @@ function AuthHydrator({ store }: { store: AppStore }) {
     hydrated.current = true;
 
     async function hydrateAuth() {
+      localStorage.removeItem("twothmatch_user");
+
       const token = getAccessToken();
-      const snapshot = getUserSnapshot();
 
       if (!token) {
         store.dispatch(setAuthLoading(false));
         return;
       }
 
-      if (snapshot) {
-        store.dispatch(setCredentials({ user: snapshot, token }));
-      }
-
-      const response = await authService.getProfileMe();
+      const response = await profileService.getProfile();
 
       if (isSuccessResponse(response)) {
-        const baseUser = snapshot ?? {
-          id: response.data.profile.id,
-          email: "",
-          role: response.data.kind === "practice" ? "practice" : "candidate",
-        };
-        const user = mergeProfileMe(baseUser, response.data);
+        const user = createUserFromProfile(response.data);
         store.dispatch(setCredentials({ user, token }));
-        setUserSnapshot(user);
         return;
       }
 
@@ -73,6 +60,21 @@ function AuthHydrator({ store }: { store: AppStore }) {
   return null;
 }
 
+/** Blocks the app shell until auth hydration finishes */
+function AuthBootstrapGate({ children }: { children: React.ReactNode }) {
+  const isLoading = useAppSelector((state) => state.auth.isLoading);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-full flex-1 items-center justify-center bg-background">
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      </div>
+    );
+  }
+
+  return children;
+}
+
 /** Redux provider with client-side auth hydration */
 export function StoreProvider({ children }: StoreProviderProps) {
   const [store] = useState(() => makeStore());
@@ -80,7 +82,7 @@ export function StoreProvider({ children }: StoreProviderProps) {
   return (
     <Provider store={store}>
       <AuthHydrator store={store} />
-      {children}
+      <AuthBootstrapGate>{children}</AuthBootstrapGate>
     </Provider>
   );
 }

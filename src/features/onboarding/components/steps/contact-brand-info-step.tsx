@@ -1,26 +1,18 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldLabel,
+  RequiredFieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
 import {
   getClinicWebsiteError,
   getPhoneNumberError,
 } from "@/features/onboarding/form/onboarding-step-schemas";
-
-type RequiredFieldLabelProps = {
-  htmlFor: string;
-  children: React.ReactNode;
-};
-
-function RequiredFieldLabel({ htmlFor, children }: RequiredFieldLabelProps) {
-  return (
-    <FieldLabel htmlFor={htmlFor} className="gap-0">
-      {children} <span className="text-destructive">*</span>
-    </FieldLabel>
-  );
-}
 
 /** Step 2 — clinic website, social links, phone, and visibility */
 export function ContactBrandInfoStep({ data, onChange }: OnboardingStepProps) {

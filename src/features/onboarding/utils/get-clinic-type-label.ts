@@ -1,12 +1,8 @@
-import {
-  CLINIC_TYPE_OPTIONS,
-  type ClinicType,
-} from "@/features/onboarding/constants";
+import type { OnboardingFormData } from "@/features/onboarding/types/onboarding-form";
 
 /** Human-readable clinic type label for display */
-export function getClinicTypeLabel(clinicType: ClinicType): string {
-  return (
-    CLINIC_TYPE_OPTIONS.find((option) => option.value === clinicType)?.label ??
-    clinicType
-  );
+export function getClinicTypeLabel(
+  data: Pick<OnboardingFormData, "clinicTypeName" | "clinicType">
+): string {
+  return data.clinicTypeName.trim() || data.clinicType.trim() || "Not specified";
 }

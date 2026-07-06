@@ -15,8 +15,8 @@ export const appEnv = {
   /** Base URL of the external backend host (no trailing slash) */
   apiUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000",
 
-  /** API root prefix on the backend (e.g. `/api`) */
-  apiRoot: process.env.NEXT_PUBLIC_API_ROOT ?? "/api",
+  /** API root prefix on the backend (e.g. `/v2`) */
+  apiRoot: process.env.NEXT_PUBLIC_API_ROOT ?? "/v2",
 
   /** Public site URL used for metadata and absolute links */
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",

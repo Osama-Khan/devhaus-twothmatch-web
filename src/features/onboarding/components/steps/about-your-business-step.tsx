@@ -1,29 +1,20 @@
 "use client";
 
-import { useRef } from "react";
-import { UserAdd01Icon } from "@hugeicons/core-free-icons";
+import { useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  RequiredFieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
-import { CLINIC_TYPE_OPTIONS } from "@/features/onboarding/constants";
-import { OnboardingSelectOption } from "@/features/onboarding/components/onboarding-select-option";
-import { OnboardingUploadZone } from "@/features/onboarding/components/onboarding-upload-zone";
+import { ClinicTypeSelect } from "@/features/onboarding/components/clinic-type-select";
+import { ClinicPictureAlbum } from "@/features/onboarding/components/clinic-picture-album";
+import { appendClinicPictureFiles } from "@/features/onboarding/utils/clinic-picture-files";
 import { getClinicNameError } from "@/features/onboarding/form/onboarding-step-schemas";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
-
-type RequiredFieldLabelProps = {
-  htmlFor: string;
-  children: React.ReactNode;
-};
-
-function RequiredFieldLabel({ htmlFor, children }: RequiredFieldLabelProps) {
-  return (
-    <FieldLabel htmlFor={htmlFor} className="gap-0">
-      {children} <span className="text-destructive">*</span>
-    </FieldLabel>
-  );
-}
+import { toast } from "sonner";
 
 /** Step 1 — clinic name, type, media uploads, and logo */
 export function AboutYourBusinessStep({
@@ -38,9 +29,38 @@ export function AboutYourBusinessStep({
       ? "Logo is required"
       : null;
 
+  const handleClinicTypeSelect = useCallback(
+    ({ id, name }: { id: string; name: string }) => {
+      onChange("clinicType", id);
+      onChange("clinicTypeName", name);
+    },
+    [onChange]
+  );
+
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    onChange("logoFile", file ?? null);
     onChange("logoFileName", file?.name ?? "Choose File");
+  };
+
+  const handleClinicPicturesSelected = (files: FileList) => {
+    const { files: nextFiles, skippedCount } = appendClinicPictureFiles(
+      data.clinicPictureFiles,
+      Array.from(files)
+    );
+
+    if (skippedCount > 0) {
+      toast.error("You've reached the maximum number of clinic images.");
+    }
+
+    onChange("clinicPictureFiles", nextFiles);
+    onChange("clinicPictureCount", nextFiles.length);
+  };
+
+  const handleRemoveClinicPicture = (index: number) => {
+    const nextFiles = data.clinicPictureFiles.filter((_, fileIndex) => fileIndex !== index);
+    onChange("clinicPictureFiles", nextFiles);
+    onChange("clinicPictureCount", nextFiles.length);
   };
 
   return (
@@ -62,35 +82,18 @@ export function AboutYourBusinessStep({
         <FieldError>{clinicNameError}</FieldError>
       </Field>
 
-      <section className="flex flex-col gap-4">
-        <FieldLabel>
-          Type of Clinic
-        </FieldLabel>
-        <div
-          role="radiogroup"
-          aria-label="Type of Clinic"
-          className="flex flex-col gap-3"
-        >
-          {CLINIC_TYPE_OPTIONS.map((option) => (
-            <OnboardingSelectOption
-              key={option.value}
-              label={option.label}
-              selected={data.clinicType === option.value}
-              onSelect={() => onChange("clinicType", option.value)}
-            />
-          ))}
-        </div>
-      </section>
+      <ClinicTypeSelect
+        value={data.clinicType}
+        onSelect={handleClinicTypeSelect}
+        showValidation={showValidation}
+      />
 
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold text-foreground">Upload Media</h2>
-        <OnboardingUploadZone
-          icon={UserAdd01Icon}
-          title="Add Pictures of Clinic"
-          description="Max file size 10MB (.jpeg or .png only)"
-          onFilesSelected={(files) =>
-            onChange("clinicPictureCount", files.length)
-          }
+        <ClinicPictureAlbum
+          files={data.clinicPictureFiles}
+          onFilesSelected={handleClinicPicturesSelected}
+          onRemove={handleRemoveClinicPicture}
         />
       </section>
 

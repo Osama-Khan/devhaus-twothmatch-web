@@ -64,14 +64,20 @@ export const externalApiRoutes = {
     apple: { _self: { path: "/auth/apple" } },
   },
   profile: {
-    me: { _self: { path: "/profile/me" } },
+    _self: { path: "/profile" },
+  },
+  upload: {
+    _self: { path: "/upload" },
   },
   config: {
-    public: { _self: { path: "/config/public" } },
+    byType: { _self: { path: "/config" } },
+  },
+  settings: {
+    byType: { _self: { path: "/settings" } },
   },
 } as const;
 
-/** Build a full API path including the configured root prefix (e.g. `/api/auth/login`) */
+/** Build a full API path including the configured root prefix (e.g. `/v2/profile`) */
 export function apiPath(segment: string): string {
   const root = appEnv.apiRoot.replace(/\/$/, "");
   const path = segment.startsWith("/") ? segment : `/${segment}`;

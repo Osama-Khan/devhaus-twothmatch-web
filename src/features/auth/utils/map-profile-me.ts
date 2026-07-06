@@ -1,20 +1,40 @@
 import type { ProfileMeResponse, User } from "@/lib/types/entities";
 
+/** Builds the Redux user from GET `/profile` when no session user exists yet */
+export function createUserFromProfileMe(response: ProfileMeResponse): User {
+  return mergeProfileMe(
+    {
+      id: response.profile.userId,
+      email: "",
+      role: response.kind === "practice" ? "practice" : "candidate",
+    },
+    response
+  );
+}
+
 /**
- * Merges a cached auth user with the unified `/profile/me` response.
+ * Merges session auth fields with the unified GET `/profile` response.
+ * Explicit API flag values always win over existing Redux user values.
  */
 export function mergeProfileMe(
   baseUser: User,
-  profile: ProfileMeResponse
+  response: ProfileMeResponse
 ): User {
+  const { profile, kind } = response;
   return {
     ...baseUser,
-    profileKind: profile.kind,
-    fullName: profile.profile?.fullName ?? baseUser.fullName,
-    avatarUrl: profile.profile?.avatar ?? baseUser.avatarUrl,
+    profileKind: kind,
+    fullName: profile?.fullName ?? baseUser.fullName,
+    avatarUrl: profile?.avatar ?? baseUser.avatarUrl,
     completionPercent: profile.completionPercent,
-    isProfileComplete: profile.isProfileComplete ?? baseUser.isProfileComplete,
-    isProfileVerified: profile.isProfileVerified ?? baseUser.isProfileVerified,
+    isProfileComplete:
+      profile.profileCompletion !== undefined
+        ? profile.profileCompletion
+        : baseUser.isProfileComplete,
+    isProfileVerified:
+      profile.isVerified !== undefined
+        ? profile.isVerified
+        : baseUser.isProfileVerified,
   };
 }
 

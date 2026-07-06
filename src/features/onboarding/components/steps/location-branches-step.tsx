@@ -1,17 +1,19 @@
 "use client";
 
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldLabel, RequiredFieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { OnboardingSelectField } from "@/features/onboarding/components/onboarding-select-field";
 import { PARKING_OPTIONS } from "@/features/onboarding/constants";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
 import { AddressLocationField } from "@/features/location/components/address-location-field";
+import { getPostcodeError } from "@/features/onboarding/form/onboarding-step-schemas";
 
 /** Step 3 — location details and branch manager contact */
 export function LocationBranchesStep({
   data,
   onChange,
 }: OnboardingStepProps) {
+  const postcodeError = getPostcodeError(data.postcode);
   return (
     <div className="flex flex-col gap-6">
       <section className="flex flex-col gap-5">
@@ -34,16 +36,18 @@ export function LocationBranchesStep({
           }}
         />
 
-        <Field>
-          <FieldLabel htmlFor="postcode">Postcode</FieldLabel>
+        <Field data-invalid={Boolean(postcodeError)}>
+          <RequiredFieldLabel htmlFor="postcode">Postcode</RequiredFieldLabel>
           <Input
             id="postcode"
             type="text"
             placeholder="Enter"
             autoComplete="postal-code"
+            aria-invalid={Boolean(postcodeError)}
             value={data.postcode}
             onChange={(event) => onChange("postcode", event.target.value)}
           />
+          <FieldError>{postcodeError}</FieldError>
         </Field>
 
         <Field>

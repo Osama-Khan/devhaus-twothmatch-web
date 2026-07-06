@@ -35,6 +35,7 @@ export function OnboardingUploadZone({
     if (files?.length) {
       onFilesSelected?.(files);
     }
+    event.target.value = "";
   };
 
   return (

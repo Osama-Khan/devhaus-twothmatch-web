@@ -4,12 +4,10 @@ import { apiFetcher } from "@/lib/services/api-fetcher";
 import {
   clearAuthStorage,
   setAccessToken,
-  setUserSnapshot,
 } from "@/lib/services/token-storage";
 import { externalApiRoutes } from "@/lib/routes";
 import type {
   LoginResponse,
-  ProfileMeResponse,
   SignupResponse,
   User,
 } from "@/lib/types/entities";
@@ -22,7 +20,7 @@ import type {
   VerifyEmailFormData,
 } from "@/features/auth/form";
 import { getWebDevicePayload } from "@/lib/utils/device";
-import { userFromLogin } from "@/features/auth/utils/map-profile-me";
+import { userFromLogin } from "@/features/auth/utils/map-profile-response";
 
 /**
  * Client-side auth service — calls the external backend API.
@@ -49,13 +47,6 @@ export const authService = {
       externalApiRoutes.auth.signup._self.path,
       payload,
       { skipAuth: true }
-    );
-  },
-
-  /** GET `/profile/me` — validates JWT and returns unified profile */
-  getProfileMe(): Promise<AppResponseType<ProfileMeResponse>> {
-    return apiFetcher.get<ProfileMeResponse>(
-      externalApiRoutes.profile.me._self.path
     );
   },
 
@@ -108,10 +99,9 @@ export const authService = {
     clearAuthStorage();
   },
 
-  /** Persist JWT + user snapshot after login */
-  persistSession(user: User, token: string): void {
+  /** Persist JWT after login */
+  persistAccessToken(token: string): void {
     setAccessToken(token);
-    setUserSnapshot(user);
   },
 
   /** Build Redux user from login response */
