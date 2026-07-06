@@ -94,7 +94,7 @@ export function AppHeader() {
             href={appRoutes.home._self.path}
             className="text-sm font-semibold tracking-tight"
           >
-            <Image src="/img/logo-wd.svg" alt={APP_NAME} height={42} />
+            <Image src="/img/logo-wd.svg" alt={APP_NAME} height={42} width={120} />
           </Link>
         </div>
 
@@ -123,6 +123,8 @@ export function AppHeader() {
                 <Image
                   src={user.avatarUrl}
                   alt=""
+                  width={36}
+                  height={36}
                   className="size-full object-cover"
                 />
               ) : (
