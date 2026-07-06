@@ -21,8 +21,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { appRoutes } from "@/lib/routes";
-import { useAppDispatch, useAuthSelector } from "@/lib/store/hooks";
-import { syncProfileSetupComplete } from "@/features/onboarding/utils/sync-profile-setup-complete";
+import { useAppDispatch, useAppStore, useAuthSelector } from "@/lib/store/hooks";
 import { isOnboardingStepComplete } from "@/features/onboarding/utils/is-onboarding-step-complete";
 
 const DONE_STEP_CLOSE_DELAY_MS = 800;
@@ -31,6 +30,7 @@ const DONE_STEP_CLOSE_DELAY_MS = 800;
 export function OnboardingFlow() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const store = useAppStore();
   const { user } = useAuthSelector();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(createInitialOnboardingFormData);
@@ -66,10 +66,20 @@ export function OnboardingFlow() {
   }, [clearCloseDialogTimeout]);
 
   const startPublish = useCallback(async () => {
+    if (!user) {
+      toast.error("Session expired. Please sign in again.");
+      return;
+    }
+
     setIsPublishing(true);
     setPublishStep("clinic-images");
 
-    const result = await publishOnboarding(formData, setPublishStep);
+    const result = await publishOnboarding(
+      formData,
+      setPublishStep,
+      dispatch,
+      () => store.getState().auth.user
+    );
 
     if (result.error) {
       toast.error(result.error);
@@ -78,14 +88,10 @@ export function OnboardingFlow() {
     }
 
     closeDialogTimeoutRef.current = setTimeout(() => {
-      if (user) {
-        syncProfileSetupComplete(dispatch, user);
-      }
-
       closePublishDialog();
       router.replace(appRoutes.onboarding.verifying._self.path);
     }, DONE_STEP_CLOSE_DELAY_MS);
-  }, [closePublishDialog, dispatch, formData, router, user]);
+  }, [closePublishDialog, dispatch, formData, router, store, user]);
 
   useEffect(() => {
     return () => {

@@ -1,4 +1,5 @@
 import { buildUpdateProfileRequest } from "@/features/onboarding/utils/build-update-profile-request";
+import { refreshAuthUserFromProfile } from "@/features/auth/utils/refresh-auth-user-from-profile";
 import type { OnboardingFormData } from "@/features/onboarding/types/onboarding-form";
 import type { OnboardingPublishStep } from "@/features/onboarding/types/onboarding-publish-step";
 import { profileService } from "@/features/profile/services/profile-service";
@@ -8,6 +9,8 @@ import {
   getUploadedMediaItems,
   UploadMediaKind,
 } from "@/features/upload/types/upload-media";
+import type { AppDispatch } from "@/lib/store";
+import type { User } from "@/lib/types/entities";
 import { isSuccessResponse } from "@/lib/types/response";
 
 function toUpdateProfileMedia(
@@ -25,8 +28,10 @@ function toUpdateProfileMedia(
  */
 export async function publishOnboarding(
   data: OnboardingFormData,
-  onStepChange: (step: OnboardingPublishStep) => void
-): Promise<{ error?: string }> {
+  onStepChange: (step: OnboardingPublishStep) => void,
+  dispatch: AppDispatch,
+  getUser: () => User | null
+): Promise<{ error?: string; user?: User }> {
   onStepChange("clinic-images");
 
   const uploadedMedia: UpdateProfileMedia[] = [];
@@ -71,6 +76,16 @@ export async function publishOnboarding(
     return { error: profileUpdate.error };
   }
 
+  const baseUser = getUser();
+  if (!baseUser) {
+    return { error: "Session expired. Please sign in again." };
+  }
+
+  const refreshed = await refreshAuthUserFromProfile(dispatch, baseUser);
+  if (!refreshed.user) {
+    return { error: refreshed.error ?? "Failed to refresh profile" };
+  }
+
   onStepChange("done");
-  return {};
+  return { user: refreshed.user };
 }
