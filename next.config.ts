@@ -1,28 +1,33 @@
 import type { NextConfig } from "next";
+const API_URL_ERR =
+  "Invalid API URL. Please set NEXT_PUBLIC_API_URL in the env file in the format https://api.example.com:port.";
 
-const getApiHostName = () => {
+const getServerPattern = () => {
   const url = process.env.NEXT_PUBLIC_API_URL ?? "";
-  const parts = url.split("//");
+  const parts = url.split("://");
+  if (parts.length < 1 && parts.length > 2) {
+    throw new Error(API_URL_ERR);
+  }
+  let protocol: "https" | "http" = "https";
+  let domainPart = "";
   if (parts.length === 2) {
-    return parts[1].split("/")[0];
+    protocol = parts[0] as "https" | "http";
+    domainPart = parts[1].split("/")[0];
   }
   if (parts.length === 1) {
-    return parts[0].split("/")[0];
+    domainPart = parts[0].split("/")[0];
   }
-  throw new Error(
-    "Invalid API URL. Please set NEXT_PUBLIC_API_URL in the env file."
-  );
+  const hostname = domainPart.split(":")[0];
+  return {
+    protocol,
+    hostname,
+  };
 };
 
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: getApiHostName(),
-      },
-    ],
+    remotePatterns: [getServerPattern()],
   },
 };
 
