@@ -46,7 +46,7 @@ export function NotificationsButton() {
       </PopoverTrigger>
 
       <PopoverContent align="end" className="w-sm">
-        <NotificationsOverlay open={open} />
+        <NotificationsOverlay open={open} onViewAll={() => setOpen(false)} />
       </PopoverContent>
     </Popover>
   );

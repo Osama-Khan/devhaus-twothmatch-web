@@ -27,6 +27,9 @@ export const appRoutes = {
   profile: {
     _self: { path: "/profile", label: "Profile" },
   },
+  notifications: {
+    _self: { path: "/notifications", label: "Notifications" },
+  },
   onboarding: {
     _self: { path: "/onboarding", label: "Onboarding" },
     verifying: { _self: { path: "/verifying", label: "Verifying" } },

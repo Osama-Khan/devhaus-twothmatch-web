@@ -1,16 +1,22 @@
 "use client";
 
+import Link from "next/link";
 import { NotificationItem } from "@/features/notifications/components/notification-item";
 import { useNotificationPreview } from "@/features/notifications/hooks/use-notification-preview";
 import { Button } from "@/components/ui/button";
+import { appRoutes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 type NotificationsOverlayProps = {
   open: boolean;
+  onViewAll?: () => void;
 };
 
 /** Popover panel listing the three most recent notifications. */
-export function NotificationsOverlay({ open }: NotificationsOverlayProps) {
+export function NotificationsOverlay({
+  open,
+  onViewAll,
+}: NotificationsOverlayProps) {
   const { notifications, isLoading, error } = useNotificationPreview(open);
 
   return (
@@ -53,11 +59,13 @@ export function NotificationsOverlay({ open }: NotificationsOverlayProps) {
       </div>
 
       <Button
-        type="button"
+        asChild
         variant="link"
         className="mt-4 h-auto w-full py-0 text-sm font-semibold"
       >
-        View All
+        <Link href={appRoutes.notifications._self.path} onClick={onViewAll}>
+          View All
+        </Link>
       </Button>
     </div>
   );
