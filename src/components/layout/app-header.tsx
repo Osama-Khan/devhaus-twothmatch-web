@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  ArrowDown01Icon,
   Briefcase07Icon,
   Calendar03Icon,
   CrownIcon,
@@ -16,7 +15,9 @@ import { APP_NAME } from "@/lib/constants/app";
 import { useAuthSelector } from "@/lib/store/hooks";
 import { cn } from "@/lib/utils";
 import { NotificationsButton } from "./notifications-button";
+import { AccountMenu } from "./account-menu";
 import Image from "next/image";
+import { Separator } from "../ui/separator";
 
 type NavItem = {
   href: string;
@@ -111,37 +112,13 @@ export function AppHeader() {
           ))}
         </nav>
 
-        <div className="flex flex-1 items-center justify-end gap-5">
+        <div className="flex flex-1 items-center justify-end gap-3">
           <NotificationsButton />
-
-          <Link
-            href={appRoutes.profile._self.path}
-            className="flex items-center gap-2 border-l border-border pl-5"
-          >
-            <div className="size-9 shrink-0 overflow-hidden rounded-full bg-muted">
-              {user?.avatarUrl ? (
-                <Image
-                  src={user.avatarUrl}
-                  alt=""
-                  width={36}
-                  height={36}
-                  className="size-full object-cover"
-                />
-              ) : (
-                <div className="flex size-full items-center justify-center text-xs font-semibold text-muted-foreground">
-                  {accountLabel.charAt(0).toUpperCase()}
-                </div>
-              )}
-            </div>
-            <span className="hidden max-w-40 truncate text-sm font-semibold tracking-tight text-foreground sm:inline">
-              {accountLabel}
-            </span>
-            <HugeiconsIcon
-              icon={ArrowDown01Icon}
-              strokeWidth={2}
-              className="hidden size-2.5 shrink-0 text-foreground sm:block"
-            />
-          </Link>
+          <Separator orientation="vertical" className="ml-2" />
+          <AccountMenu
+            accountLabel={accountLabel}
+            avatarUrl={user?.avatarUrl}
+          />
         </div>
       </div>
     </header>
