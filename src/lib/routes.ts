@@ -30,6 +30,9 @@ export const appRoutes = {
   notifications: {
     _self: { path: "/notifications", label: "Notifications" },
   },
+  settings: {
+    _self: { path: "/settings", label: "Settings" },
+  },
   onboarding: {
     _self: { path: "/onboarding", label: "Onboarding" },
     verifying: { _self: { path: "/verifying", label: "Verifying" } },
