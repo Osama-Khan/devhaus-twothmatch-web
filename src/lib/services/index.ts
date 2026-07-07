@@ -1,4 +1,4 @@
-export { apiFetcher, ApiFetcher } from "./api-fetcher";
+export { apiFetcher, ApiFetcher, registerUnauthorizedHandler } from "./api-fetcher";
 export {
   clearAuthStorage,
   clearAccessToken,

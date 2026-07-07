@@ -7,12 +7,17 @@ import {
   clearCredentials,
   setAuthLoading,
   setCredentials,
+  setTokenSession,
 } from "@/lib/store/auth-slice";
 import { clearAuthStorage, getAccessToken } from "@/lib/services/token-storage";
+import { registerUnauthorizedHandler } from "@/lib/services/api-fetcher";
 import { profileService } from "@/features/profile/services/profile-service";
 import { createUserFromProfile } from "@/features/auth/utils/map-profile-response";
 import { useAppSelector } from "@/lib/store/hooks";
-import { isSuccessResponse } from "@/lib/types/response";
+import {
+  isSuccessResponse,
+  isUnauthorizedResponse,
+} from "@/lib/types/response";
 import { logger } from "@/lib/utils/logger";
 
 const storeLogger = logger.child("StoreProvider");
@@ -26,6 +31,14 @@ type StoreProviderProps = {
  */
 function AuthHydrator({ store }: { store: AppStore }) {
   const hydrated = useRef(false);
+
+  useEffect(() => {
+    registerUnauthorizedHandler(() => {
+      storeLogger.warn("Unauthorized API response, clearing session");
+      clearAuthStorage();
+      store.dispatch(clearCredentials());
+    });
+  }, [store]);
 
   useEffect(() => {
     if (hydrated.current) return;
@@ -49,9 +62,16 @@ function AuthHydrator({ store }: { store: AppStore }) {
         return;
       }
 
-      storeLogger.warn("Token validation failed, clearing session");
-      clearAuthStorage();
-      store.dispatch(clearCredentials());
+      if (isUnauthorizedResponse(response)) {
+        clearAuthStorage();
+        store.dispatch(clearCredentials());
+        return;
+      }
+
+      storeLogger.warn("Profile hydration failed, keeping stored session", {
+        status: response.status,
+      });
+      store.dispatch(setTokenSession({ token }));
     }
 
     void hydrateAuth();

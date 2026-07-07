@@ -8,6 +8,19 @@ import { getAccessToken } from "@/lib/services/token-storage";
 
 const apiLogger = logger.child("ApiFetcher");
 
+let unauthorizedHandler: (() => void) | null = null;
+
+/** Registers a callback invoked when an authenticated request receives 401. */
+export function registerUnauthorizedHandler(handler: () => void): void {
+  unauthorizedHandler = handler;
+}
+
+function notifyUnauthorized(skipAuth: boolean, status: number): void {
+  if (!skipAuth && status === 401) {
+    unauthorizedHandler?.();
+  }
+}
+
 type FetchOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
   /** Skip attaching Authorization header */
@@ -83,13 +96,15 @@ export class ApiFetcher {
       if (!response.ok) {
         const message = extractErrorMessage(json, response.status);
         apiLogger.warn("API error", { path, status: response.status, message });
-        return { error: message };
+        notifyUnauthorized(skipAuth, response.status);
+        return { error: message, status: response.status };
       }
 
       if (json && typeof json === "object" && "success" in json) {
         if (json.success === false) {
           const message = extractErrorMessage(json, response.status);
-          return { error: message };
+          notifyUnauthorized(skipAuth, response.status);
+          return { error: message, status: response.status };
         }
         if ("data" in json) {
           return { data: json.data as T };
@@ -101,7 +116,7 @@ export class ApiFetcher {
       const message =
         error instanceof Error ? error.message : "Network request failed";
       apiLogger.error("Fetch failed", { path, message });
-      return { error: message };
+      return { error: message, status: 0 };
     }
   }
 
