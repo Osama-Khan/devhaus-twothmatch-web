@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { notificationsService } from "@/features/notifications/services/notifications-service";
 import { isSuccessResponse } from "@/lib/types/response";
 
@@ -8,6 +8,7 @@ type UseUnreadCountResult = {
   count: number;
   hasUnread: boolean;
   isLoading: boolean;
+  refetch: () => void;
 };
 
 /**
@@ -16,6 +17,14 @@ type UseUnreadCountResult = {
 export function useUnreadCount(): UseUnreadCountResult {
   const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+
+  const refetch = useCallback(() => {
+    void notificationsService.getUnreadCount().then((response) => {
+      if (isSuccessResponse(response)) {
+        setCount(response.data.count);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,5 +50,6 @@ export function useUnreadCount(): UseUnreadCountResult {
     count,
     hasUnread: count > 0,
     isLoading,
+    refetch,
   };
 }

@@ -6,19 +6,37 @@ import { Button } from "@/components/ui/button";
 
 /** Full notifications page with paginated history and load-more. */
 export function NotificationsView() {
-  const { notifications, isLoading, isLoadingMore, error, hasMore, loadMore } =
-    useNotificationHistory();
-
-  const hasUnread = notifications.some(
-    (notification) => notification.readAt === null
-  );
+  const {
+    notifications,
+    isLoading,
+    isLoadingMore,
+    isMarkingAllRead,
+    error,
+    hasMore,
+    hasUnread,
+    loadMore,
+    markAsRead,
+    markAllAsRead,
+  } = useNotificationHistory();
 
   return (
     <main className="mx-auto h-full min-h-0 w-full max-w-2xl overflow-y-auto px-4 py-8">
       <div className="rounded-3xl bg-card p-6 ring-1 ring-border">
-        <h1 className="text-base font-bold text-foreground">Notifications</h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-base font-bold text-foreground">Notifications</h1>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="shrink-0 text-sm font-semibold text-primary"
+            disabled={!hasUnread || isMarkingAllRead || isLoading}
+            onClick={markAllAsRead}
+          >
+            {isMarkingAllRead ? "Marking…" : "Mark all as read"}
+          </Button>
+        </div>
 
-        <div className={"mt-4 flex flex-col gap-2"}>
+        <div className="mt-4 flex flex-col gap-2">
           {isLoading ? (
             [1, 2, 3, 4, 5].map((item) => (
               <div
@@ -42,6 +60,7 @@ export function NotificationsView() {
                   key={notification.id}
                   notification={notification}
                   showDivider={showDivider}
+                  onMarkAsRead={markAsRead}
                 />
               );
             })

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useNotificationMarkActions } from "@/features/notifications/hooks/use-notification-mark-actions";
 import { notificationsService } from "@/features/notifications/services/notifications-service";
 import type {
   Notification,
@@ -14,9 +15,13 @@ type UseNotificationHistoryResult = {
   notifications: Notification[];
   isLoading: boolean;
   isLoadingMore: boolean;
+  isMarkingAllRead: boolean;
   error: string | null;
   hasMore: boolean;
+  hasUnread: boolean;
   loadMore: () => void;
+  markAsRead: (notificationId: string) => void;
+  markAllAsRead: () => void;
 };
 
 /**
@@ -31,6 +36,13 @@ export function useNotificationHistory(): UseNotificationHistoryResult {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { hasUnread, isMarkingAllRead, markAsRead, markAllAsRead } =
+    useNotificationMarkActions({
+      notifications,
+      setNotifications,
+      setError,
+    });
 
   useEffect(() => {
     let cancelled = false;
@@ -101,8 +113,12 @@ export function useNotificationHistory(): UseNotificationHistoryResult {
     notifications,
     isLoading,
     isLoadingMore,
+    isMarkingAllRead,
     error,
     hasMore,
+    hasUnread,
     loadMore,
+    markAsRead,
+    markAllAsRead,
   };
 }

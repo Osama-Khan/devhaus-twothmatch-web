@@ -10,18 +10,40 @@ import { cn } from "@/lib/utils";
 type NotificationsOverlayProps = {
   open: boolean;
   onViewAll?: () => void;
+  onUnreadChange?: () => void;
 };
 
 /** Popover panel listing the three most recent notifications. */
 export function NotificationsOverlay({
   open,
   onViewAll,
+  onUnreadChange,
 }: NotificationsOverlayProps) {
-  const { notifications, isLoading, error } = useNotificationPreview(open);
+  const {
+    notifications,
+    isLoading,
+    isMarkingAllRead,
+    error,
+    hasUnread,
+    markAsRead,
+    markAllAsRead,
+  } = useNotificationPreview(open, { onMarkedRead: onUnreadChange });
 
   return (
     <div className="flex flex-col">
-      <h2 className="text-base font-bold text-foreground">Notifications</h2>
+      <div className="flex items-start justify-between gap-3">
+        <h2 className="text-base font-bold text-foreground">Notifications</h2>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-auto shrink-0 px-2 py-1 text-xs font-semibold text-primary"
+          disabled={!hasUnread || isMarkingAllRead || isLoading}
+          onClick={markAllAsRead}
+        >
+          {isMarkingAllRead ? "Marking…" : "Mark all as read"}
+        </Button>
+      </div>
 
       <div
         className={cn(
@@ -52,6 +74,7 @@ export function NotificationsOverlay({
                 key={notification.id}
                 notification={notification}
                 showDivider={showDivider}
+                onMarkAsRead={markAsRead}
               />
             );
           })

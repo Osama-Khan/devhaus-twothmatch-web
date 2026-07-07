@@ -16,7 +16,7 @@ import { Button } from "../ui/button";
 /** Header bell trigger with unread badge and notification preview overlay. */
 export function NotificationsButton() {
   const [open, setOpen] = useState(false);
-  const { hasUnread } = useUnreadCount();
+  const { hasUnread, refetch } = useUnreadCount();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -46,7 +46,11 @@ export function NotificationsButton() {
       </PopoverTrigger>
 
       <PopoverContent align="end" className="w-sm">
-        <NotificationsOverlay open={open} onViewAll={() => setOpen(false)} />
+        <NotificationsOverlay
+          open={open}
+          onViewAll={() => setOpen(false)}
+          onUnreadChange={refetch}
+        />
       </PopoverContent>
     </Popover>
   );
