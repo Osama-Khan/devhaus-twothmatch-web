@@ -9,8 +9,10 @@ export default function MainLayout({
 }) {
   return (
     <RequireAuthLayout>
-      <AppHeader />
-      <div className="flex flex-1 flex-col">{children}</div>
+      <div className="flex flex-col h-dvh overflow-hidden">
+        <AppHeader />
+        <div className="flex flex-1 flex-col min-h-0 overflow-hidden">{children}</div>
+      </div>
     </RequireAuthLayout>
   );
 }

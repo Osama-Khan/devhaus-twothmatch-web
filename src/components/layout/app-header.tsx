@@ -94,7 +94,7 @@ export function AppHeader() {
             href={appRoutes.home._self.path}
             className="text-sm font-semibold tracking-tight"
           >
-            <Image src="/img/logo-wd.svg" alt={APP_NAME} height={42} width={120} />
+            <Image src="/img/logo-wd.svg" alt={APP_NAME} height={42} width={192} />
           </Link>
         </div>
 
