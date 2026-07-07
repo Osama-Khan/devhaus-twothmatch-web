@@ -19,7 +19,7 @@ export function HomeView() {
   const [selectedJobId, setSelectedJobId] = useState(MOCK_JOBS[0]?.id ?? "");
 
   return (
-    <main className="mx-auto flex h-full min-h-0 max-w-7xl flex-row gap-6 overflow-hidden px-4">
+    <main className="mx-auto flex h-full min-h-0 max-w-7xl flex-row overflow-hidden px-4">
       <div className="flex w-70 min-h-0 shrink-0 flex-col">
         <ScrollArea className="h-full">
           {ScrollSpacer}
@@ -31,11 +31,13 @@ export function HomeView() {
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <ScrollArea className="h-full">
           {ScrollSpacer}
-          <JobFeed
-            jobs={MOCK_JOBS}
-            selectedJobId={selectedJobId}
-            onSelectJob={setSelectedJobId}
-          />
+          <div className="px-6">
+            <JobFeed
+              jobs={MOCK_JOBS}
+              selectedJobId={selectedJobId}
+              onSelectJob={setSelectedJobId}
+            />
+          </div>
           {ScrollSpacer}
         </ScrollArea>
       </div>
