@@ -75,6 +75,13 @@ export const externalApiRoutes = {
   settings: {
     byType: { _self: { path: "/settings" } },
   },
+  notifications: {
+    _self: { path: "/notifications" },
+    history: { _self: { path: "/notifications/history" } },
+    unreadCount: { _self: { path: "/notifications/unread-count" } },
+    markAllRead: { _self: { path: "/notifications/markAllRead" } },
+    preferences: { _self: { path: "/notifications/preferences" } },
+  },
 } as const;
 
 /** Build a full API path including the configured root prefix (e.g. `/v2/profile`) */
