@@ -5,6 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { FilterHorizontalIcon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { CandidateListingCard } from "@/features/home/components/candidate-listing-card";
+import { CandidateFeedSkeleton } from "@/features/home/components/candidate-listing-card-skeleton";
 import { CandidateFeedTabs } from "@/features/home/components/candidate-feed-tabs";
 import { useJobCandidates } from "@/features/home/hooks/use-job-candidates";
 import type { CandidateFeedTab } from "@/features/home/types/job-candidates";
@@ -46,9 +47,7 @@ export function CandidateFeed({
       </div>
 
       {isLoading ? (
-        <p className="py-8 text-center text-sm text-muted-foreground">
-          Loading candidates...
-        </p>
+        <CandidateFeedSkeleton />
       ) : error ? (
         <p className="py-8 text-center text-sm text-destructive">{error}</p>
       ) : candidates.length === 0 ? (
