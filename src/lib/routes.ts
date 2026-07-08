@@ -88,6 +88,15 @@ export const externalApiRoutes = {
     markAllRead: { _self: { path: "/notifications/markAllRead" } },
     preferences: { _self: { path: "/notifications/preferences" } },
   },
+  jobs: {
+    candidates: {
+      locum: { _self: { path: "/jobs/candidates/locum" } },
+      permanent: { _self: { path: "/jobs/candidates/permanent" } },
+    },
+  },
+  candidates: {
+    _self: { path: "/candidates/[id]", label: "Candidates" },
+  },
 } as const;
 
 /** Build a full API path including the configured root prefix (e.g. `/v2/profile`) */

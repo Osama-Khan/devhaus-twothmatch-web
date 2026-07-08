@@ -6,7 +6,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { IconTextRow } from "@/features/home/components/icon-text-row";
-import type { ShiftDetail } from "@/features/home/mock/home-mock-data";
+import type { ShiftDetail } from "@/features/home/types/shift-detail";
 import { cn } from "@/lib/utils";
 
 type ShiftDetailsSidebarProps = {

@@ -1,6 +1,6 @@
 "use client";
 
-import type { JobFeedTab } from "@/features/home/mock/home-mock-data";
+import type { JobFeedTab } from "@/features/home/types/job-listing";
 import { cn } from "@/lib/utils";
 
 type JobFeedTabsProps = {

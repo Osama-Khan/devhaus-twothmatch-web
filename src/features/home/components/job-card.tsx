@@ -12,7 +12,7 @@ import {
 import type { IconSvgElement } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
 import { MatchBadge } from "@/features/home/components/match-badge";
-import type { JobListing } from "@/features/home/mock/home-mock-data";
+import type { JobListing } from "@/features/home/types/job-listing";
 import { cn } from "@/lib/utils";
 
 const META_ICONS: IconSvgElement[] = [
@@ -63,13 +63,15 @@ export function JobCard({ job, isSelected, onSelect, className }: JobCardProps) 
             {job.posterName}
           </span>
         </div>
-        <MatchBadge percent={job.matchPercent} />
+        {job.matchPercent != null ? (
+          <MatchBadge percent={job.matchPercent} />
+        ) : null}
       </div>
 
       <h3 className="mt-4 text-lg font-semibold text-foreground">{job.title}</h3>
       <p className="mt-1 text-xl font-semibold text-primary">{job.rate}</p>
 
-      {job.requirements.length > 0 ? (
+      {job.requirements && job.requirements.length > 0 ? (
         <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
           {job.requirements.map((item) => (
             <li key={item}>{item}</li>
