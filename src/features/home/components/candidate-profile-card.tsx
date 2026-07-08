@@ -7,6 +7,7 @@ import {
   getInitials,
 } from "@/features/candidates/utils/format-candidate-display";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 type CandidateProfileCardProps = {
   profile: CandidateProfile;
@@ -27,10 +28,10 @@ export function CandidateProfileCard({
         className
       )}
     >
-      <div className="flex aspect-[4/3] items-center justify-center bg-muted">
-        <Avatar className="size-24" size="lg">
+      <div className="flex aspect-4/3 bg-muted">
+        <Avatar className="size-full! object-cover" size="lg">
           {profile.avatar ? (
-            <AvatarImage src={profile.avatar} alt={profile.fullName} />
+            <Image src={profile.avatar} alt={profile.fullName} fill className="object-cover" />
           ) : null}
           <AvatarFallback className="text-xl font-semibold">
             {initials}

@@ -78,3 +78,26 @@ export type BrowseJobCandidatesParams = {
   latitude?: number;
   longitude?: number;
 };
+
+/** Job feed tab options on the home page */
+export type CandidateFeedTab = "locum" | "permanent";
+
+/** Metadata row item on a job card */
+export type CandidateMetaItem = {
+  label: string;
+  value: string;
+};
+
+/** Job listing card in the center feed */
+export type CandidateListing = {
+  id: string;
+  posterUserId: string;
+  isNew: boolean;
+  posterName: string;
+  avatar: string;
+  title: string;
+  rate: string;
+  matchPercent?: number;
+  requirements?: string[];
+  meta: CandidateMetaItem[];
+};

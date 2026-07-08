@@ -1,20 +1,20 @@
 "use client";
 
-import type { JobFeedTab } from "@/features/home/types/job-listing";
+import type { CandidateFeedTab } from "@/features/home/types/job-candidates";
 import { cn } from "@/lib/utils";
 
-type JobFeedTabsProps = {
-  activeTab: JobFeedTab;
-  onTabChange: (tab: JobFeedTab) => void;
+type CandidateFeedTabsProps = {
+  activeTab: CandidateFeedTab;
+  onTabChange: (tab: CandidateFeedTab) => void;
 };
 
-const TABS: { id: JobFeedTab; label: string }[] = [
-  { id: "locum", label: "Locum Shifts" },
-  { id: "permanent", label: "Permanent Jobs" },
+const TABS: { id: CandidateFeedTab; label: string }[] = [
+  { id: "locum", label: "Locum Candidates" },
+  { id: "permanent", label: "Permanent Candidates" },
 ];
 
 /** Pill toggle for locum vs permanent job feeds */
-export function JobFeedTabs({ activeTab, onTabChange }: JobFeedTabsProps) {
+export function CandidateFeedTabs({ activeTab, onTabChange }: CandidateFeedTabsProps) {
   return (
     <div className="inline-flex rounded-full border border-border bg-card p-1">
       {TABS.map((tab) => {

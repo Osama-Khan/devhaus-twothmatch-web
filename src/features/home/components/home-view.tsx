@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CandidateDetailsSidebar } from "@/features/home/components/candidate-details-sidebar";
 import { CandidateProfileSidebar } from "@/features/home/components/candidate-profile-sidebar";
-import { JobFeed } from "@/features/home/components/job-feed";
+import { CandidateFeed } from "@/features/home/components/candidate-feed";
 import { useCandidateDetail } from "@/features/candidates/hooks/use-candidate-detail";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -34,7 +34,7 @@ export function HomeView() {
         <ScrollArea className="h-full w-full grow">
           {ScrollSpacer}
           <div className="w-full px-6">
-            <JobFeed
+            <CandidateFeed
               selectedCandidateId={selectedCandidateId ?? undefined}
               onSelectCandidate={setSelectedCandidateId}
             />

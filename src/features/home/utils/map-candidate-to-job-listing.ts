@@ -1,4 +1,7 @@
-import type { JobFeedTab, JobListing } from "@/features/home/types/job-listing";
+import type {
+  CandidateFeedTab,
+  CandidateListing,
+} from "@/features/home/types/job-candidates";
 import type {
   LocumCandidate,
   PermanentCandidate,
@@ -22,7 +25,7 @@ function formatAvailability(dateTime: string): string {
 /** Map a locum candidate API card to the center-feed job listing shape */
 export function mapLocumCandidateToJobListing(
   candidate: LocumCandidate
-): JobListing {
+): CandidateListing {
   const nextAvailability = candidate.availability[0];
 
   return {
@@ -30,11 +33,14 @@ export function mapLocumCandidateToJobListing(
     posterUserId: candidate.userId,
     isNew: false,
     posterName: candidate.fullName,
-    posterInitials: getInitials(candidate.fullName),
+    avatar: candidate.avatar,
     title: candidate.jobTitle,
     rate: `£${candidate.rate.hourlyRate}/hr`,
     meta: [
-      { label: "Distance", value: formatDistanceMiles(candidate.distanceMiles) },
+      {
+        label: "Distance",
+        value: formatDistanceMiles(candidate.distanceMiles),
+      },
       { label: "Location", value: candidate.location.address },
       {
         label: "Availability",
@@ -53,7 +59,7 @@ export function mapLocumCandidateToJobListing(
 /** Map a permanent candidate API card to the center-feed job listing shape */
 export function mapPermanentCandidateToJobListing(
   candidate: PermanentCandidate
-): JobListing {
+): CandidateListing {
   const salary =
     candidate.rate.salaryPreference ||
     `£${candidate.rate.payMin.toLocaleString("en-GB")} - £${candidate.rate.payMax.toLocaleString("en-GB")}`;
@@ -63,11 +69,14 @@ export function mapPermanentCandidateToJobListing(
     posterUserId: candidate.userId,
     isNew: false,
     posterName: candidate.fullName,
-    posterInitials: getInitials(candidate.fullName),
+    avatar: candidate.avatar,
     title: candidate.jobTitle,
     rate: salary,
     meta: [
-      { label: "Distance", value: formatDistanceMiles(candidate.distanceMiles) },
+      {
+        label: "Distance",
+        value: formatDistanceMiles(candidate.distanceMiles),
+      },
       { label: "Location", value: candidate.location.address },
       { label: "Postcode", value: candidate.postcode },
       {
@@ -80,9 +89,9 @@ export function mapPermanentCandidateToJobListing(
 
 /** Map API candidates to feed listings for the active tab */
 export function mapCandidatesToJobListings(
-  tab: JobFeedTab,
+  tab: CandidateFeedTab,
   candidates: LocumCandidate[] | PermanentCandidate[]
-): JobListing[] {
+): CandidateListing[] {
   if (tab === "locum") {
     return (candidates as LocumCandidate[]).map(mapLocumCandidateToJobListing);
   }
