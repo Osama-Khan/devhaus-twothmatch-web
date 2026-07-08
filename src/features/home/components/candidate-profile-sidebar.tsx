@@ -1,4 +1,5 @@
 import { CandidateProfileCard } from "@/features/home/components/candidate-profile-card";
+import { CandidateProfileCardSkeleton } from "@/features/home/components/candidate-profile-card-skeleton";
 import type { CandidateProfile } from "@/features/candidates/types/candidate-detail";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +20,7 @@ export function CandidateProfileSidebar({
   return (
     <aside className={cn("flex flex-col gap-5", className)}>
       {isLoading ? (
-        <SidebarPlaceholder message="Loading candidate…" />
+        <CandidateProfileCardSkeleton />
       ) : error ? (
         <SidebarPlaceholder message={error} isError />
       ) : profile ? (

@@ -7,6 +7,7 @@ import {
   MoneyBag02Icon,
 } from "@hugeicons/core-free-icons";
 import { IconTextRow } from "@/features/home/components/icon-text-row";
+import { CandidateDetailsSidebarSkeleton } from "@/features/home/components/candidate-details-sidebar-skeleton";
 import type { CandidateDetailResponse } from "@/features/candidates/types/candidate-detail";
 import {
   formatDisplayDate,
@@ -39,7 +40,7 @@ export function CandidateDetailsSidebar({
       <h2 className="text-lg font-semibold text-foreground">Candidate Details</h2>
 
       {isLoading ? (
-        <SidebarBody message="Loading details…" />
+        <CandidateDetailsSidebarSkeleton />
       ) : error ? (
         <SidebarBody message={error} isError />
       ) : detail ? (

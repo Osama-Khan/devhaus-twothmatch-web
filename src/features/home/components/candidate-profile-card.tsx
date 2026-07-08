@@ -1,6 +1,9 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckmarkBadge01Icon, Linkedin02Icon } from "@hugeicons/core-free-icons";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  CheckmarkBadge01Icon,
+  Linkedin02Icon,
+} from "@hugeicons/core-free-icons";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { CandidateProfile } from "@/features/candidates/types/candidate-detail";
 import {
   formatLabelValue,
@@ -8,6 +11,7 @@ import {
 } from "@/features/candidates/utils/format-candidate-display";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useMemo } from "react";
 
 type CandidateProfileCardProps = {
   profile: CandidateProfile;
@@ -20,6 +24,22 @@ export function CandidateProfileCard({
   className,
 }: CandidateProfileCardProps) {
   const initials = getInitials(profile.fullName);
+
+  const validatedLinkedinUrl = useMemo(() => {
+    let u = profile.linkedinUrl;
+    if (!u) return null;
+    try {
+      if (!u.startsWith("http")) {
+        u = `https://${u}`;
+      }
+      if (u.startsWith("https://www.linkedin.com/")) {
+        return u;
+      }
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }, []);
 
   return (
     <article
@@ -46,9 +66,9 @@ export function CandidateProfileCard({
 
       <div className="space-y-4 p-5">
         <div className="flex items-start gap-3">
-          {profile.linkedinUrl ? (
+          {validatedLinkedinUrl ? (
             <a
-              href={profile.linkedinUrl}
+              href={validatedLinkedinUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#0a66c2] transition-opacity hover:opacity-90"
