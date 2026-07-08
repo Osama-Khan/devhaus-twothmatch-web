@@ -13,7 +13,7 @@ export function CandidateListingCardSkeleton({
     <article
       aria-hidden="true"
       className={cn(
-        "rounded-2xl border border-border bg-card p-5 shadow-sm",
+        "w-full rounded-2xl border border-border bg-card p-5 shadow-sm",
         className
       )}
     >
@@ -33,7 +33,7 @@ export function CandidateListingCardSkeleton({
             <Skeleton className="mt-0.5 size-4 shrink-0 rounded-sm" />
             <div className="min-w-0 flex-1 space-y-1.5">
               <Skeleton className="h-3 w-16" />
-              <Skeleton className="h-4 w-full max-w-24" />
+              <Skeleton className="h-4 w-full" />
             </div>
           </div>
         ))}

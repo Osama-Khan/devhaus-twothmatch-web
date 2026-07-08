@@ -17,7 +17,7 @@ export function HomeView() {
   const { detail, isLoading, error } = useCandidateDetail(selectedCandidateId);
 
   return (
-    <main className="mx-auto flex h-full min-h-0 max-w-7xl flex-row overflow-hidden px-4">
+    <main className="mx-auto flex h-full min-h-0 w-full max-w-7xl flex-row overflow-hidden px-4">
       <div className="flex w-70 min-h-0 shrink-0 flex-col">
         <ScrollArea className="h-full">
           {ScrollSpacer}
@@ -30,10 +30,10 @@ export function HomeView() {
         </ScrollArea>
       </div>
 
-      <div className="flex min-h-0 flex-1 shrink-0 grow flex-col">
-        <ScrollArea className="h-full w-full grow">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <ScrollArea className="h-full w-full">
           {ScrollSpacer}
-          <div className="w-full px-6">
+          <div className="px-6">
             <CandidateFeed
               selectedCandidateId={selectedCandidateId ?? undefined}
               onSelectCandidate={setSelectedCandidateId}
