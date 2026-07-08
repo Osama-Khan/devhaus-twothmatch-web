@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { FilterIcon } from "@hugeicons/core-free-icons";
+import { FilterHorizontalIcon, } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { JobCard } from "@/features/home/components/job-card";
 import { JobFeedTabs } from "@/features/home/components/job-feed-tabs";
@@ -29,8 +29,8 @@ export function JobFeed({
     <section className={cn("flex flex-col gap-5", className)}>
       <div className="flex items-center justify-between gap-4">
         <JobFeedTabs activeTab={activeTab} onTabChange={setActiveTab} />
-        <Button variant="outline" size="icon" type="button" aria-label="Filter jobs">
-          <HugeiconsIcon icon={FilterIcon} strokeWidth={2} />
+        <Button variant="outline" size="icon" type="button" className="border-none text-foreground" aria-label="Filter jobs">
+          <HugeiconsIcon icon={FilterHorizontalIcon} strokeWidth={2} />
         </Button>
       </div>
 
