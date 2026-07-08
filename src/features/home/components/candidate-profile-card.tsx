@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Linkedin02Icon } from "@hugeicons/core-free-icons";
+import { CheckmarkBadge01Icon, Linkedin02Icon } from "@hugeicons/core-free-icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { CandidateProfile } from "@/features/candidates/types/candidate-detail";
 import {
@@ -31,7 +31,12 @@ export function CandidateProfileCard({
       <div className="flex aspect-4/3 bg-muted">
         <Avatar className="size-full! object-cover" size="lg">
           {profile.avatar ? (
-            <Image src={profile.avatar} alt={profile.fullName} fill className="object-cover" />
+            <Image
+              src={profile.avatar}
+              alt={profile.fullName}
+              fill
+              className="object-cover"
+            />
           ) : null}
           <AvatarFallback className="text-xl font-semibold">
             {initials}
@@ -58,17 +63,21 @@ export function CandidateProfileCard({
           ) : null}
 
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1">
               <h2 className="text-base font-semibold text-foreground">
                 {profile.fullName}
               </h2>
               {profile.isVerified ? (
-                <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-                  Verified
-                </span>
+                <HugeiconsIcon
+                  icon={CheckmarkBadge01Icon}
+                  strokeWidth={2}
+                  className="size-4 text-primary"
+                />
               ) : null}
             </div>
-            <p className="text-sm font-medium text-primary">{profile.jobTitle}</p>
+            <p className="text-sm font-medium text-primary">
+              {profile.jobTitle}
+            </p>
             {profile.currentStatus ? (
               <p className="mt-1 text-sm text-muted-foreground">
                 {formatLabelValue(profile.currentStatus)}
