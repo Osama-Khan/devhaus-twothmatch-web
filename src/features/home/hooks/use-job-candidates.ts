@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import type {
   BrowseLocumCandidatesResponse,
   BrowsePermanentCandidatesResponse,
+  CandidateFeedFilters,
   CandidateFeedTab,
   CandidateListing,
   JobCandidatesPagination,
@@ -35,7 +36,8 @@ type BrowseCandidatesResponse =
  * with append-on-load-more pagination.
  */
 export function useJobCandidates(
-  activeTab: CandidateFeedTab
+  activeTab: CandidateFeedTab,
+  filters?: CandidateFeedFilters | null
 ): UseCandidateFeedResult {
   const [candidates, setCandidates] = useState<CandidateListing[]>([]);
   const [pagination, setPagination] = useState<JobCandidatesPagination | null>(
@@ -51,13 +53,17 @@ export function useJobCandidates(
       tab: CandidateFeedTab,
       pageNumber: number
     ): Promise<AppResponseType<BrowseCandidatesResponse>> => {
-      const params = { page: pageNumber, limit: PAGE_SIZE };
+      const params = {
+        page: pageNumber,
+        limit: PAGE_SIZE,
+        ...(filters ?? {}),
+      };
 
       return tab === "locum"
         ? jobsService.browseLocumCandidates(params)
         : jobsService.browsePermanentCandidates(params);
     },
-    []
+    [filters]
   );
 
   useEffect(() => {
@@ -92,7 +98,7 @@ export function useJobCandidates(
     return () => {
       cancelled = true;
     };
-  }, [activeTab, fetchPage]);
+  }, [activeTab, fetchPage, filters]);
 
   const loadMore = useCallback(() => {
     if (isLoadingMore || !pagination || page >= pagination.totalPages) {

@@ -1,15 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { FilterHorizontalIcon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { CandidateListingCard } from "@/features/home/components/candidate-listing-card";
 import { CandidateFeedSkeleton } from "@/features/home/components/candidate-listing-card-skeleton";
 import { CandidateFeedTabs } from "@/features/home/components/candidate-feed-tabs";
+import { CandidateFeedFiltersButton } from "@/features/home/components/candidate-feed-filters-button";
 import { useJobCandidates } from "@/features/home/hooks/use-job-candidates";
-import type { CandidateFeedTab } from "@/features/home/types/job-candidates";
+import type {
+  CandidateFeedFilters,
+  CandidateFeedTab,
+} from "@/features/home/types/job-candidates";
 import { cn } from "@/lib/utils";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { UserSearchIcon } from "@hugeicons/core-free-icons";
 
 type CandidateFeedProps = {
   selectedCandidateId?: string;
@@ -24,33 +28,34 @@ export function CandidateFeed({
   className,
 }: CandidateFeedProps) {
   const [activeTab, setActiveTab] = useState<CandidateFeedTab>("locum");
-  const {
-    candidates,
-    isLoading,
-    isLoadingMore,
-    error,
-    hasMore,
-    loadMore,
-  } = useJobCandidates(activeTab);
+  const [filters, setFilters] = useState<CandidateFeedFilters | null>(null);
+  const { candidates, isLoading, isLoadingMore, error, hasMore, loadMore } =
+    useJobCandidates(activeTab, filters);
 
   const handleTabChange = (tab: CandidateFeedTab) => {
     setActiveTab(tab);
     onSelectCandidate(null);
+
+    if (filters) {
+      const nextFilters: CandidateFeedFilters = { ...filters };
+      delete nextFilters.payRangeMin;
+      delete nextFilters.payRangeMax;
+      setFilters(Object.keys(nextFilters).length > 0 ? nextFilters : null);
+    }
   };
 
   return (
     <section className={cn("flex flex-col gap-5 w-full", className)}>
       <div className="flex items-center justify-between gap-4">
-        <CandidateFeedTabs activeTab={activeTab} onTabChange={handleTabChange} />
-        <Button
-          variant="outline"
-          size="icon"
-          type="button"
-          className="border-none text-foreground"
-          aria-label="Filter jobs"
-        >
-          <HugeiconsIcon icon={FilterHorizontalIcon} strokeWidth={2} />
-        </Button>
+        <CandidateFeedTabs
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
+        <CandidateFeedFiltersButton
+          activeTab={activeTab}
+          value={filters}
+          onChange={setFilters}
+        />
       </div>
 
       {isLoading ? (
@@ -58,9 +63,26 @@ export function CandidateFeed({
       ) : error && candidates.length === 0 ? (
         <p className="py-8 text-center text-sm text-destructive">{error}</p>
       ) : candidates.length === 0 ? (
-        <p className="py-8 text-center text-sm text-muted-foreground">
-          No candidates found.
-        </p>
+        <div className="flex flex-col items-center gap-2 py-12">
+          <span className="text-[46px] text-muted-foreground flex items-center justify-center">
+            <HugeiconsIcon
+              icon={UserSearchIcon}
+              strokeWidth={2}
+              className="size-14 text-primary"
+            />
+          </span>
+          <span className="text-center text-base text-muted-foreground font-medium">
+            No candidates found.
+          </span>
+          <Button
+            type="button"
+            variant="default"
+            className="mt-2"
+            onClick={() => setFilters(null)}
+          >
+            Reset Filters
+          </Button>
+        </div>
       ) : (
         <div className="flex flex-col gap-4">
           {candidates.map((candidate) => (

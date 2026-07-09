@@ -82,6 +82,16 @@ export type BrowseJobCandidatesParams = {
 /** Job feed tab options on the home page */
 export type CandidateFeedTab = "locum" | "permanent";
 
+/** Applied candidate feed filters emitted by the filters popover */
+export type CandidateFeedFilters = {
+  workingPattern?: string;
+  payRangeMin?: number;
+  payRangeMax?: number;
+  searchRadius?: number;
+  latitude?: number;
+  longitude?: number;
+};
+
 /** Metadata row item on a job card */
 export type CandidateMetaItem = {
   label: string;
