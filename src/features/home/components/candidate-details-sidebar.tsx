@@ -37,7 +37,9 @@ export function CandidateDetailsSidebar({
         className
       )}
     >
-      <h2 className="text-lg font-semibold text-foreground">Candidate Details</h2>
+      <h2 className="text-lg font-semibold text-foreground">
+        Candidate Details
+      </h2>
 
       {isLoading ? (
         <CandidateDetailsSidebarSkeleton />
@@ -70,7 +72,11 @@ function SidebarBody({ message, isError }: SidebarBodyProps) {
   );
 }
 
-function CandidateDetailsContent({ detail }: { detail: CandidateDetailResponse }) {
+function CandidateDetailsContent({
+  detail,
+}: {
+  detail: CandidateDetailResponse;
+}) {
   const prefs = detail.jobPreferences;
   const skillNames = detail.skills.map((item) => item.Skill.name);
   const specializationNames = detail.specializations.map(
@@ -116,11 +122,13 @@ function CandidateDetailsContent({ detail }: { detail: CandidateDetailResponse }
                 isNegotiable: prefs.isNegotiable,
               })}
             />
-            <IconTextRow
-              icon={Location01Icon}
-              label="Location"
-              value={`${prefs.currentAddress}, ${prefs.postcode}`}
-            />
+            {prefs.currentAddress && (
+              <IconTextRow
+                icon={Location01Icon}
+                label="Location"
+                value={prefs.currentAddress}
+              />
+            )}
             <IconTextRow
               icon={Location01Icon}
               label="Search radius"
@@ -132,7 +140,9 @@ function CandidateDetailsContent({ detail }: { detail: CandidateDetailResponse }
 
       {detail.availabilitySlots.length > 0 ? (
         <section>
-          <h3 className="text-sm font-semibold text-foreground">Availability</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            Availability
+          </h3>
           <ul className="mt-3 space-y-2">
             {detail.availabilitySlots.map((slot) => (
               <li

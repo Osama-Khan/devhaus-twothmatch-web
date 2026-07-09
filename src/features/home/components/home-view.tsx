@@ -19,15 +19,17 @@ export function HomeView() {
   return (
     <main className="mx-auto flex h-full min-h-0 w-full max-w-7xl flex-row overflow-hidden px-4">
       <div className="flex w-70 min-h-0 shrink-0 flex-col">
-        <ScrollArea className="h-full">
-          {ScrollSpacer}
-          <CandidateProfileSidebar
-            profile={detail?.profile ?? null}
-            isLoading={isLoading && selectedCandidateId != null}
-            error={error}
-          />
-          {ScrollSpacer}
-        </ScrollArea>
+        {selectedCandidateId != null && (
+          <ScrollArea className="h-full">
+            {ScrollSpacer}
+            <CandidateProfileSidebar
+              profile={detail?.profile ?? null}
+              isLoading={isLoading && selectedCandidateId != null}
+              error={error}
+            />
+            {ScrollSpacer}
+          </ScrollArea>
+        )}
       </div>
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -44,15 +46,17 @@ export function HomeView() {
       </div>
 
       <div className="flex w-80 min-h-0 shrink-0 flex-col">
-        <ScrollArea className="h-full">
-          {ScrollSpacer}
-          <CandidateDetailsSidebar
-            detail={detail}
-            isLoading={isLoading && selectedCandidateId != null}
-            error={error}
-          />
-          {ScrollSpacer}
-        </ScrollArea>
+        {selectedCandidateId != null && (
+          <ScrollArea className="h-full">
+            {ScrollSpacer}
+            <CandidateDetailsSidebar
+              detail={detail}
+              isLoading={isLoading && selectedCandidateId != null}
+              error={error}
+            />
+            {ScrollSpacer}
+          </ScrollArea>
+        )}
       </div>
     </main>
   );
