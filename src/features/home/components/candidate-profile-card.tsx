@@ -49,7 +49,7 @@ export function CandidateProfileCard({
       )}
     >
       <div className="flex aspect-4/3 bg-muted">
-        <Avatar className="size-full! object-cover" size="lg">
+        <Avatar className="size-full! object-cover after:border-none" size="lg">
           {profile.avatar ? (
             <Image
               src={profile.avatar}
