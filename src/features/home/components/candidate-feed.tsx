@@ -24,7 +24,14 @@ export function CandidateFeed({
   className,
 }: CandidateFeedProps) {
   const [activeTab, setActiveTab] = useState<CandidateFeedTab>("locum");
-  const { candidates, isLoading, error } = useJobCandidates(activeTab);
+  const {
+    candidates,
+    isLoading,
+    isLoadingMore,
+    error,
+    hasMore,
+    loadMore,
+  } = useJobCandidates(activeTab);
 
   const handleTabChange = (tab: CandidateFeedTab) => {
     setActiveTab(tab);
@@ -48,7 +55,7 @@ export function CandidateFeed({
 
       {isLoading ? (
         <CandidateFeedSkeleton />
-      ) : error ? (
+      ) : error && candidates.length === 0 ? (
         <p className="py-8 text-center text-sm text-destructive">{error}</p>
       ) : candidates.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">
@@ -64,6 +71,24 @@ export function CandidateFeed({
               onSelect={() => onSelectCandidate(candidate.id)}
             />
           ))}
+
+          {error ? (
+            <p className="text-center text-sm text-destructive">{error}</p>
+          ) : null}
+
+          {hasMore ? (
+            <div className="flex justify-center pt-2">
+              <Button
+                type="button"
+                variant="link"
+                className="h-auto py-0 text-sm font-semibold"
+                disabled={isLoadingMore}
+                onClick={loadMore}
+              >
+                {isLoadingMore ? "Loading…" : "Load more"}
+              </Button>
+            </div>
+          ) : null}
         </div>
       )}
     </section>
