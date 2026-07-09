@@ -1,10 +1,10 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Briefcase07Icon,
-  Calendar03Icon,
   Clock01Icon,
   Location01Icon,
   MoneyBag02Icon,
+  PinLocation03Icon,
 } from "@hugeicons/core-free-icons";
 import { IconTextRow } from "@/features/home/components/icon-text-row";
 import { CandidateDetailsSidebarSkeleton } from "@/features/home/components/candidate-details-sidebar-skeleton";
@@ -130,7 +130,7 @@ function CandidateDetailsContent({
               />
             )}
             <IconTextRow
-              icon={Location01Icon}
+              icon={PinLocation03Icon}
               label="Search radius"
               value={`${prefs.searchRadiusKm} km`}
             />
@@ -138,28 +138,6 @@ function CandidateDetailsContent({
         </section>
       ) : null}
 
-      {detail.availabilitySlots.length > 0 ? (
-        <section>
-          <h3 className="text-sm font-semibold text-foreground">
-            Availability
-          </h3>
-          <ul className="mt-3 space-y-2">
-            {detail.availabilitySlots.map((slot) => (
-              <li
-                key={slot.id}
-                className="flex items-center gap-2 text-sm text-muted-foreground"
-              >
-                <HugeiconsIcon
-                  icon={Calendar03Icon}
-                  strokeWidth={2}
-                  className="size-4 shrink-0 text-primary"
-                />
-                {formatDisplayDate(slot.dateTime)}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
 
       {skillNames.length > 0 ? (
         <TagSection title="Skills" items={skillNames} />
