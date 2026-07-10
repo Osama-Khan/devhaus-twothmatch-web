@@ -5,7 +5,7 @@ type MatchBadgeProps = {
   className?: string;
 };
 
-/** Green match percentage pill on job cards */
+/** Green match percentage pill on feed cards */
 export function MatchBadge({ percent, className }: MatchBadgeProps) {
   return (
     <span
