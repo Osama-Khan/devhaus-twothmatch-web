@@ -1,18 +1,15 @@
 import type {
   CandidateFeedTab,
   CandidateListing,
-} from "@/features/home/types/job-candidates";
-import type {
   LocumCandidate,
   PermanentCandidate,
-} from "@/features/home/types/job-candidates";
+} from "@/features/home/types/feed-candidates";
 import {
   formatDisplayDate,
   formatLabelValue,
-  getInitials,
 } from "@/features/candidates/utils/format-candidate-display";
 
-/** Format distance in miles for job card meta rows */
+/** Format distance in miles for feed card meta rows */
 function formatDistanceMiles(distanceMiles: number): string {
   return `${distanceMiles.toFixed(1)} miles away`;
 }
@@ -22,8 +19,8 @@ function formatAvailability(dateTime: string): string {
   return formatDisplayDate(dateTime);
 }
 
-/** Map a locum candidate API card to the center-feed job listing shape */
-export function mapLocumCandidateToJobListing(
+/** Map a locum candidate API card to the center-feed listing shape */
+export function mapLocumCandidateToFeedListing(
   candidate: LocumCandidate
 ): CandidateListing {
   const nextAvailability = candidate.availability[0];
@@ -56,8 +53,8 @@ export function mapLocumCandidateToJobListing(
   };
 }
 
-/** Map a permanent candidate API card to the center-feed job listing shape */
-export function mapPermanentCandidateToJobListing(
+/** Map a permanent candidate API card to the center-feed listing shape */
+export function mapPermanentCandidateToFeedListing(
   candidate: PermanentCandidate
 ): CandidateListing {
   const salary =
@@ -88,15 +85,15 @@ export function mapPermanentCandidateToJobListing(
 }
 
 /** Map API candidates to feed listings for the active tab */
-export function mapCandidatesToJobListings(
+export function mapCandidatesToFeedListings(
   tab: CandidateFeedTab,
   candidates: LocumCandidate[] | PermanentCandidate[]
 ): CandidateListing[] {
   if (tab === "locum") {
-    return (candidates as LocumCandidate[]).map(mapLocumCandidateToJobListing);
+    return (candidates as LocumCandidate[]).map(mapLocumCandidateToFeedListing);
   }
 
   return (candidates as PermanentCandidate[]).map(
-    mapPermanentCandidateToJobListing
+    mapPermanentCandidateToFeedListing
   );
 }

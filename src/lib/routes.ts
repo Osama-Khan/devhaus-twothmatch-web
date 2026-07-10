@@ -88,10 +88,10 @@ export const externalApiRoutes = {
     markAllRead: { _self: { path: "/notifications/markAllRead" } },
     preferences: { _self: { path: "/notifications/preferences" } },
   },
-  jobs: {
+  feed: {
     candidates: {
-      locum: { _self: { path: "/jobs/candidates/locum" } },
-      permanent: { _self: { path: "/jobs/candidates/permanent" } },
+      locum: { _self: { path: "/feed/candidates/locum" } },
+      permanent: { _self: { path: "/feed/candidates/permanent" } },
     },
   },
   candidates: {

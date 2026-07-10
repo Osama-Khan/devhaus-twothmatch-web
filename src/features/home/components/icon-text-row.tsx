@@ -9,7 +9,7 @@ type IconTextRowProps = {
   className?: string;
 };
 
-/** Compact icon + text row used in job cards and shift details */
+/** Compact icon + text row used in feed cards and shift details */
 export function IconTextRow({ icon, label, value, className }: IconTextRowProps) {
   return (
     <div className={cn("flex min-w-0 items-start gap-2", className)}>

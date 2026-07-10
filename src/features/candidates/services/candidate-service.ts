@@ -15,7 +15,7 @@ function candidateByIdPath(candidateId: string): string {
  * Client-side candidate service. Auth required for all endpoints.
  */
 export const candidateService = {
-  /** GET `/jobs/candidates/:id` — full candidate profile for practice detail view */
+  /** GET `/candidates/:id` — full candidate profile for practice detail view */
   getById(
     candidateId: string
   ): Promise<AppResponseType<CandidateDetailResponse>> {

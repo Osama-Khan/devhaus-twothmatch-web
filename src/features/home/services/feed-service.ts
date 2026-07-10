@@ -1,17 +1,17 @@
 "use client";
 
 import type {
-  BrowseJobCandidatesParams,
+  BrowseFeedCandidatesParams,
   BrowseLocumCandidatesResponse,
   BrowsePermanentCandidatesResponse,
-} from "@/features/home/types/job-candidates";
+} from "@/features/home/types/feed-candidates";
 import type { AppResponseType } from "@/lib/types/response";
 import { externalApiRoutes } from "@/lib/routes";
 import { apiFetcher } from "@/lib/services/api-fetcher";
 
 function buildCandidatesPath(
   basePath: string,
-  params?: BrowseJobCandidatesParams
+  params?: BrowseFeedCandidatesParams
 ): string {
   if (!params) {
     return basePath;
@@ -55,28 +55,28 @@ function buildCandidatesPath(
 }
 
 /**
- * Client-side jobs browse service. Auth required for all endpoints.
+ * Client-side feed browse service. Auth required for all endpoints.
  */
-export const jobsService = {
-  /** GET `/jobs/candidates/locum` — browse verified locum candidates */
+export const feedService = {
+  /** GET `/feed/candidates/locum` — browse verified locum candidates */
   browseLocumCandidates(
-    params?: BrowseJobCandidatesParams
+    params?: BrowseFeedCandidatesParams
   ): Promise<AppResponseType<BrowseLocumCandidatesResponse>> {
     return apiFetcher.get<BrowseLocumCandidatesResponse>(
       buildCandidatesPath(
-        externalApiRoutes.jobs.candidates.locum._self.path,
+        externalApiRoutes.feed.candidates.locum._self.path,
         params
       )
     );
   },
 
-  /** GET `/jobs/candidates/permanent` — browse verified permanent candidates */
+  /** GET `/feed/candidates/permanent` — browse verified permanent candidates */
   browsePermanentCandidates(
-    params?: BrowseJobCandidatesParams
+    params?: BrowseFeedCandidatesParams
   ): Promise<AppResponseType<BrowsePermanentCandidatesResponse>> {
     return apiFetcher.get<BrowsePermanentCandidatesResponse>(
       buildCandidatesPath(
-        externalApiRoutes.jobs.candidates.permanent._self.path,
+        externalApiRoutes.feed.candidates.permanent._self.path,
         params
       )
     );

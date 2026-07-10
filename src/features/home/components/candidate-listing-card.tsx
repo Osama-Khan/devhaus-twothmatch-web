@@ -12,7 +12,7 @@ import {
 import type { IconSvgElement } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
 import { MatchBadge } from "@/features/home/components/match-badge";
-import type { CandidateListing } from "@/features/home/types/job-candidates";
+import type { CandidateListing } from "@/features/home/types/feed-candidates";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/features/candidates/utils/format-candidate-display";
@@ -32,7 +32,7 @@ type CandidateListingCardProps = {
   className?: string;
 };
 
-/** Single job listing card in the center feed */
+/** Single candidate listing card in the center feed */
 export function CandidateListingCard({
   candidate,
   isSelected,

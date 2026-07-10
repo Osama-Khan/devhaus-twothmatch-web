@@ -1,5 +1,5 @@
 /** Shared location payload on candidate browse cards */
-export type JobCandidateLocation = {
+export type FeedCandidateLocation = {
   address: string;
   latitude: string;
   longitude: string;
@@ -24,7 +24,7 @@ export type PermanentCandidateRate = {
 };
 
 /** Base fields shared by locum and permanent candidate cards */
-export type JobCandidateBase = {
+export type FeedCandidateBase = {
   id: string;
   userId: string;
   fullName: string;
@@ -32,22 +32,22 @@ export type JobCandidateBase = {
   jobTitle: string;
   workingPattern: string;
   distanceMiles: number;
-  location: JobCandidateLocation;
+  location: FeedCandidateLocation;
 };
 
 /** Locum (part-time) candidate card from browse API */
-export type LocumCandidate = JobCandidateBase & {
+export type LocumCandidate = FeedCandidateBase & {
   rate: LocumCandidateRate;
   availability: LocumAvailabilitySlot[];
 };
 
 /** Permanent (full-time) candidate card from browse API */
-export type PermanentCandidate = JobCandidateBase & {
+export type PermanentCandidate = FeedCandidateBase & {
   rate: PermanentCandidateRate;
   postcode: string;
 };
 
-export type JobCandidatesPagination = {
+export type FeedCandidatesPagination = {
   page: number;
   limit: number;
   totalPages: number;
@@ -56,17 +56,17 @@ export type JobCandidatesPagination = {
 export type BrowseLocumCandidatesResponse = {
   totalCandidates: number;
   candidates: LocumCandidate[];
-  pagination: JobCandidatesPagination;
+  pagination: FeedCandidatesPagination;
 };
 
 export type BrowsePermanentCandidatesResponse = {
   totalCandidates: number;
   candidates: PermanentCandidate[];
-  pagination: JobCandidatesPagination;
+  pagination: FeedCandidatesPagination;
 };
 
 /** Query params for candidate browse endpoints */
-export type BrowseJobCandidatesParams = {
+export type BrowseFeedCandidatesParams = {
   page?: number;
   limit?: number;
   workingPattern?: string;
@@ -79,7 +79,7 @@ export type BrowseJobCandidatesParams = {
   longitude?: number;
 };
 
-/** Job feed tab options on the home page */
+/** Candidate feed tab options on the home page */
 export type CandidateFeedTab = "locum" | "permanent";
 
 /** Applied candidate feed filters emitted by the filters popover */
@@ -92,13 +92,13 @@ export type CandidateFeedFilters = {
   longitude?: number;
 };
 
-/** Metadata row item on a job card */
+/** Metadata row item on a feed listing card */
 export type CandidateMetaItem = {
   label: string;
   value: string;
 };
 
-/** Job listing card in the center feed */
+/** Candidate listing card in the center feed */
 export type CandidateListing = {
   id: string;
   posterUserId: string;

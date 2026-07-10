@@ -1,4 +1,4 @@
-/** Candidate profile summary from GET `/jobs/candidates/:id` */
+/** Candidate profile summary from GET `/candidates/:id` */
 export type CandidateProfile = {
   id: string;
   userId: string;

@@ -23,7 +23,7 @@ import { isPracticeProfileResponse } from "@/features/profile/types/profile-get-
 import type {
   CandidateFeedFilters,
   CandidateFeedTab,
-} from "@/features/home/types/job-candidates";
+} from "@/features/home/types/feed-candidates";
 import { hasCoordinates } from "@/features/location/utils/has-coordinates";
 import { isSuccessResponse } from "@/lib/types/response";
 import { cn } from "@/lib/utils";
@@ -270,7 +270,7 @@ export function CandidateFeedFiltersButton({
           size="icon"
           type="button"
           className="border-none text-foreground"
-          aria-label="Filter jobs"
+          aria-label="Filter feed"
         >
           <HugeiconsIcon icon={FilterHorizontalIcon} strokeWidth={2} />
         </Button>

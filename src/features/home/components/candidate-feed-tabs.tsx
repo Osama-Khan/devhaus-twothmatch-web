@@ -1,6 +1,6 @@
 "use client";
 
-import type { CandidateFeedTab } from "@/features/home/types/job-candidates";
+import type { CandidateFeedTab } from "@/features/home/types/feed-candidates";
 import { cn } from "@/lib/utils";
 
 type CandidateFeedTabsProps = {
@@ -13,7 +13,7 @@ const TABS: { id: CandidateFeedTab; label: string }[] = [
   { id: "permanent", label: "Permanent Candidates" },
 ];
 
-/** Pill toggle for locum vs permanent job feeds */
+/** Pill toggle for locum vs permanent candidate feeds */
 export function CandidateFeedTabs({ activeTab, onTabChange }: CandidateFeedTabsProps) {
   return (
     <div className="inline-flex rounded-full border border-border bg-card p-1">

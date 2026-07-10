@@ -7,10 +7,10 @@ import type {
   CandidateFeedFilters,
   CandidateFeedTab,
   CandidateListing,
-  JobCandidatesPagination,
-} from "@/features/home/types/job-candidates";
-import { jobsService } from "@/features/home/services/jobs-service";
-import { mapCandidatesToJobListings } from "@/features/home/utils/map-candidate-to-job-listing";
+  FeedCandidatesPagination,
+} from "@/features/home/types/feed-candidates";
+import { feedService } from "@/features/home/services/feed-service";
+import { mapCandidatesToFeedListings } from "@/features/home/utils/map-candidate-to-feed-listing";
 import {
   isSuccessResponse,
   type AppResponseType,
@@ -32,15 +32,15 @@ type BrowseCandidatesResponse =
   | BrowsePermanentCandidatesResponse;
 
 /**
- * Fetches locum or permanent candidate listings for the home job feed,
+ * Fetches locum or permanent candidate listings for the home feed,
  * with append-on-load-more pagination.
  */
-export function useJobCandidates(
+export function useFeedCandidates(
   activeTab: CandidateFeedTab,
   filters?: CandidateFeedFilters | null
 ): UseCandidateFeedResult {
   const [candidates, setCandidates] = useState<CandidateListing[]>([]);
-  const [pagination, setPagination] = useState<JobCandidatesPagination | null>(
+  const [pagination, setPagination] = useState<FeedCandidatesPagination | null>(
     null
   );
   const [page, setPage] = useState(1);
@@ -60,8 +60,8 @@ export function useJobCandidates(
       };
 
       return tab === "locum"
-        ? jobsService.browseLocumCandidates(params)
-        : jobsService.browsePermanentCandidates(params);
+        ? feedService.browseLocumCandidates(params)
+        : feedService.browsePermanentCandidates(params);
     },
     [filters]
   );
@@ -82,7 +82,7 @@ export function useJobCandidates(
 
       if (isSuccessResponse(response)) {
         setCandidates(
-          mapCandidatesToJobListings(activeTab, response.data.candidates)
+          mapCandidatesToFeedListings(activeTab, response.data.candidates)
         );
         setPagination(response.data.pagination);
         setPage(response.data.pagination.page);
@@ -114,7 +114,7 @@ export function useJobCandidates(
       if (isSuccessResponse(response)) {
         setCandidates((current) => [
           ...current,
-          ...mapCandidatesToJobListings(activeTab, response.data.candidates),
+          ...mapCandidatesToFeedListings(activeTab, response.data.candidates),
         ]);
         setPagination(response.data.pagination);
         setPage(response.data.pagination.page);

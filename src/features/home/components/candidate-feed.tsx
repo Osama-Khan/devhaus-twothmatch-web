@@ -6,11 +6,11 @@ import { CandidateListingCard } from "@/features/home/components/candidate-listi
 import { CandidateFeedSkeleton } from "@/features/home/components/candidate-listing-card-skeleton";
 import { CandidateFeedTabs } from "@/features/home/components/candidate-feed-tabs";
 import { CandidateFeedFiltersButton } from "@/features/home/components/candidate-feed-filters-button";
-import { useJobCandidates } from "@/features/home/hooks/use-job-candidates";
+import { useFeedCandidates } from "@/features/home/hooks/use-feed-candidates";
 import type {
   CandidateFeedFilters,
   CandidateFeedTab,
-} from "@/features/home/types/job-candidates";
+} from "@/features/home/types/feed-candidates";
 import { cn } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { UserSearchIcon } from "@hugeicons/core-free-icons";
@@ -30,7 +30,7 @@ export function CandidateFeed({
   const [activeTab, setActiveTab] = useState<CandidateFeedTab>("locum");
   const [filters, setFilters] = useState<CandidateFeedFilters | null>(null);
   const { candidates, isLoading, isLoadingMore, error, hasMore, loadMore } =
-    useJobCandidates(activeTab, filters);
+    useFeedCandidates(activeTab, filters);
 
   const handleTabChange = (tab: CandidateFeedTab) => {
     setActiveTab(tab);
