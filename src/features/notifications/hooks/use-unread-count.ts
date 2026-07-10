@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { notificationsService } from "@/features/notifications/services/notifications-service";
+import { subscribeUnreadCountInvalidation } from "@/features/notifications/utils/unread-count-invalidation";
 import { isSuccessResponse } from "@/lib/types/response";
 
 type UseUnreadCountResult = {
@@ -13,6 +14,7 @@ type UseUnreadCountResult = {
 
 /**
  * Fetches the unread in-app notification count for the navbar badge.
+ * Automatically refetches when notifications are marked read elsewhere.
  */
 export function useUnreadCount(): UseUnreadCountResult {
   const [count, setCount] = useState(0);
@@ -45,6 +47,8 @@ export function useUnreadCount(): UseUnreadCountResult {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => subscribeUnreadCountInvalidation(refetch), [refetch]);
 
   return {
     count,

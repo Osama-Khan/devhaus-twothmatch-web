@@ -8,10 +8,6 @@ import { isSuccessResponse } from "@/lib/types/response";
 
 const PREVIEW_LIMIT = 3;
 
-type UseNotificationPreviewOptions = {
-  onMarkedRead?: () => void;
-};
-
 type UseNotificationPreviewResult = {
   notifications: Notification[];
   isLoading: boolean;
@@ -26,10 +22,8 @@ type UseNotificationPreviewResult = {
  * Loads the latest notifications when the overlay is open.
  */
 export function useNotificationPreview(
-  open: boolean,
-  options: UseNotificationPreviewOptions = {}
+  open: boolean
 ): UseNotificationPreviewResult {
-  const { onMarkedRead } = options;
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +33,6 @@ export function useNotificationPreview(
       notifications,
       setNotifications,
       setError,
-      onMarkedRead,
     });
 
   useEffect(() => {

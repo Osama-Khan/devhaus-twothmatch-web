@@ -9,6 +9,7 @@ import {
 } from "react";
 import { notificationsService } from "@/features/notifications/services/notifications-service";
 import type { Notification } from "@/features/notifications/types";
+import { invalidateUnreadCount } from "@/features/notifications/utils/unread-count-invalidation";
 import { isSuccessResponse } from "@/lib/types/response";
 
 type UseNotificationMarkActionsParams = {
@@ -60,6 +61,7 @@ export function useNotificationMarkActions({
 
       void notificationsService.markAsRead(notificationId).then((response) => {
         if (isSuccessResponse(response)) {
+          invalidateUnreadCount();
           onMarkedRead?.();
           return;
         }
@@ -103,6 +105,7 @@ export function useNotificationMarkActions({
 
     void notificationsService.markAllAsRead().then((response) => {
       if (isSuccessResponse(response)) {
+        invalidateUnreadCount();
         onMarkedRead?.();
       } else {
         setNotifications(previousNotifications);

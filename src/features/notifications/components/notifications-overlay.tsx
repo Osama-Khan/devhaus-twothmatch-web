@@ -10,14 +10,12 @@ import { cn } from "@/lib/utils";
 type NotificationsOverlayProps = {
   open: boolean;
   onViewAll?: () => void;
-  onUnreadChange?: () => void;
 };
 
 /** Popover panel listing the three most recent notifications. */
 export function NotificationsOverlay({
   open,
   onViewAll,
-  onUnreadChange,
 }: NotificationsOverlayProps) {
   const {
     notifications,
@@ -27,7 +25,7 @@ export function NotificationsOverlay({
     hasUnread,
     markAsRead,
     markAllAsRead,
-  } = useNotificationPreview(open, { onMarkedRead: onUnreadChange });
+  } = useNotificationPreview(open);
 
   return (
     <div className="flex flex-col">
