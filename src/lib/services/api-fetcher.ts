@@ -148,8 +148,12 @@ export class ApiFetcher {
     return this.fetch<T>(path, { ...options, method: "PATCH", body });
   }
 
-  delete<T>(path: string, options?: Omit<FetchOptions, "method" | "body">) {
-    return this.fetch<T>(path, { ...options, method: "DELETE" });
+  delete<T>(
+    path: string,
+    body?: unknown,
+    options?: Omit<FetchOptions, "method" | "body">
+  ) {
+    return this.fetch<T>(path, { ...options, method: "DELETE", body });
   }
 }
 
