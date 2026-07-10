@@ -45,8 +45,11 @@ export function CandidateFeed({
   };
 
   return (
-    <section className={cn("flex flex-col gap-5 w-full", className)}>
-      <div className="flex items-center justify-between gap-4">
+    <section className={cn("flex flex-col gap-5 w-full relative", className)}>
+      <div className="sticky top-0 w-full h-0 -mb-5 overflow-visible z-5">
+        <div className="h-24 from-background/90 from-50% via-background/90 to-background/0 bg-linear-to-b"></div>
+      </div>
+      <div className="flex items-center justify-between gap-4 sticky top-8 z-10">
         <CandidateFeedTabs
           activeTab={activeTab}
           onTabChange={handleTabChange}
