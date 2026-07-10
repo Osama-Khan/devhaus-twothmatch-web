@@ -97,6 +97,9 @@ export const externalApiRoutes = {
   candidates: {
     _self: { path: "/candidates/[id]", label: "Candidates" },
   },
+  jobs: {
+    _self: { path: "/jobs" },
+  },
 } as const;
 
 /** Build a full API path including the configured root prefix (e.g. `/v2/profile`) */
