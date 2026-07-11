@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { OnboardingStepper } from "@/features/onboarding/components/onboarding-stepper";
+import { Stepper } from "@/components/ui/stepper";
 import { AboutYourBusinessStep } from "@/features/onboarding/components/steps/about-your-business-step";
 import { ContactBrandInfoStep } from "@/features/onboarding/components/steps/contact-brand-info-step";
 import { LocationBranchesStep } from "@/features/onboarding/components/steps/location-branches-step";
@@ -151,7 +151,7 @@ export function OnboardingFlow() {
   return (
     <>
       <div className="w-full max-w-lg flex flex-col gap-8 grow">
-        <OnboardingStepper
+        <Stepper
           currentStep={currentStep}
           totalSteps={ONBOARDING_TOTAL_STEPS}
         />

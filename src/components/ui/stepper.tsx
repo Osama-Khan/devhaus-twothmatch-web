@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-type OnboardingStepperProps = {
+type StepperProps = {
   /** Current step, 1-indexed */
   currentStep: number;
   /** Total number of steps */
@@ -23,18 +23,14 @@ function getStepState(step: number, currentStep: number): StepSegmentState {
 }
 
 /**
- * Onboarding progress header with step label and segmented progress bar.
+ * Shared multi-step progress header with step label and segmented bar.
  */
-export function OnboardingStepper({
-  currentStep,
-  totalSteps,
-  className,
-}: OnboardingStepperProps) {
+export function Stepper({ currentStep, totalSteps, className }: StepperProps) {
   const steps = Array.from({ length: totalSteps }, (_, index) => index + 1);
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+      <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
         Step {currentStep} of {totalSteps}
       </p>
 
