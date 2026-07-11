@@ -53,7 +53,7 @@ Feature modules: `components/`, `form/` (Zod), `services/`, `hooks/`, `utils/` a
 | -------------------- | --------- | ----------------- |
 | `--background`       | `#f4f4f4` | Page canvas       |
 | `--card`             | `#ffffff` | Elevated surfaces |
-| `--primary`          | `#955ace` | Brand purple      |
+| `--primary`          | `#923CF6` | Brand purple      |
 | `--muted`            | `#e0e0e0` | Subtle fills      |
 | `--foreground`       | `#272643` | Headings          |
 | `--muted-foreground` | `#6e6e88` | Secondary text    |
