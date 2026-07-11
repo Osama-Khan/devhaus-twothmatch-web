@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { LocumJobFormData } from "@/features/jobs/types/locum-job-form";
+import { isFutureDateInputValue } from "@/features/jobs/utils/future-date";
 import {
   getMaxBreakDurationMins,
   hasMinimumShiftGap,
@@ -10,7 +11,11 @@ export const locumStep1Schema = z
   .object({
     roleId: z.string().trim().min(1, "Role is required"),
     locationId: z.string().trim().min(1, "Location is required"),
-    date: z.string().trim().min(1, "Date is required"),
+    date: z
+      .string()
+      .trim()
+      .min(1, "Date is required")
+      .refine(isFutureDateInputValue, "Date must be in the future"),
     timeStart: z.string().trim().min(1, "Start time is required"),
     timeEnd: z.string().trim().min(1, "End time is required"),
     breakDurationMins: z.number().int().min(0),

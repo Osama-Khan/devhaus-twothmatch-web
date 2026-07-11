@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { PermanentJobFormData } from "@/features/jobs/types/permanent-job-form";
+import { isFutureDateInputValue } from "@/features/jobs/utils/future-date";
 import { hasMinimumShiftGap } from "@/features/jobs/utils/locum-shift-duration";
 
 /** Step 1 — job basics */
@@ -8,7 +9,11 @@ export const permanentStep1Schema = z.object({
   locationId: z.string().trim().min(1, "Location is required"),
   contractTypeId: z.string().trim().min(1, "Contract type is required"),
   jobTypeId: z.string().trim().min(1, "Job type is required"),
-  startDate: z.string().trim().min(1, "Start date is required"),
+  startDate: z
+    .string()
+    .trim()
+    .min(1, "Start date is required")
+    .refine(isFutureDateInputValue, "Start date must be in the future"),
 });
 
 /** Step 2 — job details */

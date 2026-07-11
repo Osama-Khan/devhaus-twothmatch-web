@@ -12,6 +12,7 @@ import { ConfigType } from "@/features/config/types/config-type";
 import { getPermanentStep1FieldError } from "@/features/jobs/form/permanent-job-step-schemas";
 import { usePracticeLocations } from "@/features/jobs/hooks/use-practice-locations";
 import type { PermanentJobStepProps } from "@/features/jobs/types/permanent-job-form";
+import { getMinFutureDateInputValue } from "@/features/jobs/utils/future-date";
 
 /** Step 1 — role, location, contract, job type, and start date */
 export function PermanentJobBasicsStep({
@@ -99,6 +100,7 @@ export function PermanentJobBasicsStep({
         <Input
           id="permanent-start-date"
           type="date"
+          min={getMinFutureDateInputValue()}
           value={data.startDate}
           aria-invalid={
             (showValidation &&

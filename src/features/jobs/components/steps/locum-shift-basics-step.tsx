@@ -14,6 +14,7 @@ import { ConfigType } from "@/features/config/types/config-type";
 import { getLocumStep1FieldError } from "@/features/jobs/form/locum-job-step-schemas";
 import { usePracticeLocations } from "@/features/jobs/hooks/use-practice-locations";
 import type { LocumJobStepProps } from "@/features/jobs/types/locum-job-form";
+import { getMinFutureDateInputValue } from "@/features/jobs/utils/future-date";
 import { getMaxBreakDurationMins } from "@/features/jobs/utils/locum-shift-duration";
 
 /** Step 1 — role, location, date, time window, and break */
@@ -90,6 +91,7 @@ export function LocumShiftBasicsStep({
         <Input
           id="locum-date"
           type="date"
+          min={getMinFutureDateInputValue()}
           value={data.date}
           aria-invalid={Boolean(dateError) || undefined}
           onChange={(event) => onChange("date", event.target.value)}
