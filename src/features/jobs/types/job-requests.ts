@@ -59,6 +59,8 @@ export type PermanentJobFields = {
   screeningQuestions?: string[];
   autoRejectIfQuestionsNotAnswered?: boolean;
   complianceDocuments?: string[];
+  /** When true, only candidates with the required docs can apply */
+  autoFilterValidDocs?: boolean;
   boostListing?: boolean;
   status?: JobStatus;
 };
