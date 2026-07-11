@@ -2,8 +2,11 @@
 
 import {
   Field,
+  FieldContent,
+  FieldDescription,
   FieldError,
   FieldLabel,
+  FieldTitle,
   RequiredFieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -27,22 +30,22 @@ export function BooleanSwitchField({
   description,
 }: BooleanSwitchFieldProps) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl border border-border px-4 py-3">
-      <div className="min-w-0">
-        <FieldLabel htmlFor={id} className="cursor-pointer">
-          {label}
-        </FieldLabel>
-        {description ? (
-          <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
-        ) : null}
-      </div>
-      <Switch
-        id={id}
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        aria-label={label}
-      />
-    </div>
+    <FieldLabel htmlFor={id}>
+      <Field orientation="horizontal">
+        <FieldContent>
+          <FieldTitle>{label}</FieldTitle>
+          {description ? (
+            <FieldDescription>{description}</FieldDescription>
+          ) : null}
+        </FieldContent>
+        <Switch
+          id={id}
+          checked={checked}
+          onCheckedChange={onCheckedChange}
+          aria-label={label}
+        />
+      </Field>
+    </FieldLabel>
   );
 }
 
