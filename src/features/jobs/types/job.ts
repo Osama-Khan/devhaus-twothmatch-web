@@ -8,10 +8,25 @@ export type JobType = "locum" | "permanent";
  */
 export type JobStatus = "active" | "paused" | "urgent" | (string & {});
 
+/** Named config/ref object on job list items (role, terms, policy, etc.) */
+export type JobNamedRef = {
+  id: string;
+  name: string;
+};
+
+/** Practice location embedded on job list items */
+export type JobListLocation = {
+  id: string;
+  address: string;
+  postcode: string;
+  latitude: number;
+  longitude: number;
+};
+
 /** Rate payload on locum list items */
 export type LocumJobRate = {
-  hourlyRate: string;
-  dayRate: string;
+  amount: string;
+  interval: string;
 };
 
 /** Rate payload on permanent list items */
@@ -24,9 +39,20 @@ export type LocumJobListItem = {
   id: string;
   type: "locum";
   title: string;
-  rate: LocumJobRate;
   status: JobStatus;
   createdAt: string;
+  date: string;
+  role: JobNamedRef;
+  location: JobListLocation;
+  timeStart: string;
+  timeEnd: string;
+  breakDurationMins: number;
+  rate: LocumJobRate;
+  isOvertimePaid: boolean;
+  paymentTerms: JobNamedRef;
+  cancellationPolicy: JobNamedRef;
+  isParkingAvailable: boolean;
+  isPublicTransportAvailable: boolean;
 };
 
 /** Permanent job row from GET `/jobs` */
@@ -34,9 +60,19 @@ export type PermanentJobListItem = {
   id: string;
   type: "permanent";
   title: string;
-  rate: PermanentJobRate;
   status: JobStatus;
   createdAt: string;
+  jobTitle: string;
+  startDate: string;
+  role: JobNamedRef;
+  location: JobListLocation;
+  contractType: JobNamedRef;
+  jobType: JobNamedRef;
+  interviewType: JobNamedRef;
+  workingHoursStart: string;
+  workingHoursEnd: string;
+  isWorkingHoursFlexible: boolean;
+  rate: PermanentJobRate;
 };
 
 /** Combined list item from GET `/jobs` */
@@ -44,34 +80,29 @@ export type JobListItem = LocumJobListItem | PermanentJobListItem;
 
 /**
  * Locum shift entity returned by create/update.
- * Field set matches `LOCUM_FIELDS` plus server-owned keys.
+ * Field set matches writable locum fields plus server-owned keys.
  */
 export type LocumJob = {
   id: string;
   userId: string;
-  practiceLocationId: string | null;
-  role: string | null;
-  location: string | null;
+  roleId: string | null;
+  locationId: string | null;
   date: string | null;
-  time: string | null;
-  breakLunchDuration: string | null;
-  dayRate: number | null;
-  hourlyRate: number | null;
-  overtimeRules: string | null;
-  paymentTerms: string | null;
-  cancellationPolicy: string | null;
+  timeStart: string | null;
+  timeEnd: string | null;
+  breakDurationMins: number | null;
+  rate: number | null;
+  rateInterval: string | null;
+  isOvertimePaid: boolean | null;
+  paymentTermsId: string | null;
+  cancellationPolicyId: string | null;
+  isParkingAvailable: boolean | null;
+  isPublicTransportAvailable: boolean | null;
   complianceDocuments: string[] | null;
   skills: string[] | null;
   software: string[] | null;
   specialisms: string[] | null;
-  parking: string | null;
-  publicTransport: string | null;
   ppeProvided: boolean | null;
-  autoblockUnverified: boolean | null;
-  mandatoryDocsForBooking: string[] | null;
-  complianceText: string | null;
-  preapprovedCandidates: string[] | null;
-  candidateExpressesInterest: boolean | null;
   status: JobStatus;
   createdAt: string;
   updatedAt: string;
@@ -79,28 +110,28 @@ export type LocumJob = {
 
 /**
  * Permanent job entity returned by create/update.
- * Field set matches `PERMANENT_FIELDS` plus server-owned keys.
+ * Field set matches writable permanent fields plus server-owned keys.
  */
 export type PermanentJob = {
   id: string;
   userId: string;
-  practiceLocationId: string | null;
-  role: string | null;
-  location: string | null;
-  contractType: string | null;
-  jobType: string | null;
+  roleId: string | null;
+  locationId: string | null;
+  contractTypeId: string | null;
+  jobTypeId: string | null;
+  interviewTypeId: string | null;
   startDate: string | null;
   jobTitle: string | null;
   jobDescription: string | null;
+  workingHoursStart: string | null;
+  workingHoursEnd: string | null;
+  isWorkingHoursFlexible: boolean | null;
   skills: string[] | null;
   software: string[] | null;
   experienceLevels: string[] | null;
   specialisms: string[] | null;
   salaryRange: string | null;
   benefits: string[] | null;
-  workingHours: string | null;
-  flexibleWorkingOption: boolean | null;
-  interviewType: string | null;
   screeningQuestions: string[] | null;
   autoRejectIfQuestionsNotAnswered: boolean | null;
   complianceDocuments: string[] | null;

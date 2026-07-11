@@ -1,73 +1,66 @@
 import type { JobStatus, JobType } from "@/features/jobs/types/job";
 
+/** Rate interval for locum pay (e.g. config `rate_types`) */
+export type JobRateInterval = "hour" | "day" | (string & {});
+
 /**
- * Writable locum fields (`LOCUM_FIELDS` from createJob controller).
- * All optional — the API picks only defined keys.
+ * Writable locum fields for create/update.
+ * All optional — the API picks only defined keys (PATCH); create sends the full set.
  */
 export type LocumJobFields = {
-  role?: string;
-  location?: string;
+  roleId?: string;
+  locationId?: string;
   date?: string;
-  time?: string;
-  breakLunchDuration?: string;
-  dayRate?: number;
-  hourlyRate?: number;
-  overtimeRules?: string;
-  paymentTerms?: string;
-  cancellationPolicy?: string;
+  timeStart?: string;
+  timeEnd?: string;
+  breakDurationMins?: number;
+  rate?: number;
+  rateInterval?: JobRateInterval;
+  isOvertimePaid?: boolean;
+  paymentTermsId?: string;
+  cancellationPolicyId?: string;
+  isParkingAvailable?: boolean;
+  isPublicTransportAvailable?: boolean;
   complianceDocuments?: string[];
   skills?: string[];
   software?: string[];
   specialisms?: string[];
-  parking?: string;
-  publicTransport?: string;
   ppeProvided?: boolean;
-  autoblockUnverified?: boolean;
-  mandatoryDocsForBooking?: string[];
-  complianceText?: string;
-  preapprovedCandidates?: string[];
-  candidateExpressesInterest?: boolean;
   status?: JobStatus;
-  practiceLocationId?: string | null;
 };
 
 /**
- * Writable permanent fields (`PERMANENT_FIELDS` from createJob controller).
- * All optional — the API picks only defined keys.
+ * Writable permanent fields for create/update.
+ * All optional — the API picks only defined keys (PATCH); create sends the full set.
  */
 export type PermanentJobFields = {
-  role?: string;
-  location?: string;
-  contractType?: string;
-  jobType?: string;
+  roleId?: string;
+  locationId?: string;
+  contractTypeId?: string;
+  jobTypeId?: string;
+  interviewTypeId?: string;
   startDate?: string;
   jobTitle?: string;
   jobDescription?: string;
+  workingHoursStart?: string;
+  workingHoursEnd?: string;
+  isWorkingHoursFlexible?: boolean;
   skills?: string[];
   software?: string[];
   experienceLevels?: string[];
   specialisms?: string[];
   salaryRange?: string;
   benefits?: string[];
-  workingHours?: string;
-  flexibleWorkingOption?: boolean;
-  interviewType?: string;
   screeningQuestions?: string[];
   autoRejectIfQuestionsNotAnswered?: boolean;
   complianceDocuments?: string[];
   boostListing?: boolean;
   status?: JobStatus;
-  practiceLocationId?: string | null;
 };
 
 /** Body for POST `/jobs` with `type: "locum"` */
 export type CreateLocumJobRequest = LocumJobFields & {
   type: "locum";
-  /**
-   * When true (or `status` is `urgent`), triggers an urgent-shift notification.
-   * Not persisted via `LOCUM_FIELDS`.
-   */
-  urgent?: boolean;
 };
 
 /** Body for POST `/jobs` with `type: "permanent"` */
@@ -88,7 +81,6 @@ export type CreateJobRequest =
 export type UpdateJobRequest = {
   id: string;
   type?: JobType;
-  urgent?: boolean;
 } & LocumJobFields &
   PermanentJobFields;
 

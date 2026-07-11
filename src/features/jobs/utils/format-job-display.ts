@@ -1,13 +1,16 @@
 import type { JobListItem } from "@/features/jobs/types";
 
-/** Format a job list rate for display (locum hourly or permanent salary range) */
+/** Format a job list rate for display (locum amount/interval or permanent salary range) */
 export function formatJobListRate(job: JobListItem): string {
   if (job.type === "locum") {
-    const hourly = Number.parseFloat(job.rate.hourlyRate);
-    if (!Number.isNaN(hourly)) {
-      return `£${hourly}/hr`;
+    const amount = Number.parseFloat(job.rate.amount);
+    const suffix = job.rate.interval === "hour" ? "/hr" : `/${job.rate.interval}`;
+
+    if (!Number.isNaN(amount)) {
+      return `£${amount}${suffix}`;
     }
-    return `£${job.rate.hourlyRate}/hr`;
+
+    return `£${job.rate.amount}${suffix}`;
   }
 
   const range = job.rate.salaryRange.trim();

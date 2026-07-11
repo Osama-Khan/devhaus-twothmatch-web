@@ -1,5 +1,7 @@
 export type {
   JobListItem,
+  JobListLocation,
+  JobNamedRef,
   JobStatus,
   JobType,
   JobsPagination,
@@ -17,6 +19,7 @@ export type {
   CreateLocumJobRequest,
   CreatePermanentJobRequest,
   DeleteJobRequest,
+  JobRateInterval,
   LocumJobFields,
   PermanentJobFields,
   UpdateJobRequest,
