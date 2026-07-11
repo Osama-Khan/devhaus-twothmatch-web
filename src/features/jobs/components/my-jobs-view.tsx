@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Briefcase07Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { JobListingCard } from "@/features/jobs/components/job-listing-card";
 import { JobListingCardSkeleton } from "@/features/jobs/components/job-listing-card-skeleton";
 import { useJobs } from "@/features/jobs/hooks/use-jobs";
 import { useAuthSelector } from "@/lib/store/hooks";
+import { appRoutes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 type MyJobsViewProps = {
@@ -34,9 +36,15 @@ export function MyJobsView({ className }: MyJobsViewProps) {
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
               My Jobs
             </h1>
-            <Button type="button" variant="default">
-              <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} className="size-4" />
-              Post a Job
+            <Button type="button" variant="default" asChild>
+              <Link href={appRoutes.nav.myJobs.create._self.path}>
+                <HugeiconsIcon
+                  icon={PlusSignIcon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
+                Post a Job
+              </Link>
             </Button>
           </div>
 

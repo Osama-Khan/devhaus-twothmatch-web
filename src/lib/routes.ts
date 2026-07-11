@@ -41,7 +41,15 @@ export const appRoutes = {
   nav: {
     home: { _self: { path: "/", label: "Home" } },
     matches: { _self: { path: "/matches", label: "Matches" } },
-    myJobs: { _self: { path: "/my-jobs", label: "My Jobs" } },
+    myJobs: {
+      _self: { path: "/my-jobs", label: "My Jobs" },
+      create: {
+        _self: { path: "/my-jobs/create", label: "Create Job" },
+        byType: {
+          _self: { path: "/my-jobs/create/[type]", label: "Create Job" },
+        },
+      },
+    },
     invites: { _self: { path: "/invites", label: "Invites" } },
     events: { _self: { path: "/events", label: "Events" } },
   },
