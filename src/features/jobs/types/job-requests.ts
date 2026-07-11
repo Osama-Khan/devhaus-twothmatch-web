@@ -1,6 +1,6 @@
 import type { JobStatus, JobType } from "@/features/jobs/types/job";
 
-/** Rate interval for locum pay (e.g. config `rate_types`) */
+/** Rate interval for locum pay (`day` | `hour`) */
 export type JobRateInterval = "hour" | "day" | (string & {});
 
 /**
@@ -13,7 +13,8 @@ export type LocumJobFields = {
   date?: string;
   timeStart?: string;
   timeEnd?: string;
-  breakDurationMins?: number;
+  /** Minutes; `null` or omit when no break (UI uses `0` for none) */
+  breakDurationMins?: number | null;
   rate?: number;
   rateInterval?: JobRateInterval;
   isOvertimePaid?: boolean;
@@ -26,6 +27,10 @@ export type LocumJobFields = {
   software?: string[];
   specialisms?: string[];
   ppeProvided?: boolean;
+  autoblockUnverified?: boolean;
+  mandatoryDocsForBooking?: boolean;
+  instantBook?: boolean;
+  approvalRequired?: boolean;
   status?: JobStatus;
 };
 
