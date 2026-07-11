@@ -96,14 +96,14 @@ export function LocumRoleRequirementsStep({
       />
 
       {showValidation &&
-      !locumStep3Schema.safeParse({
-        skills: data.skills,
-        software: data.software,
-        specialisms: data.specialisms,
-        ppeProvided: data.ppeProvided,
-        isParkingAvailable: data.isParkingAvailable,
-        isPublicTransportAvailable: data.isPublicTransportAvailable,
-      }).success ? (
+        !locumStep3Schema.safeParse({
+          skills: data.skills,
+          software: data.software,
+          specialisms: data.specialisms,
+          ppeProvided: data.ppeProvided,
+          isParkingAvailable: data.isParkingAvailable,
+          isPublicTransportAvailable: data.isPublicTransportAvailable,
+        }).success ? (
         <FieldError className="sr-only">
           Complete required role requirements
         </FieldError>
