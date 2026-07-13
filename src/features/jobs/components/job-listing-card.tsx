@@ -3,7 +3,16 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { getInitials } from "@/features/candidates/utils/format-candidate-display";
 import { jobsService } from "@/features/jobs/services/jobs-service";
 import type { JobListItem, JobStatus } from "@/features/jobs/types";
@@ -36,9 +45,11 @@ export function JobListingCard({
   const [status, setStatus] = useState<JobStatus>(job.status);
   const [isDeleted, setIsDeleted] = useState(false);
   const [pendingAction, setPendingAction] = useState<CardAction | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const isActive = status === "active";
   const isBusy = pendingAction != null;
+  const isDeleting = pendingAction === "delete";
 
   async function updateStatus(nextStatus: "active" | "paused") {
     if (pendingAction != null || status === nextStatus) {
@@ -79,11 +90,13 @@ export function JobListingCard({
     });
 
     if (isSuccessResponse(response)) {
+      setIsDeleteDialogOpen(false);
       setIsDeleted(true);
-    } else {
-      toast.error("Failed to delete job");
-      setPendingAction(null);
+      return;
     }
+
+    toast.error("Failed to delete job");
+    setPendingAction(null);
   }
 
   if (isDeleted) {
@@ -91,65 +104,106 @@ export function JobListingCard({
   }
 
   return (
-    <article
-      className={cn(
-        "rounded-3xl border border-primary/40 bg-card p-5 shadow-sm",
-        className
-      )}
-    >
-      <h3 className="text-xl font-semibold text-foreground">{job.title}</h3>
+    <>
+      <article className={cn("rounded-3xl bg-card p-5 shadow-sm", className)}>
+        <div className="flex flex-row items-center justify-between">
+          <h3 className="text-xl font-semibold text-foreground">{job.title}</h3>
+          <Badge variant="soft">
+            {job.type === "locum" ? "Locum" : "Permanent"}
+          </Badge>
+        </div>
 
-      <div className="mt-3 flex items-center gap-2.5">
-        <Avatar>
-          {practice.avatarUrl ? (
-            <AvatarImage src={practice.avatarUrl} alt={practice.name} />
-          ) : null}
-          <AvatarFallback>{getInitials(practice.name)}</AvatarFallback>
-        </Avatar>
-        <p className="min-w-0 truncate text-sm text-muted-foreground">
-          {practice.name}
+        <div className="mt-3 flex items-center gap-2.5">
+          <Avatar>
+            {practice.avatarUrl ? (
+              <AvatarImage src={practice.avatarUrl} alt={practice.name} />
+            ) : null}
+            <AvatarFallback>{getInitials(practice.name)}</AvatarFallback>
+          </Avatar>
+          <p className="min-w-0 truncate text-sm text-muted-foreground">
+            {practice.name}
+          </p>
+        </div>
+
+        <div className="mt-4 flex items-start justify-between gap-3">
+          <p className="text-2xl font-semibold text-primary">
+            {formatJobListRate(job)}
+          </p>
+        </div>
+
+        <p className="mt-2 text-sm text-muted-foreground">
+          Posted on: {formatJobPostedDate(job.createdAt)}
         </p>
-      </div>
 
-      <div className="mt-4 flex items-start justify-between gap-3">
-        <p className="text-2xl font-semibold text-primary">
-          {formatJobListRate(job)}
-        </p>
-      </div>
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            className="border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive"
+            disabled={isBusy}
+            onClick={() => setIsDeleteDialogOpen(true)}
+          >
+            Delete
+          </Button>
+          {isActive ? (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isBusy}
+              onClick={() => void updateStatus("paused")}
+            >
+              {pendingAction === "paused" ? "Pausing…" : "Pause"}
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="default"
+              disabled={isBusy}
+              onClick={() => void updateStatus("active")}
+            >
+              {pendingAction === "active" ? "Activating…" : "Activate"}
+            </Button>
+          )}
+        </div>
+      </article>
 
-      <p className="mt-2 text-sm text-muted-foreground">
-        Posted on: {formatJobPostedDate(job.createdAt)}
-      </p>
-
-      <div className="mt-5 grid grid-cols-3 gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          className="border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive"
-          disabled={isBusy}
-          onClick={() => void deleteJob()}
-        >
-          {pendingAction === "delete" ? "Deleting…" : "Delete"}
-        </Button>
-        <Button
-          type="button"
-          variant={!isActive ? "default" : "outline"}
-          disabled={isBusy || !isActive}
-          className={cn(isActive && "text-primary")}
-          onClick={() => void updateStatus("paused")}
-        >
-          {pendingAction === "paused" ? "Pausing…" : "Pause"}
-        </Button>
-        <Button
-          type="button"
-          variant={isActive ? "default" : "outline"}
-          disabled={isBusy || isActive}
-          className={cn(!isActive && "text-primary")}
-          onClick={() => void updateStatus("active")}
-        >
-          {pendingAction === "active" ? "Activating…" : "Active"}
-        </Button>
-      </div>
-    </article>
+      <Dialog
+        open={isDeleteDialogOpen}
+        onOpenChange={(open) => {
+          if (isDeleting) {
+            return;
+          }
+          setIsDeleteDialogOpen(open);
+        }}
+      >
+        <DialogContent showCloseButton={!isDeleting}>
+          <DialogHeader>
+            <DialogTitle>Delete job?</DialogTitle>
+            <DialogDescription>
+              This will permanently delete &ldquo;{job.title}&rdquo; and its
+              related matches. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isDeleting}
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={isDeleting}
+              onClick={() => void deleteJob()}
+            >
+              {isDeleting ? "Deleting…" : "Delete job"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
