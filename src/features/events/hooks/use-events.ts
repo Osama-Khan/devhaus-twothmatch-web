@@ -15,6 +15,8 @@ type UseEventsResult = {
   hasMore: boolean;
   loadMore: () => void;
   refetch: () => void;
+  /** Optimistically mark an event as booked after a successful book call */
+  markBooked: (eventId: string) => void;
 };
 
 /**
@@ -90,6 +92,14 @@ export function useEvents(): UseEventsResult {
     setRefreshKey((key) => key + 1);
   }, []);
 
+  const markBooked = useCallback((eventId: string) => {
+    setEvents((current) =>
+      current.map((event) =>
+        event.id === eventId ? { ...event, isBooked: true } : event
+      )
+    );
+  }, []);
+
   const hasMore = pagination != null && page < pagination.totalPages;
 
   return {
@@ -100,5 +110,6 @@ export function useEvents(): UseEventsResult {
     hasMore,
     loadMore,
     refetch,
+    markBooked,
   };
 }
