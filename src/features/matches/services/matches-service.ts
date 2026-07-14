@@ -47,8 +47,8 @@ export const matchesService = {
 
   /**
    * GET `/matches/likes` — paginated sent + received likes for the
-   * authenticated user (`createdAt` desc). Received likes include `sender`;
-   * sent likes omit it.
+   * authenticated user (`createdAt` desc). Received likes include `actor`;
+   * sent likes include `target`.
    */
   listLikes(
     params?: ListMatchesParams

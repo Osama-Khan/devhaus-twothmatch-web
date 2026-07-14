@@ -37,8 +37,12 @@ export type MatchTargetPreview = {
   avatar: string | null;
 };
 
-/** Candidate sender on a received like */
-export type LikeSenderCandidate = {
+/**
+ * Candidate who liked one of the current user's jobs.
+ * `id` is the liked job id; `jobTitle` is that job's role title.
+ */
+export type LikeActorCandidate = {
+  /** Actor's candidate profile id */
   id: string;
   userId: string;
   role: "candidate";
@@ -47,21 +51,40 @@ export type LikeSenderCandidate = {
   avatar: string | null;
 };
 
-/** Practice sender on a received like */
-export type LikeSenderPractice = {
+/** Practice that liked the current user's candidate profile */
+export type LikeActorPractice = {
   userId: string;
   role: "practice";
   name: string;
   avatar: string | null;
 };
 
-/** Sender attached to received likes only (omitted on sent likes) */
-export type LikeSender = LikeSenderCandidate | LikeSenderPractice;
+/** Actor on a received like (someone else liked the current user) */
+export type LikeActor = LikeActorCandidate | LikeActorPractice;
 
-/** Like row from GET `/matches/likes` */
-export type LikeListItem = LikeRecord & {
-  sender?: LikeSender;
+/** Candidate profile target on a sent like */
+export type LikeTargetCandidatePreview = {
+  id: string;
+  name: string;
+  avatar: string | null;
 };
+
+/**
+ * Job target on a sent like.
+ * `name` / `avatar` are the practice; `jobId` / `jobTitle` identify the listing.
+ */
+export type LikeTargetJobPreview = {
+  id: string;
+  name: string;
+  avatar: string | null;
+  jobId: string;
+  jobTitle: string;
+};
+
+/** Preview of the liked entity on a sent like */
+export type LikeTargetPreview =
+  | LikeTargetCandidatePreview
+  | LikeTargetJobPreview;
 
 /**
  * Nested job/target on GET `/matches`.
@@ -134,6 +157,20 @@ export type MatchListPractice = {
   name: string;
   about?: string | null;
   website?: string | null;
+};
+
+/** Like row from GET `/matches/likes` */
+export type LikeListItem = LikeRecord & {
+  /**
+   * Present when someone else liked the current user (received like).
+   * Mutually exclusive with a resolved `target` for direction.
+   */
+  actor?: LikeActor;
+  /**
+   * Present when the current user liked someone/something (sent like).
+   * May be `null` when the target snapshot could not be resolved.
+   */
+  target?: LikeTargetPreview | null;
 };
 
 /** Match row from GET `/matches` with nested relations */

@@ -6,8 +6,11 @@ import { CrownIcon, FavouriteIcon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { PillTabs } from "@/components/ui/pill-tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { LikeListingCard } from "@/features/matches/components/like-listing-card";
+import { LikeListingCardSkeleton } from "@/features/matches/components/like-listing-card-skeleton";
 import { MatchListingCard } from "@/features/matches/components/match-listing-card";
 import { MatchListingCardSkeleton } from "@/features/matches/components/match-listing-card-skeleton";
+import { useLikes } from "@/features/matches/hooks/use-likes";
 import { useMatches } from "@/features/matches/hooks/use-matches";
 import { useAuthSelector } from "@/lib/store/hooks";
 import { cn } from "@/lib/utils";
@@ -30,15 +33,34 @@ export function MatchesView({ className }: MatchesViewProps) {
 
   const {
     matches,
-    isLoading,
-    isLoadingMore,
-    error,
-    hasMore,
-    loadMore,
-    refetch,
+    isLoading: isLoadingMatches,
+    isLoadingMore: isLoadingMoreMatches,
+    error: matchesError,
+    hasMore: hasMoreMatches,
+    loadMore: loadMoreMatches,
+    refetch: refetchMatches,
   } = useMatches();
 
+  const {
+    likes,
+    isLoading: isLoadingLikes,
+    isLoadingMore: isLoadingMoreLikes,
+    error: likesError,
+    hasMore: hasMoreLikes,
+    loadMore: loadMoreLikes,
+    refetch: refetchLikes,
+  } = useLikes();
+
   const isMatchesTab = activeTab === "matches";
+  const isLoading = isMatchesTab ? isLoadingMatches : isLoadingLikes;
+  const isLoadingMore = isMatchesTab
+    ? isLoadingMoreMatches
+    : isLoadingMoreLikes;
+  const error = isMatchesTab ? matchesError : likesError;
+  const hasMore = isMatchesTab ? hasMoreMatches : hasMoreLikes;
+  const loadMore = isMatchesTab ? loadMoreMatches : loadMoreLikes;
+  const refetch = isMatchesTab ? refetchMatches : refetchLikes;
+  const listLength = isMatchesTab ? matches.length : likes.length;
 
   return (
     <main className={cn("flex h-full min-h-0 w-full flex-col", className)}>
@@ -57,68 +79,61 @@ export function MatchesView({ className }: MatchesViewProps) {
           </div>
 
           <section className="mt-6">
-            {isMatchesTab ? (
-              isLoading ? (
+            {isLoading ? (
+              isMatchesTab ? (
                 <MatchListingCardSkeleton />
-              ) : error && matches.length === 0 ? (
-                <div className="flex flex-col items-center gap-3 py-12">
-                  <p className="text-center text-sm text-destructive">{error}</p>
-                  <Button type="button" variant="outline" onClick={refetch}>
-                    Try again
-                  </Button>
-                </div>
-              ) : matches.length === 0 ? (
-                <div className="flex flex-col items-center gap-2 py-12">
-                  <HugeiconsIcon
-                    icon={CrownIcon}
-                    strokeWidth={2}
-                    className="size-14 text-primary"
-                  />
-                  <p className="text-center text-base font-medium text-muted-foreground">
-                    No matches yet.
-                  </p>
-                </div>
               ) : (
-                <div className="flex flex-col gap-4">
-                  {matches.map((match) => (
-                    <MatchListingCard
-                      key={match.id}
-                      match={match}
-                      viewerRole={user?.role}
-                    />
-                  ))}
-
-                  {error ? (
-                    <p className="text-center text-sm text-destructive">
-                      {error}
-                    </p>
-                  ) : null}
-
-                  {hasMore ? (
-                    <div className="flex justify-center pt-2">
-                      <Button
-                        type="button"
-                        variant="link"
-                        className="h-auto py-0 text-sm font-semibold"
-                        disabled={isLoadingMore}
-                        onClick={loadMore}
-                      >
-                        {isLoadingMore ? "Loading…" : "Load more"}
-                      </Button>
-                    </div>
-                  ) : null}
-                </div>
+                <LikeListingCardSkeleton />
               )
-            ) : (
+            ) : error && listLength === 0 ? (
+              <div className="flex flex-col items-center gap-3 py-12">
+                <p className="text-center text-sm text-destructive">{error}</p>
+                <Button type="button" variant="outline" onClick={refetch}>
+                  Try again
+                </Button>
+              </div>
+            ) : listLength === 0 ? (
               <div className="flex flex-col items-center gap-2 py-12">
                 <HugeiconsIcon
-                  icon={FavouriteIcon}
+                  icon={isMatchesTab ? CrownIcon : FavouriteIcon}
                   strokeWidth={2}
                   className="size-14 text-primary"
                 />
                 <p className="text-center text-base font-medium text-muted-foreground">
-                  Likes coming soon.
+                  {isMatchesTab ? "No matches yet." : "No likes yet."}
                 </p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {isMatchesTab
+                  ? matches.map((match) => (
+                      <MatchListingCard
+                        key={match.id}
+                        match={match}
+                        viewerRole={user?.role}
+                      />
+                    ))
+                  : likes.map((like) => (
+                      <LikeListingCard key={like.id} like={like} />
+                    ))}
+
+                {error ? (
+                  <p className="text-center text-sm text-destructive">{error}</p>
+                ) : null}
+
+                {hasMore ? (
+                  <div className="flex justify-center pt-2">
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="h-auto py-0 text-sm font-semibold"
+                      disabled={isLoadingMore}
+                      onClick={loadMore}
+                    >
+                      {isLoadingMore ? "Loading…" : "Load more"}
+                    </Button>
+                  </div>
+                ) : null}
               </div>
             )}
           </section>

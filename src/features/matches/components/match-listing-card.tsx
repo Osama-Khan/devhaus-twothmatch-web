@@ -85,12 +85,7 @@ export function MatchListingCard({
                   "bg-[color-mix(in_srgb,var(--chart-3)_80%,white)] text-xs font-bold text-[var(--chart-2)]"
                 )}
               >
-                <HugeiconsIcon
-                  icon={StarIcon}
-                  strokeWidth={2}
-                  className="size-3.5 fill-current"
-                />
-                {display.score}
+                {display.score}% Match
               </span>
             </div>
           </div>
