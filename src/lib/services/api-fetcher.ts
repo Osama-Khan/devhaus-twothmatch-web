@@ -3,7 +3,7 @@
 import { apiPath } from "@/lib/routes";
 import { appEnv } from "@/lib/utils/env";
 import { logger } from "@/lib/utils/logger";
-import type { AppResponseType } from "@/lib/types/response";
+import type { AppErrorDetails, AppResponseType } from "@/lib/types/response";
 import { getAccessToken } from "@/lib/services/token-storage";
 
 const apiLogger = logger.child("ApiFetcher");
@@ -95,16 +95,22 @@ export class ApiFetcher {
 
       if (!response.ok) {
         const message = extractErrorMessage(json, response.status);
+        const details = extractErrorDetails(json);
         apiLogger.warn("API error", { path, status: response.status, message });
         notifyUnauthorized(skipAuth, response.status);
-        return { error: message, status: response.status };
+        return details
+          ? { error: message, status: response.status, details }
+          : { error: message, status: response.status };
       }
 
       if (json && typeof json === "object" && "success" in json) {
         if (json.success === false) {
           const message = extractErrorMessage(json, response.status);
+          const details = extractErrorDetails(json);
           notifyUnauthorized(skipAuth, response.status);
-          return { error: message, status: response.status };
+          return details
+            ? { error: message, status: response.status, details }
+            : { error: message, status: response.status };
         }
         if ("data" in json) {
           return { data: json.data as T };
@@ -164,6 +170,25 @@ function extractErrorMessage(json: unknown, status: number): string {
     if (body.error) return body.error;
   }
   return `Request failed with status ${status}`;
+}
+
+/** Preserve structured error fields (e.g. entitlement payloads) beyond the message. */
+function extractErrorDetails(json: unknown): AppErrorDetails | undefined {
+  if (!json || typeof json !== "object") {
+    return undefined;
+  }
+
+  const body = json as Record<string, unknown>;
+  const details: AppErrorDetails = {};
+
+  for (const [key, value] of Object.entries(body)) {
+    if (key === "message" || key === "error" || key === "success") {
+      continue;
+    }
+    details[key] = value;
+  }
+
+  return Object.keys(details).length > 0 ? details : undefined;
 }
 
 /** Default singleton instance */

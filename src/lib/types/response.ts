@@ -7,12 +7,21 @@ export type ResponseMetadata = {
 };
 
 /**
+ * Extra fields from an API error body beyond `message` / `error`
+ * (e.g. entitlement limit payloads with `code`, `key`, `limit`).
+ */
+export type AppErrorDetails = {
+  code?: string;
+  [key: string]: unknown;
+};
+
+/**
  * Standard response shape for client-side API calls and form submissions.
  * Use `{ data }` on success or `{ error, status }` on failure.
  */
 export type AppResponseType<T> =
   | { data: T; metadata?: ResponseMetadata }
-  | { error: string; status: number };
+  | { error: string; status: number; details?: AppErrorDetails };
 
 /** Type guard for successful responses */
 export function isSuccessResponse<T>(
@@ -24,7 +33,7 @@ export function isSuccessResponse<T>(
 /** Type guard for failed responses */
 export function isErrorResponse<T>(
   response: AppResponseType<T>
-): response is { error: string; status: number } {
+): response is { error: string; status: number; details?: AppErrorDetails } {
   return "error" in response;
 }
 
