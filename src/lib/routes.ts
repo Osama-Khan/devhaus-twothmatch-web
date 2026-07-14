@@ -113,6 +113,10 @@ export const externalApiRoutes = {
     bookings: { _self: { path: "/events/bookings" } },
     book: { _self: { path: "/events/book/[eventId]", label: "Book Event" } },
   },
+  matches: {
+    _self: { path: "/matches" },
+    likes: { _self: { path: "/matches/likes" } },
+  },
 } as const;
 
 /** Build a full API path including the configured root prefix (e.g. `/v2/profile`) */
