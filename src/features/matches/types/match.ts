@@ -63,13 +63,52 @@ export type LikeListItem = LikeRecord & {
   sender?: LikeSender;
 };
 
-/** Nested job/target summary on a mutual match */
+/**
+ * Nested job/target on GET `/matches`.
+ * Locum and permanent payloads share common fields; type-specific fields are optional.
+ */
 export type MatchListTarget = {
   id: string;
   userId: string;
   role: string;
-  date?: string;
+  /** Display location label (city/address string from the API) */
+  location?: string | null;
   status: string;
+  skills?: string[] | null;
+  software?: string[] | null;
+  specialisms?: string[] | null;
+  complianceDocuments?: string[] | null;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Locum fields
+  date?: string | null;
+  time?: string | null;
+  timeStart?: string | null;
+  timeEnd?: string | null;
+  breakDurationMins?: number | null;
+  /** Decimal string amount (e.g. `"15.00"`) */
+  rate?: string | null;
+  rateInterval?: string | null;
+  isOvertimePaid?: boolean | null;
+  paymentTerms?: string | null;
+  ppeProvided?: boolean | null;
+  mandatoryDocsForBooking?: boolean | null;
+
+  // Permanent fields
+  startDate?: string | null;
+  jobTitle?: string | null;
+  jobDescription?: string | null;
+  contractType?: string | null;
+  jobType?: string | null;
+  salaryRange?: string | null;
+  workingHours?: string | null;
+  isWorkingHoursFlexible?: boolean | null;
+  workingHoursStart?: string | null;
+  workingHoursEnd?: string | null;
+  interviewType?: string | null;
+  benefits?: string[] | null;
+  experienceLevels?: string[] | null;
 };
 
 /** Nested candidate profile on a mutual match */
@@ -80,6 +119,9 @@ export type MatchListCandidate = {
   jobTitle: string;
   isVerified: boolean;
   avatar: string | null;
+  gender?: string | null;
+  aboutMe?: string | null;
+  currentStatus?: string | null;
 };
 
 /** Nested practice profile on a mutual match */
@@ -90,6 +132,8 @@ export type MatchListPractice = {
   isVerified: boolean;
   avatar: string | null;
   name: string;
+  about?: string | null;
+  website?: string | null;
 };
 
 /** Match row from GET `/matches` with nested relations */
