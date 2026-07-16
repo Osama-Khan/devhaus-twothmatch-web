@@ -27,6 +27,7 @@ import type {
   ChatSocketMessageEvent,
 } from "@/features/chat/types";
 import { setActiveChatPeerUserId } from "@/features/chat/utils/active-chat-session";
+import { getThreadParticipantLastReadAt } from "@/features/chat/utils/chat-participants";
 import { isSuccessResponse } from "@/lib/types/response";
 import { cn } from "@/lib/utils";
 
@@ -94,6 +95,7 @@ export function ChatMessagePane({
     resolveOptimistic,
     setDeliveryStatus,
     upsertFromSocket,
+    applyPeerReadReceipt,
   } = useChatHistory({
     threadId: chat?.threadId ?? resolvedThreadId,
     // Always pass peer id so draft → thread promotion keeps the same history
@@ -120,6 +122,26 @@ export function ChatMessagePane({
     // Only on open / peer change / load finish — not on every new message
     // eslint-disable-next-line react-hooks/exhaustive-deps -- messages.length gated intentionally
   }, [isLoading, peer?.id, scrollToBottom]);
+
+  // Seed double-ticks from the peer's thread watermark (participants[].lastReadAt)
+  useEffect(() => {
+    if (!chat || !peer || !currentUserId || isLoading) {
+      return;
+    }
+
+    const peerLastReadAt = getThreadParticipantLastReadAt(chat, peer.id, {
+      fallbackRoot: false,
+    });
+    if (peerLastReadAt) {
+      applyPeerReadReceipt(peerLastReadAt, currentUserId);
+    }
+  }, [
+    applyPeerReadReceipt,
+    chat,
+    currentUserId,
+    isLoading,
+    peer,
+  ]);
 
   const handleSocketMessage = useCallback(
     (event: ChatSocketMessageEvent) => {
@@ -149,10 +171,25 @@ export function ChatMessagePane({
     ]
   );
 
+  const handlePeerRead = useCallback(
+    (event: { userId: string; lastReadAt: string }) => {
+      if (!peer || !currentUserId) {
+        return;
+      }
+      // Only the other participant's watermark upgrades our ticks
+      if (event.userId !== peer.id) {
+        return;
+      }
+      applyPeerReadReceipt(event.lastReadAt, currentUserId);
+    },
+    [peer, currentUserId, applyPeerReadReceipt]
+  );
+
   const { typingUserId, emitTyping, markRead } = useThreadSocket({
     threadId: resolvedThreadId ?? chat?.threadId,
     enabled: Boolean(resolvedThreadId ?? chat?.threadId),
     onMessage: handleSocketMessage,
+    onRead: handlePeerRead,
   });
 
   const isPeerTyping =

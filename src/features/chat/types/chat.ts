@@ -36,10 +36,11 @@ export type ChatMessage = {
 /**
  * Local delivery state for outgoing bubbles.
  * - `pending` — optimistic, REST in flight
- * - `sent` — REST succeeded (socket echo only dedupes)
+ * - `sent` — REST succeeded (single tick)
+ * - `read` — peer read receipt (double tick)
  * - `error` — REST send failed
  */
-export type ChatMessageDeliveryStatus = "pending" | "sent" | "error";
+export type ChatMessageDeliveryStatus = "pending" | "sent" | "read" | "error";
 
 /** Message row used in the UI (history + optimistic outbound) */
 export type ChatDisplayMessage = ChatMessage & {
@@ -63,13 +64,25 @@ export type ChatOtherUser = {
   avatar: string | null;
 };
 
+/** Per-user read watermark on a thread */
+export type ChatThreadParticipant = {
+  userId: string;
+  lastReadAt: string | null;
+};
+
 /** One thread in GET `/chat` */
 export type ChatListItem = {
   threadId: string;
   otherUser: ChatOtherUser;
   timestamp: string;
   message: ChatListMessage;
+  /**
+   * Authenticated user's last-read watermark (legacy / convenience).
+   * Prefer `participants[].lastReadAt` when present.
+   */
   lastReadAt: string | null;
+  /** Per-participant read watermarks (includes current user + peer) */
+  participants?: ChatThreadParticipant[];
   muted: boolean;
   archived: boolean;
 };

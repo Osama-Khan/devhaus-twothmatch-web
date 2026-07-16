@@ -8,6 +8,7 @@ export type {
   ChatMessage,
   ChatMessageDeliveryStatus,
   ChatOtherUser,
+  ChatThreadParticipant,
   GetChatHistoryParams,
 } from "@/features/chat/types/chat";
 

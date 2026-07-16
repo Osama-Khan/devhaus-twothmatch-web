@@ -11,6 +11,7 @@ import {
   formatChatListTime,
   formatChatPreviewText,
 } from "@/features/chat/utils/format-chat-display";
+import { isThreadUnreadForUser } from "@/features/chat/utils/chat-participants";
 import { cn } from "@/lib/utils";
 
 type ChatThreadItemProps = {
@@ -31,12 +32,7 @@ export function ChatThreadItem({
 }: ChatThreadItemProps) {
   const preview = formatChatPreviewText(chat.message);
   const timeLabel = formatChatListTime(chat.timestamp);
-  const isFromOther =
-    currentUserId != null && chat.message.senderId !== currentUserId;
-  const isUnread =
-    isFromOther &&
-    (chat.lastReadAt == null ||
-      new Date(chat.lastReadAt).getTime() < new Date(chat.timestamp).getTime());
+  const isUnread = isThreadUnreadForUser(chat, currentUserId);
 
   return (
     <button

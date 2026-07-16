@@ -60,7 +60,8 @@ function buildSendFileFormData(body: SendChatFileRequest): FormData {
 export const chatService = {
   /**
    * GET `/chat` — all chat threads for the authenticated user.
-   * Each row includes `otherUser`, latest `message`, `lastReadAt`, mute/archive flags.
+   * Each row includes `otherUser`, latest `message`, `participants` (per-user
+   * `lastReadAt`), mute/archive flags.
    */
   listChats(): Promise<AppResponseType<ListChatsResponse>> {
     return apiFetcher.get<ListChatsResponse>(externalApiRoutes.chat._self.path);

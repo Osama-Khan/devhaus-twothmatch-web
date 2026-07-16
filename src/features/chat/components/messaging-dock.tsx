@@ -16,6 +16,7 @@ import { ChatThreadItem } from "@/features/chat/components/chat-thread-item";
 import { ChatThreadListSkeleton } from "@/features/chat/components/chat-thread-list-skeleton";
 import { useChats } from "@/features/chat/hooks/use-chats";
 import { buildChatPath } from "@/features/chat/utils/build-chat-path";
+import { isThreadUnreadForUser } from "@/features/chat/utils/chat-participants";
 import { appRoutes } from "@/lib/routes";
 import { useAuthSelector } from "@/lib/store/hooks";
 import { cn } from "@/lib/utils";
@@ -33,19 +34,11 @@ export function MessagingDock() {
   const [query, setQuery] = useState("");
 
   const unreadCount = useMemo(() => {
-    if (!user?.id) {
-      return 0;
-    }
-
-    return chats.reduce((count, chat) => {
-      const isFromOther = chat.message.senderId !== user.id;
-      const isUnread =
-        isFromOther &&
-        (chat.lastReadAt == null ||
-          new Date(chat.lastReadAt).getTime() <
-            new Date(chat.timestamp).getTime());
-      return isUnread ? count + 1 : count;
-    }, 0);
+    return chats.reduce(
+      (count, chat) =>
+        isThreadUnreadForUser(chat, user?.id) ? count + 1 : count,
+      0
+    );
   }, [chats, user?.id]);
 
   const filteredChats = useMemo(() => {

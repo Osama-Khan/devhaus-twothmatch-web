@@ -10,6 +10,7 @@ import type {
   ChatOtherUser,
 } from "@/features/chat/types";
 import { getActiveChatPeerUserId } from "@/features/chat/utils/active-chat-session";
+import { withParticipantLastReadAt } from "@/features/chat/utils/chat-participants";
 import { useAuthSelector } from "@/lib/store/hooks";
 import { isSuccessResponse } from "@/lib/types/response";
 
@@ -19,6 +20,8 @@ type UpsertChatArgs = {
   message: ChatMessage;
   /** When true, clear unread for this thread (viewer has it open) */
   markRead?: boolean;
+  /** Current user — used to patch `participants[].lastReadAt` when marking read */
+  currentUserId?: string;
 };
 
 type UseChatsResult = {
@@ -57,7 +60,7 @@ function upsertChatList(
 
   if (index >= 0) {
     const existing = current[index];
-    const updated: ChatListItem = {
+    let updated: ChatListItem = {
       ...existing,
       threadId: args.threadId ?? existing.threadId,
       timestamp: args.message.createdAt,
@@ -68,10 +71,15 @@ function upsertChatList(
         name: args.otherUser.name || existing.otherUser.name,
         avatar: args.otherUser.avatar ?? existing.otherUser.avatar,
       },
-      lastReadAt: args.markRead
-        ? args.message.createdAt
-        : existing.lastReadAt,
     };
+
+    if (args.markRead && args.currentUserId) {
+      updated = withParticipantLastReadAt(
+        updated,
+        args.currentUserId,
+        args.message.createdAt
+      );
+    }
 
     return [updated, ...current.filter((_, itemIndex) => itemIndex !== index)];
   }
@@ -80,15 +88,23 @@ function upsertChatList(
     return current;
   }
 
-  const created: ChatListItem = {
+  let created: ChatListItem = {
     threadId: args.threadId,
     otherUser: args.otherUser,
     timestamp: args.message.createdAt,
     message: preview,
-    lastReadAt: args.markRead ? args.message.createdAt : null,
+    lastReadAt: null,
     muted: false,
     archived: false,
   };
+
+  if (args.markRead && args.currentUserId) {
+    created = withParticipantLastReadAt(
+      created,
+      args.currentUserId,
+      args.message.createdAt
+    );
+  }
 
   return [created, ...current];
 }
@@ -168,6 +184,7 @@ export function useChats(): UseChatsResult {
           },
           message,
           markRead: isOwn || isActiveConversation,
+          currentUserId,
         });
       });
     });
@@ -177,20 +194,37 @@ export function useChats(): UseChatsResult {
     setRefreshKey((key) => key + 1);
   }, []);
 
-  const upsertFromOutgoing = useCallback((args: UpsertChatArgs) => {
-    setChats((current) =>
-      upsertChatList(current, { ...args, markRead: args.markRead ?? true })
-    );
-  }, []);
+  const upsertFromOutgoing = useCallback(
+    (args: UpsertChatArgs) => {
+      setChats((current) =>
+        upsertChatList(current, {
+          ...args,
+          markRead: args.markRead ?? true,
+          currentUserId: args.currentUserId ?? user?.id,
+        })
+      );
+    },
+    [user?.id]
+  );
 
-  const clearThreadUnread = useCallback((threadId: string) => {
-    const now = new Date().toISOString();
-    setChats((current) =>
-      current.map((chat) =>
-        chat.threadId === threadId ? { ...chat, lastReadAt: now } : chat
-      )
-    );
-  }, []);
+  const clearThreadUnread = useCallback(
+    (threadId: string) => {
+      const userId = user?.id;
+      const now = new Date().toISOString();
+      setChats((current) =>
+        current.map((chat) => {
+          if (chat.threadId !== threadId) {
+            return chat;
+          }
+          if (!userId) {
+            return { ...chat, lastReadAt: now };
+          }
+          return withParticipantLastReadAt(chat, userId, now);
+        })
+      );
+    },
+    [user?.id]
+  );
 
   return {
     chats,

@@ -46,6 +46,11 @@ type UseChatHistoryResult = {
    * pending optimistic rows, otherwise prepends.
    */
   upsertFromSocket: (message: ChatMessage) => void;
+  /**
+   * Apply a peer read watermark — own messages at or before `lastReadAt`
+   * become `read` (double tick).
+   */
+  applyPeerReadReceipt: (lastReadAt: string, currentUserId: string) => void;
 };
 
 function withSentDefaults(messages: ChatMessage[]): ChatDisplayMessage[] {
@@ -227,8 +232,11 @@ export function useChatHistory({
           if (item.id !== idOrClientId && item.clientId !== idOrClientId) {
             return item;
           }
-          // Don't revive an error as sent via late socket/timeout
+          // Don't revive an error / downgrade a read receipt
           if (item.deliveryStatus === "error" && status === "sent") {
+            return item;
+          }
+          if (item.deliveryStatus === "read" && status === "sent") {
             return item;
           }
           return { ...item, deliveryStatus: status };
@@ -243,11 +251,12 @@ export function useChatHistory({
       const byId = current.findIndex((item) => item.id === message.id);
       if (byId >= 0) {
         const next = [...current];
+        const previous = next[byId].deliveryStatus;
         next[byId] = {
           ...next[byId],
           ...message,
           clientId: next[byId].clientId,
-          deliveryStatus: "sent",
+          deliveryStatus: previous === "read" ? "read" : "sent",
         };
         return next;
       }
@@ -273,6 +282,35 @@ export function useChatHistory({
     });
   }, []);
 
+  const applyPeerReadReceipt = useCallback(
+    (lastReadAt: string, currentUserId: string) => {
+      const watermark = new Date(lastReadAt).getTime();
+      if (!Number.isFinite(watermark)) {
+        return;
+      }
+
+      setMessages((current) =>
+        current.map((item) => {
+          if (item.senderId !== currentUserId) {
+            return item;
+          }
+          if (
+            item.deliveryStatus === "pending" ||
+            item.deliveryStatus === "error" ||
+            item.deliveryStatus === "read"
+          ) {
+            return item;
+          }
+          if (new Date(item.createdAt).getTime() <= watermark) {
+            return { ...item, deliveryStatus: "read" };
+          }
+          return item;
+        })
+      );
+    },
+    []
+  );
+
   return {
     messages,
     isLoading,
@@ -286,5 +324,6 @@ export function useChatHistory({
     resolveOptimistic,
     setDeliveryStatus,
     upsertFromSocket,
+    applyPeerReadReceipt,
   };
 }

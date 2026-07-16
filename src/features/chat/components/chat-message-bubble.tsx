@@ -3,6 +3,7 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   CancelCircleIcon,
+  CheckCheckIcon,
   CheckIcon,
   File01Icon,
   Loading03Icon,
@@ -137,6 +138,20 @@ function DeliveryStatusIcon({
         strokeWidth={2}
         className="size-3.5 shrink-0 text-destructive"
         aria-label="Failed to send"
+      />
+    );
+  }
+
+  if (status === "read") {
+    return (
+      <HugeiconsIcon
+        icon={CheckCheckIcon}
+        strokeWidth={2.5}
+        className={cn(
+          "size-3.5 shrink-0",
+          isOwn ? "text-primary-foreground" : "text-muted-foreground"
+        )}
+        aria-label="Read"
       />
     );
   }
