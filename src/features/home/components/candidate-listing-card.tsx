@@ -3,16 +3,15 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Briefcase07Icon,
-  Calendar03Icon,
   Clock01Icon,
   Hospital02Icon,
   Location01Icon,
   MoneyBag02Icon,
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
-import { Button } from "@/components/ui/button";
 import { MatchBadge } from "@/features/home/components/match-badge";
 import type { CandidateListing } from "@/features/home/types/feed-candidates";
+import { ScheduleInterviewButton } from "@/features/interviews/components/schedule-interview-button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/features/candidates/utils/format-candidate-display";
@@ -115,15 +114,12 @@ export function CandidateListingCard({
         </div>
       ) : null}
 
-      <Button
-        variant="secondary"
-        className="mt-5 w-full"
-        type="button"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <HugeiconsIcon icon={Calendar03Icon} strokeWidth={2} />
-        Calendar
-      </Button>
+      <div className="mt-5" onClick={(event) => event.stopPropagation()}>
+        <ScheduleInterviewButton
+          candidateUserId={candidate.posterUserId}
+          candidateName={candidate.posterName}
+        />
+      </div>
     </article>
   );
 }

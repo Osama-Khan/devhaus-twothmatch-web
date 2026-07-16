@@ -112,15 +112,33 @@ export const interviewMeetingTypeSchema = z.enum([
 
 export const interviewLocationSchema = z.enum(["Online", "Office"]);
 
-/** Schedule form — maps to POST `/interviews` (practice) */
-export const scheduleInterviewSchema = z.object({
-  candidateUserId: z.string().trim().min(1, "Select a candidate"),
+const scheduleInterviewFieldShape = {
   meetingType: interviewMeetingTypeSchema,
   location: interviewLocationSchema,
   date: interviewDateSchema,
   time: interviewTimeSchema,
   notes: z.string().optional(),
-});
+};
+
+/**
+ * Schedule form fields shown in the UI (candidate is supplied by the parent).
+ * Date/time must be in the future.
+ */
+export const scheduleInterviewFormSchema = z
+  .object(scheduleInterviewFieldShape)
+  .superRefine((data, ctx) => {
+    addFutureDateTimeIssue(ctx, data.date, data.time, ["date"], ["time"]);
+  });
+
+/** Full schedule payload — maps to POST `/interviews` (practice) */
+export const scheduleInterviewSchema = z
+  .object({
+    candidateUserId: z.string().trim().min(1, "Select a candidate"),
+    ...scheduleInterviewFieldShape,
+  })
+  .superRefine((data, ctx) => {
+    addFutureDateTimeIssue(ctx, data.date, data.time, ["date"], ["time"]);
+  });
 
 /** Decline form — maps to DELETE `/interviews/:id` (candidate) */
 export const declineInterviewSchema = z.object({
@@ -213,6 +231,9 @@ export const practiceRescheduleFormSchema = z
     addFutureDateTimeIssue(ctx, data.date, data.time, ["date"], ["time"]);
   });
 
+export type ScheduleInterviewFormFields = z.infer<
+  typeof scheduleInterviewFormSchema
+>;
 export type ScheduleInterviewFormData = z.infer<typeof scheduleInterviewSchema>;
 export type DeclineInterviewFormData = z.infer<typeof declineInterviewSchema>;
 export type RequestRescheduleFormData = z.infer<typeof requestRescheduleSchema>;
