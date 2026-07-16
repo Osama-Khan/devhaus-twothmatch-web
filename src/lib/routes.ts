@@ -30,6 +30,9 @@ export const appRoutes = {
   notifications: {
     _self: { path: "/notifications", label: "Notifications" },
   },
+  chat: {
+    _self: { path: "/chat", label: "Chat" },
+  },
   settings: {
     _self: { path: "/settings", label: "Settings" },
   },
@@ -137,6 +140,18 @@ export const externalApiRoutes = {
       _self: {
         path: "/interviews/[id]/reschedule",
         label: "Reschedule Interview",
+      },
+    },
+  },
+  chat: {
+    _self: { path: "/chat" },
+    history: { _self: { path: "/chat/history" } },
+    send: { _self: { path: "/chat/send" } },
+    sendFile: { _self: { path: "/chat/send-file" } },
+    markRead: {
+      _self: {
+        path: "/chat/threads/[threadId]/read",
+        label: "Mark Thread Read",
       },
     },
   },
