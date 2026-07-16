@@ -50,7 +50,9 @@ export const appRoutes = {
         },
       },
     },
-    invites: { _self: { path: "/invites", label: "Invites" } },
+    invitations: {
+      _self: { path: "/invitations", label: "Invitations" },
+    },
     events: { _self: { path: "/events", label: "Events" } },
   },
   docs: {
@@ -116,6 +118,27 @@ export const externalApiRoutes = {
   matches: {
     _self: { path: "/matches" },
     likes: { _self: { path: "/matches/likes" } },
+  },
+  interviews: {
+    _self: { path: "/interviews" },
+    byId: {
+      _self: { path: "/interviews/[id]", label: "Interview" },
+    },
+    accept: {
+      _self: { path: "/interviews/[id]/accept", label: "Accept Interview" },
+    },
+    complete: {
+      _self: {
+        path: "/interviews/[id]/complete",
+        label: "Complete Interview",
+      },
+    },
+    reschedule: {
+      _self: {
+        path: "/interviews/[id]/reschedule",
+        label: "Reschedule Interview",
+      },
+    },
   },
 } as const;
 

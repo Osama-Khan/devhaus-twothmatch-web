@@ -37,7 +37,11 @@ const NAV_ITEMS: NavItem[] = [
     label: "My Jobs",
     icon: Briefcase07Icon,
   },
-  { href: appRoutes.nav.invites._self.path, label: "Invites", icon: UserStar01Icon },
+  {
+    href: appRoutes.nav.invitations._self.path,
+    label: "Invitations",
+    icon: UserStar01Icon,
+  },
   {
     href: appRoutes.nav.events._self.path,
     label: "Events",

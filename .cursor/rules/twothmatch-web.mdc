@@ -29,7 +29,7 @@ Feature modules: `components/`, `form/` (Zod), `services/`, `hooks/`, `utils/` a
 
 - All paths from `@/lib/routes` — never hardcode strings
 - `appRoutes.home` → `/` (feed; no separate marketing landing)
-- `appRoutes.nav.*` → header tabs: `/`, `/matches`, `/my-jobs`, `/invites`, `/events`
+- `appRoutes.nav.*` → header tabs: `/`, `/matches`, `/my-jobs`, `/invitations`, `/events`
 - `appRoutes.auth.*`, `appRoutes.profile`, `externalApiRoutes` + `apiPath()` for API
 - New app pages go under `src/app/(main)/` so they inherit the authenticated header layout
 - Placeholder pages: use `PlaceholderPage` from `@/components/layout/placeholder-page`
