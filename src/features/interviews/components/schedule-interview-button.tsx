@@ -49,7 +49,7 @@ export function ScheduleInterviewButton({
       <Button
         type="button"
         variant={variant}
-        className={cn("w-full", className)}
+        className={cn("w-full sm:w-auto", className)}
         onClick={(event) => {
           event.stopPropagation();
           setOpen(true);

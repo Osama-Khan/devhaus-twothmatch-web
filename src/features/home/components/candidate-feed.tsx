@@ -29,8 +29,15 @@ export function CandidateFeed({
 }: CandidateFeedProps) {
   const [activeTab, setActiveTab] = useState<CandidateFeedTab>("locum");
   const [filters, setFilters] = useState<CandidateFeedFilters | null>(null);
-  const { candidates, isLoading, isLoadingMore, error, hasMore, loadMore } =
-    useFeedCandidates(activeTab, filters);
+  const {
+    candidates,
+    isLoading,
+    isLoadingMore,
+    error,
+    hasMore,
+    loadMore,
+    removeCandidate,
+  } = useFeedCandidates(activeTab, filters);
 
   const handleTabChange = (tab: CandidateFeedTab) => {
     setActiveTab(tab);
@@ -94,6 +101,12 @@ export function CandidateFeed({
               candidate={candidate}
               isSelected={candidate.id === selectedCandidateId}
               onSelect={() => onSelectCandidate(candidate.id)}
+              onSwiped={(candidateId) => {
+                removeCandidate(candidateId);
+                if (selectedCandidateId === candidateId) {
+                  onSelectCandidate(null);
+                }
+              }}
             />
           ))}
 

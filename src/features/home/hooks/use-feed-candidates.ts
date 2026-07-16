@@ -25,6 +25,8 @@ type UseCandidateFeedResult = {
   error: string | null;
   hasMore: boolean;
   loadMore: () => void;
+  /** Remove a candidate from the local feed (e.g. after like/pass) */
+  removeCandidate: (candidateId: string) => void;
 };
 
 type BrowseCandidatesResponse =
@@ -126,6 +128,12 @@ export function useFeedCandidates(
     });
   }, [activeTab, fetchPage, isLoadingMore, page, pagination]);
 
+  const removeCandidate = useCallback((candidateId: string) => {
+    setCandidates((current) =>
+      current.filter((candidate) => candidate.id !== candidateId)
+    );
+  }, []);
+
   const hasMore = pagination != null && page < pagination.totalPages;
 
   return {
@@ -135,5 +143,6 @@ export function useFeedCandidates(
     error,
     hasMore,
     loadMore,
+    removeCandidate,
   };
 }

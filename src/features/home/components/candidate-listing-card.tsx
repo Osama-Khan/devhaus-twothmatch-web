@@ -1,20 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Briefcase07Icon,
+  Cancel01Icon,
   Clock01Icon,
+  FavouriteIcon,
   Hospital02Icon,
   Location01Icon,
   MoneyBag02Icon,
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { getInitials } from "@/features/candidates/utils/format-candidate-display";
 import { MatchBadge } from "@/features/home/components/match-badge";
 import type { CandidateListing } from "@/features/home/types/feed-candidates";
 import { ScheduleInterviewButton } from "@/features/interviews/components/schedule-interview-button";
+import { matchesService } from "@/features/matches/services/matches-service";
+import type { MatchDecision } from "@/features/matches/types";
+import { isSuccessResponse } from "@/lib/types/response";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getInitials } from "@/features/candidates/utils/format-candidate-display";
 
 const META_ICONS: IconSvgElement[] = [
   Location01Icon,
@@ -28,6 +36,8 @@ type CandidateListingCardProps = {
   candidate: CandidateListing;
   isSelected?: boolean;
   onSelect?: () => void;
+  /** Called after a successful like or pass so the feed can drop the card */
+  onSwiped?: (candidateId: string, decision: MatchDecision) => void;
   className?: string;
 };
 
@@ -36,8 +46,48 @@ export function CandidateListingCard({
   candidate,
   isSelected,
   onSelect,
+  onSwiped,
   className,
 }: CandidateListingCardProps) {
+  const [pendingDecision, setPendingDecision] = useState<MatchDecision | null>(
+    null
+  );
+
+  async function handleSwipe(decision: MatchDecision) {
+    if (pendingDecision != null) {
+      return;
+    }
+
+    setPendingDecision(decision);
+
+    const response = await matchesService.likeTarget({
+      targetType: "candidate",
+      targetId: candidate.id,
+      decision,
+    });
+
+    if (!isSuccessResponse(response)) {
+      toast.error(response.error);
+      setPendingDecision(null);
+      return;
+    }
+
+    if (decision === "like") {
+      toast.success(
+        response.data.match
+          ? "It's a match!"
+          : `Liked ${candidate.posterName}`
+      );
+    } else {
+      toast.success("Passed");
+    }
+
+    onSwiped?.(candidate.id, decision);
+    setPendingDecision(null);
+  }
+
+  const isBusy = pendingDecision != null;
+
   return (
     <article
       role="button"
@@ -114,11 +164,37 @@ export function CandidateListingCard({
         </div>
       ) : null}
 
-      <div className="mt-5" onClick={(event) => event.stopPropagation()}>
+      <div
+        className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-stretch"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <Button
+          type="button"
+          variant="outline"
+          className="sm:flex-1"
+          disabled={isBusy}
+          onClick={() => void handleSwipe("pass")}
+        >
+          <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
+          {pendingDecision === "pass" ? "Passing…" : "Pass"}
+        </Button>
+
         <ScheduleInterviewButton
           candidateUserId={candidate.posterUserId}
           candidateName={candidate.posterName}
+          className="sm:flex-[1.4]"
         />
+
+        <Button
+          type="button"
+          variant="default"
+          className="sm:flex-1"
+          disabled={isBusy}
+          onClick={() => void handleSwipe("like")}
+        >
+          <HugeiconsIcon icon={FavouriteIcon} strokeWidth={2} />
+          {pendingDecision === "like" ? "Liking…" : "Like"}
+        </Button>
       </div>
     </article>
   );
