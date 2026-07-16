@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   BubbleChatIcon,
@@ -11,10 +12,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getInitials } from "@/features/candidates/utils/format-candidate-display";
+import { buildChatPath } from "@/features/chat/utils/build-chat-path";
 import type { MatchListItem } from "@/features/matches/types";
 import {
   formatMatchTargetTypeLabel,
   getMatchCardDisplay,
+  getMatchChatPeer,
 } from "@/features/matches/utils/format-match-display";
 import type { UserRole } from "@/lib/types/entities";
 import { cn } from "@/lib/utils";
@@ -34,6 +37,7 @@ export function MatchListingCard({
   className,
 }: MatchListingCardProps) {
   const display = getMatchCardDisplay(match, viewerRole);
+  const chatPeer = getMatchChatPeer(match, viewerRole);
   const typeLabel = formatMatchTargetTypeLabel(display.targetType);
   const isLocum = display.targetType === "locum";
   const isPermanent = display.targetType === "permanent";
@@ -43,6 +47,7 @@ export function MatchListingCard({
     display.showDocsRequired;
   const hasSkills =
     display.skills.length > 0 || display.specialisms.length > 0;
+  const chatHref = buildChatPath(chatPeer);
 
   return (
     <article
@@ -187,9 +192,11 @@ export function MatchListingCard({
           </span>
         </div>
 
-        <Button type="button" className="mt-4 w-full gap-2" disabled>
-          <HugeiconsIcon icon={BubbleChatIcon} strokeWidth={2} />
-          Chat
+        <Button asChild className="mt-4 w-full gap-2">
+          <Link href={chatHref}>
+            <HugeiconsIcon icon={BubbleChatIcon} strokeWidth={2} />
+            Chat
+          </Link>
         </Button>
       </div>
     </article>

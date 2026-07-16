@@ -218,6 +218,38 @@ function buildDetailPills(match: MatchListItem): MatchDetailPill[] {
   return buildLocumDetailPills(match.target);
 }
 
+/** Chat peer for a mutual match (the other participant’s user id + display). */
+export type MatchChatPeer = {
+  receiverId: string;
+  name: string;
+  avatar: string | null;
+};
+
+/**
+ * Resolve the other user to open a chat with from a match row.
+ * Practices chat with the candidate; candidates chat with the practice.
+ */
+export function getMatchChatPeer(
+  match: MatchListItem,
+  viewerRole: UserRole | undefined
+): MatchChatPeer {
+  const isPracticeViewer = viewerRole === "practice";
+
+  if (isPracticeViewer) {
+    return {
+      receiverId: match.candidate.userId || match.candidateUserId,
+      name: match.candidate.fullName,
+      avatar: match.candidate.avatar,
+    };
+  }
+
+  return {
+    receiverId: match.practice.userId || match.practiceUserId,
+    name: match.practice.name,
+    avatar: match.practice.avatar,
+  };
+}
+
 /**
  * Map a match list row to card display fields.
  * Candidates see the practice + job role; practices see the candidate.
