@@ -64,9 +64,15 @@ export function ChatMessagePane({
   const peer = chat?.otherUser ?? draftPeer;
   const isDraft = chat == null && draftPeer != null;
   const bottomRef = useRef<HTMLDivElement>(null);
+  const markReadRef = useRef<() => void>(() => {});
+  const onThreadReadRef = useRef(onThreadRead);
   const [resolvedThreadId, setResolvedThreadId] = useState<string | undefined>(
     chat?.threadId
   );
+
+  useEffect(() => {
+    onThreadReadRef.current = onThreadRead;
+  }, [onThreadRead]);
 
   useEffect(() => {
     setResolvedThreadId(chat?.threadId);
@@ -143,6 +149,12 @@ export function ChatMessagePane({
     peer,
   ]);
 
+  const acknowledgeThreadRead = useCallback((threadId: string) => {
+    void chatService.markThreadRead(threadId);
+    markReadRef.current();
+    onThreadReadRef.current?.(threadId);
+  }, []);
+
   const handleSocketMessage = useCallback(
     (event: ChatSocketMessageEvent) => {
       upsertFromSocket(event.message);
@@ -160,7 +172,11 @@ export function ChatMessagePane({
           message: event.message,
           otherUser: peer,
         });
+        return;
       }
+
+      // Viewing this conversation — mark read so the sender gets a receipt
+      acknowledgeThreadRead(event.threadId);
     },
     [
       upsertFromSocket,
@@ -168,6 +184,7 @@ export function ChatMessagePane({
       peer,
       currentUserId,
       onOutgoingConfirmed,
+      acknowledgeThreadRead,
     ]
   );
 
@@ -191,6 +208,10 @@ export function ChatMessagePane({
     onMessage: handleSocketMessage,
     onRead: handlePeerRead,
   });
+
+  useEffect(() => {
+    markReadRef.current = markRead;
+  }, [markRead]);
 
   const isPeerTyping =
     peer != null && typingUserId != null && typingUserId === peer.id;
@@ -228,10 +249,8 @@ export function ChatMessagePane({
       return;
     }
 
-    void chatService.markThreadRead(threadId);
-    markRead();
-    onThreadRead?.(threadId);
-  }, [chat?.threadId, resolvedThreadId, markRead, onThreadRead]);
+    acknowledgeThreadRead(threadId);
+  }, [chat?.threadId, resolvedThreadId, acknowledgeThreadRead]);
 
   if (!peer) {
     return (
