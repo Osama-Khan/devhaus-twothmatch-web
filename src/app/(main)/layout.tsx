@@ -1,6 +1,7 @@
 import { AppHeader } from "@/components/layout/app-header";
 import { RequireAuthLayout } from "@/features/auth/utils/require-auth-layout";
 import { ChatSocketConnector } from "@/features/chat/components/chat-socket-connector";
+import { MessagingDock } from "@/features/chat/components/messaging-dock";
 
 /** Layout for authenticated app routes with header and footer */
 export default function MainLayout({
@@ -15,6 +16,7 @@ export default function MainLayout({
         <AppHeader />
         <div className="flex flex-1 flex-col min-h-0 overflow-hidden">{children}</div>
       </div>
+      <MessagingDock />
     </RequireAuthLayout>
   );
 }
