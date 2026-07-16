@@ -22,7 +22,14 @@ export function ChatView({ className }: ChatViewProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuthSelector();
-  const { chats, isLoading, error, refetch, upsertFromOutgoing } = useChats();
+  const {
+    chats,
+    isLoading,
+    error,
+    refetch,
+    upsertFromOutgoing,
+    clearThreadUnread,
+  } = useChats();
 
   const receiverIdParam = searchParams.get("receiverId")?.trim() || null;
   const nameParam = searchParams.get("name")?.trim() || "Chat";
@@ -134,6 +141,7 @@ export function ChatView({ className }: ChatViewProps) {
           currentUserId={user?.id}
           onBack={handleBack}
           onOutgoingConfirmed={handleOutgoingConfirmed}
+          onThreadRead={clearThreadUnread}
         />
       </div>
     </main>

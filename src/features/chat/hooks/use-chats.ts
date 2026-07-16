@@ -31,6 +31,8 @@ type UseChatsResult = {
    * Creates a row when `threadId` is known for a new chat.
    */
   upsertFromOutgoing: (args: UpsertChatArgs) => void;
+  /** Clear unread locally for a thread (does not call the API). */
+  clearThreadUnread: (threadId: string) => void;
 };
 
 function toListPreview(message: ChatMessage): ChatListMessage {
@@ -147,6 +149,10 @@ export function useChats(): UseChatsResult {
       const isOwn = message.senderId === currentUserId;
       const isActiveConversation = getActiveChatPeerUserId() === peerId;
 
+      if (isActiveConversation) {
+        void chatService.markThreadRead(threadId);
+      }
+
       setChats((current) => {
         const existing = current.find(
           (chat) =>
@@ -177,11 +183,21 @@ export function useChats(): UseChatsResult {
     );
   }, []);
 
+  const clearThreadUnread = useCallback((threadId: string) => {
+    const now = new Date().toISOString();
+    setChats((current) =>
+      current.map((chat) =>
+        chat.threadId === threadId ? { ...chat, lastReadAt: now } : chat
+      )
+    );
+  }, []);
+
   return {
     chats,
     isLoading,
     error,
     refetch,
     upsertFromOutgoing,
+    clearThreadUnread,
   };
 }

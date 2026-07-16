@@ -45,6 +45,8 @@ type ChatMessagePaneProps = {
     message: ChatMessage;
     otherUser: ChatOtherUser;
   }) => void;
+  /** Clear unread in the parent thread list after marking read */
+  onThreadRead?: (threadId: string) => void;
 };
 
 /**
@@ -56,6 +58,7 @@ export function ChatMessagePane({
   currentUserId,
   onBack,
   onOutgoingConfirmed,
+  onThreadRead,
 }: ChatMessagePaneProps) {
   const peer = chat?.otherUser ?? draftPeer;
   const isDraft = chat == null && draftPeer != null;
@@ -181,14 +184,17 @@ export function ChatMessagePane({
     });
   }, [isDraft, draftPeer, currentUserId, handleSocketMessage]);
 
+  // Mark the open thread as read whenever this pane has a thread
   useEffect(() => {
-    if (!chat?.threadId) {
+    const threadId = chat?.threadId ?? resolvedThreadId;
+    if (!threadId) {
       return;
     }
 
-    void chatService.markThreadRead(chat.threadId);
+    void chatService.markThreadRead(threadId);
     markRead();
-  }, [chat?.threadId, markRead]);
+    onThreadRead?.(threadId);
+  }, [chat?.threadId, resolvedThreadId, markRead, onThreadRead]);
 
   if (!peer) {
     return (
