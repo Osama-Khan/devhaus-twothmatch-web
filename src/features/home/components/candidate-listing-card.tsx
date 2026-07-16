@@ -19,6 +19,10 @@ import { getInitials } from "@/features/candidates/utils/format-candidate-displa
 import { MatchBadge } from "@/features/home/components/match-badge";
 import type { CandidateListing } from "@/features/home/types/feed-candidates";
 import { ScheduleInterviewButton } from "@/features/interviews/components/schedule-interview-button";
+import {
+  MatchSuccessDialog,
+  type MatchSuccessTarget,
+} from "@/features/matches/components/match-success-dialog";
 import { matchesService } from "@/features/matches/services/matches-service";
 import type { MatchDecision } from "@/features/matches/types";
 import { isSuccessResponse } from "@/lib/types/response";
@@ -52,6 +56,9 @@ export function CandidateListingCard({
   const [pendingDecision, setPendingDecision] = useState<MatchDecision | null>(
     null
   );
+  const [matchTarget, setMatchTarget] = useState<MatchSuccessTarget | null>(
+    null
+  );
 
   async function handleSwipe(decision: MatchDecision) {
     if (pendingDecision != null) {
@@ -72,12 +79,18 @@ export function CandidateListingCard({
       return;
     }
 
+    if (decision === "like" && response.data.match) {
+      setMatchTarget({
+        name: response.data.target.name || candidate.posterName,
+        avatar: response.data.target.avatar ?? candidate.avatar,
+        score: response.data.match.score,
+      });
+      setPendingDecision(null);
+      return;
+    }
+
     if (decision === "like") {
-      toast.success(
-        response.data.match
-          ? "It's a match!"
-          : `Liked ${candidate.posterName}`
-      );
+      toast.success(`Liked ${candidate.posterName}`);
     } else {
       toast.success("Passed");
     }
@@ -86,9 +99,19 @@ export function CandidateListingCard({
     setPendingDecision(null);
   }
 
+  function handleMatchDialogChange(open: boolean) {
+    if (open) {
+      return;
+    }
+
+    setMatchTarget(null);
+    onSwiped?.(candidate.id, "like");
+  }
+
   const isBusy = pendingDecision != null;
 
   return (
+    <>
     <article
       role="button"
       tabIndex={0}
@@ -197,5 +220,12 @@ export function CandidateListingCard({
         </Button>
       </div>
     </article>
+
+    <MatchSuccessDialog
+      open={matchTarget != null}
+      onOpenChange={handleMatchDialogChange}
+      target={matchTarget}
+    />
+    </>
   );
 }
