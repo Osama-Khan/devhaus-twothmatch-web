@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,10 +18,14 @@ import { isSuccessResponse } from "@/lib/types/response";
 import { registerSchema, type RegisterFormData } from "@/features/auth/form";
 import { authService } from "@/features/auth/services/auth-service";
 import { PasswordField } from "@/features/auth/components/password-field";
+import { PrivacyPolicyDialog } from "@/features/auth/components/privacy-policy-dialog";
 
 /** Registration form — POST `/auth/signup`, then email verification */
 export function RegisterForm() {
   const router = useRouter();
+  const [pendingData, setPendingData] = useState<RegisterFormData | null>(null);
+  const [policyOpen, setPolicyOpen] = useState(false);
+  const [isSigningUp, setIsSigningUp] = useState(false);
 
   const {
     register,
@@ -33,11 +38,29 @@ export function RegisterForm() {
     },
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
+  /** Validated form opens the privacy dialog; signup runs only after agreement. */
+  function onValidatedSubmit(data: RegisterFormData) {
+    setPendingData(data);
+    setPolicyOpen(true);
+  }
+
+  function handlePolicyContinue() {
+    if (!pendingData || isSigningUp) {
+      return;
+    }
+
+    setIsSigningUp(true);
+    setPolicyOpen(false);
+    void completeSignup(pendingData);
+  }
+
+  async function completeSignup(data: RegisterFormData) {
     const response = await authService.signup(data);
 
     if (!isSuccessResponse(response)) {
       toast.error(response.error);
+      setPendingData(null);
+      setIsSigningUp(false);
       return;
     }
 
@@ -49,10 +72,13 @@ export function RegisterForm() {
       toast.success("Check your email for a verification code.");
     }
 
+    setPendingData(null);
+    setIsSigningUp(false);
+
     router.push(
       `${appRoutes.auth.verifyEmail._self.path}?email=${encodeURIComponent(response.data.email)}`
     );
-  };
+  }
 
   return (
     <div className="rounded-3xl bg-card px-6 py-8 shadow-[0_8px_32px_rgba(39,38,67,0.08)] sm:px-8">
@@ -61,7 +87,7 @@ export function RegisterForm() {
       </h1>
 
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onValidatedSubmit)}
         className="mt-6 flex flex-col gap-5"
       >
         <Field data-invalid={Boolean(errors.email)}>
@@ -128,8 +154,12 @@ export function RegisterForm() {
           registration={register("confirmPassword")}
         />
 
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? "Signing up…" : "Sign Up"}
+        <Button
+          type="submit"
+          disabled={isSubmitting || isSigningUp}
+          className="w-full"
+        >
+          {isSigningUp ? "Signing up…" : "Sign Up"}
         </Button>
       </form>
 
@@ -142,6 +172,17 @@ export function RegisterForm() {
           Log In
         </Link>
       </p>
+
+      <PrivacyPolicyDialog
+        open={policyOpen}
+        onOpenChange={(open) => {
+          setPolicyOpen(open);
+          if (!open && !isSigningUp) {
+            setPendingData(null);
+          }
+        }}
+        onContinue={handlePolicyContinue}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import type { SettingType } from "@/features/config/types/setting-type";
 export type MetadataItem = {
   id: string;
   name: string;
+  value?: string;
 };
 
 /** Response from `GET /v2/config/{type}` */
