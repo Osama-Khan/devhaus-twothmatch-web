@@ -29,7 +29,7 @@ export function RegisterForm() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      role: "candidate",
+      role: "practice",
     },
   });
 
