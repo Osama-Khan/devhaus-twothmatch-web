@@ -3,8 +3,13 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import {
+  ArrowDown01Icon,
+  Building03Icon,
+  Call02Icon,
+  Video01Icon,
+} from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -15,15 +20,24 @@ import {
   type ScheduleInterviewFormFields,
 } from "@/features/interviews/form/interview-schemas";
 import { interviewsService } from "@/features/interviews/services/interviews-service";
-import type { Interview } from "@/features/interviews/types";
+import type { Interview, InterviewMeetingType } from "@/features/interviews/types";
 import { isSuccessResponse } from "@/lib/types/response";
 import { cn } from "@/lib/utils";
 
-const MEETING_TYPES = ["Video", "In Person", "Call"] as const;
+const MEETING_TYPE_OPTIONS: {
+  value: InterviewMeetingType;
+  label: string;
+  icon: IconSvgElement;
+}[] = [
+  { value: "Video", label: "Video", icon: Video01Icon },
+  { value: "Call", label: "Call", icon: Call02Icon },
+  { value: "In Person", label: "In Person", icon: Building03Icon },
+];
+
 const LOCATIONS = ["Online", "Office"] as const;
 
 const selectClassName = cn(
-  "h-11 w-full min-w-0 appearance-none rounded-4xl border border-input bg-card px-3 py-1 pr-10 text-base transition-colors outline-none",
+  "h-11 w-full min-w-0 appearance-none rounded-full border border-input bg-card px-4 py-1 pr-10 text-base transition-colors outline-none",
   "focus-visible:border-ring focus-visible:bg-accent/40 focus-visible:ring-[3px] focus-visible:ring-ring/50",
   "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
   "aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20",
@@ -64,6 +78,8 @@ export function ScheduleInterviewForm({
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ScheduleInterviewFormFields>({
     resolver: zodResolver(scheduleInterviewFormSchema),
@@ -75,6 +91,8 @@ export function ScheduleInterviewForm({
       notes: "",
     },
   });
+
+  const meetingType = watch("meetingType");
 
   useEffect(() => {
     reset({
@@ -119,55 +137,73 @@ export function ScheduleInterviewForm({
         </p>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <Field data-invalid={Boolean(errors.meetingType)}>
-          <FieldLabel htmlFor="schedule-meeting-type">Meeting type</FieldLabel>
-          <div className="relative">
-            <select
-              id="schedule-meeting-type"
-              className={selectClassName}
-              aria-invalid={Boolean(errors.meetingType)}
-              {...register("meetingType")}
-            >
-              {MEETING_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-            <HugeiconsIcon
-              icon={ArrowDown01Icon}
-              strokeWidth={2}
-              className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground"
-            />
-          </div>
-          <FieldError errors={[errors.meetingType]} />
-        </Field>
+      <Field data-invalid={Boolean(errors.meetingType)}>
+        <FieldLabel id="schedule-meeting-type-label">
+          Select Meeting Type
+        </FieldLabel>
+        <div
+          role="radiogroup"
+          aria-labelledby="schedule-meeting-type-label"
+          aria-invalid={Boolean(errors.meetingType)}
+          className="grid grid-cols-3 gap-2.5"
+        >
+          {MEETING_TYPE_OPTIONS.map((option) => {
+            const selected = meetingType === option.value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() =>
+                  setValue("meetingType", option.value, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
+                className={cn(
+                  "flex flex-col items-center justify-center gap-2 rounded-2xl border-2 px-2 py-4 text-sm font-medium transition-colors",
+                  selected
+                    ? "border-primary bg-primary/5 text-primary"
+                    : "border-border bg-card text-foreground hover:bg-muted/40"
+                )}
+              >
+                <HugeiconsIcon
+                  icon={option.icon}
+                  strokeWidth={2}
+                  className="size-6"
+                />
+                <span>{option.label}</span>
+              </button>
+            );
+          })}
+        </div>
+        <FieldError errors={[errors.meetingType]} />
+      </Field>
 
-        <Field data-invalid={Boolean(errors.location)}>
-          <FieldLabel htmlFor="schedule-location">Location</FieldLabel>
-          <div className="relative">
-            <select
-              id="schedule-location"
-              className={selectClassName}
-              aria-invalid={Boolean(errors.location)}
-              {...register("location")}
-            >
-              {LOCATIONS.map((location) => (
-                <option key={location} value={location}>
-                  {location}
-                </option>
-              ))}
-            </select>
-            <HugeiconsIcon
-              icon={ArrowDown01Icon}
-              strokeWidth={2}
-              className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground"
-            />
-          </div>
-          <FieldError errors={[errors.location]} />
-        </Field>
-      </div>
+      <Field data-invalid={Boolean(errors.location)}>
+        <FieldLabel htmlFor="schedule-location">Location</FieldLabel>
+        <div className="relative">
+          <select
+            id="schedule-location"
+            className={selectClassName}
+            aria-invalid={Boolean(errors.location)}
+            {...register("location")}
+          >
+            {LOCATIONS.map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+          <HugeiconsIcon
+            icon={ArrowDown01Icon}
+            strokeWidth={2}
+            className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-foreground"
+          />
+        </div>
+        <FieldError errors={[errors.location]} />
+      </Field>
 
       <div className="grid grid-cols-2 gap-3">
         <Field data-invalid={Boolean(errors.date)}>
