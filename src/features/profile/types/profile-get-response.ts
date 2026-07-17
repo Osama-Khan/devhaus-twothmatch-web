@@ -66,8 +66,9 @@ export type PracticeProfile = {
 
 /** Full candidate profile payload from GET `/profile` */
 export type CandidateProfileResponse = {
+  userId: string;
   kind: "candidate";
-  profile: CandidateProfile;
+  profile?: CandidateProfile;
   educations: ProfileEducation[];
   workExperiences: ProfileWorkExperience[];
   personality: ProfilePersonality | null;
@@ -83,8 +84,9 @@ export type CandidateProfileResponse = {
 
 /** Full practice profile payload from GET `/profile` */
 export type PracticeProfileResponse = {
+  userId: string;
   kind: "practice";
-  profile: PracticeProfile;
+  profile?: PracticeProfile;
   media: ProfileMedia[];
   locations: ProfileLocation[];
   documents: ProfileDocument[];
