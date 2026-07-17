@@ -116,8 +116,8 @@ export type ProfileLocation = {
   address: string;
   postcode: string;
   phone: string | null;
-  parking: string | null;
-  publicTransport: string | null;
+  parking: boolean | null;
+  publicTransport: boolean | null;
   practiceManagerName: string | null;
   email: string | null;
   practiceManagerPhone: string | null;

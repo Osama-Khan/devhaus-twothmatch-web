@@ -66,11 +66,11 @@ function buildMeta(data: OnboardingFormData): ProfilePreviewMetaItem[] {
     },
     {
       label: "Parking",
-      value: withFallback(data.parking, "Not specified"),
+      value: data.parking ? "Available" : "Not available",
     },
     {
       label: "Public transport",
-      value: withFallback(data.publicTransport, "Not specified"),
+      value: data.publicTransport ? "Available" : "Not available",
     },
     {
       label: "Benefits",
@@ -93,7 +93,7 @@ export function buildProfilePreview(
   practiceName: string
 ): ProfilePreviewModel {
   const name = withFallback(data.clinicName || practiceName, "Your Practice");
-  const locationSummary = [data.address, data.postcode, data.publicTransport]
+  const locationSummary = [data.address, data.postcode]
     .map((part) => part.trim())
     .filter(Boolean)
     .join(", ");

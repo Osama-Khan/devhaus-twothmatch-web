@@ -1,9 +1,15 @@
 "use client";
 
-import { Field, FieldError, FieldLabel, RequiredFieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldLabel,
+  FieldTitle,
+  RequiredFieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { OnboardingSelectField } from "@/features/onboarding/components/onboarding-select-field";
-import { PARKING_OPTIONS } from "@/features/onboarding/constants";
+import { Switch } from "@/components/ui/switch";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
 import { AddressLocationField } from "@/features/location/components/address-location-field";
 import { getPostcodeError } from "@/features/onboarding/form/onboarding-step-schemas";
@@ -61,24 +67,35 @@ export function LocationBranchesStep({
           />
         </Field>
 
-        <OnboardingSelectField
-          id="parking"
-          label="Parking"
-          options={PARKING_OPTIONS}
-          value={data.parking}
-          onValueChange={(value) => onChange("parking", value)}
-        />
+        <FieldLabel htmlFor="parking">
+          <Field orientation="horizontal">
+            <FieldContent>
+              <FieldTitle>Parking available</FieldTitle>
+            </FieldContent>
+            <Switch
+              id="parking"
+              checked={data.parking}
+              onCheckedChange={(checked) => onChange("parking", checked)}
+              aria-label="Parking available"
+            />
+          </Field>
+        </FieldLabel>
 
-        <Field>
-          <FieldLabel htmlFor="publicTransport">Public Transport</FieldLabel>
-          <Input
-            id="publicTransport"
-            type="text"
-            placeholder="Enter"
-            value={data.publicTransport}
-            onChange={(event) => onChange("publicTransport", event.target.value)}
-          />
-        </Field>
+        <FieldLabel htmlFor="publicTransport">
+          <Field orientation="horizontal">
+            <FieldContent>
+              <FieldTitle>Public transport available</FieldTitle>
+            </FieldContent>
+            <Switch
+              id="publicTransport"
+              checked={data.publicTransport}
+              onCheckedChange={(checked) =>
+                onChange("publicTransport", checked)
+              }
+              aria-label="Public transport available"
+            />
+          </Field>
+        </FieldLabel>
       </section>
 
       <section className="flex flex-col gap-5">

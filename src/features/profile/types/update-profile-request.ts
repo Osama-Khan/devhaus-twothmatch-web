@@ -35,8 +35,8 @@ export type UpdateProfileLocation = {
   address?: string;
   postcode?: string;
   phone?: string;
-  parking?: string;
-  publicTransport?: string;
+  parking?: boolean;
+  publicTransport?: boolean;
   practiceManagerName?: string;
   email?: string;
   practiceManagerPhone?: string;

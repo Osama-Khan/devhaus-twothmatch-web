@@ -21,8 +21,8 @@ export type OnboardingFormData = {
   longitude: number | null;
   postcode: string;
   locationPhone: string;
-  parking: string;
-  publicTransport: string;
+  parking: boolean;
+  publicTransport: boolean;
   branchManagerName: string;
   branchManagerContact: string;
   branchManagerEmail: string;
@@ -69,8 +69,8 @@ export function createInitialOnboardingFormData(): OnboardingFormData {
     longitude: null,
     postcode: "",
     locationPhone: "",
-    parking: "",
-    publicTransport: "",
+    parking: false,
+    publicTransport: false,
     branchManagerName: "",
     branchManagerContact: "",
     branchManagerEmail: "",
