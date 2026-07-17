@@ -1,4 +1,4 @@
-/** Collected onboarding answers across all seven steps */
+/** Collected practice onboarding answers across all steps */
 export type OnboardingFormData = {
   clinicName: string;
   /** Config item id from `types_of_clinics` */
