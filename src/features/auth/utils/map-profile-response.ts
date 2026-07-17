@@ -5,7 +5,7 @@ import type { User } from "@/lib/types/entities";
 export function createUserFromProfile(response: ProfileResponse): User {
   return mergeProfileResponse(
     {
-      id: response.profile.userId,
+      id: response.userId,
       email: "",
       role: response.kind === "practice" ? "practice" : "candidate",
     },
@@ -26,16 +26,16 @@ export function mergeProfileResponse(
   return {
     ...baseUser,
     profileKind: kind,
-    fullName: profile.fullName ?? baseUser.fullName,
-    avatarUrl: profile.avatar ?? baseUser.avatarUrl,
-    completionPercent: profile.completionPercent ?? completionPercent,
+    fullName: profile?.fullName ?? baseUser.fullName,
+    avatarUrl: profile?.avatar ?? baseUser.avatarUrl,
+    completionPercent: profile?.completionPercent ?? completionPercent,
     isProfileComplete:
-      profile.profileCompletion !== undefined
-        ? profile.profileCompletion
+      profile?.profileCompletion !== undefined
+        ? profile?.profileCompletion
         : baseUser.isProfileComplete,
     isProfileVerified:
-      profile.isVerified !== undefined
-        ? profile.isVerified
+      profile?.isVerified !== undefined
+        ? profile?.isVerified
         : baseUser.isProfileVerified,
   };
 }
