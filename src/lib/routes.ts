@@ -155,6 +155,38 @@ export const externalApiRoutes = {
       },
     },
   },
+  payments: {
+    plans: { _self: { path: "/payments/plans" } },
+    me: {
+      subscription: { _self: { path: "/payments/me/subscription" } },
+      entitlement: { _self: { path: "/payments/me/entitlement" } },
+      paymentMethods: { _self: { path: "/payments/me/payment-methods" } },
+      invoices: { _self: { path: "/payments/me/invoices" } },
+      invoiceById: {
+        _self: {
+          path: "/payments/me/invoices/[invoiceId]",
+          label: "Payment Invoice",
+        },
+      },
+    },
+    setupIntent: { _self: { path: "/payments/setup-intent" } },
+    paymentMethodDefault: {
+      _self: {
+        path: "/payments/payment-methods/[stripePaymentMethodId]/default",
+        label: "Set Default Payment Method",
+      },
+    },
+    paymentMethodById: {
+      _self: {
+        path: "/payments/payment-methods/[stripePaymentMethodId]",
+        label: "Payment Method",
+      },
+    },
+    subscriptions: { _self: { path: "/payments/subscriptions" } },
+    changeSubscription: { _self: { path: "/payments/subscriptions/change" } },
+    cancelSubscription: { _self: { path: "/payments/subscriptions/cancel" } },
+    resumeSubscription: { _self: { path: "/payments/subscriptions/resume" } },
+  },
 } as const;
 
 /** Build a full API path including the configured root prefix (e.g. `/v2/profile`) */
