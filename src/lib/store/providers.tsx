@@ -13,6 +13,7 @@ import { clearAuthStorage, getAccessToken } from "@/lib/services/token-storage";
 import { registerUnauthorizedHandler } from "@/lib/services/api-fetcher";
 import { profileService } from "@/features/profile/services/profile-service";
 import { createUserFromProfile } from "@/features/auth/utils/map-profile-response";
+import { fetchAuthEntitlement } from "@/features/auth/utils/refresh-auth-entitlement";
 import { useAppSelector } from "@/lib/store/hooks";
 import {
   isSuccessResponse,
@@ -27,7 +28,7 @@ type StoreProviderProps = {
 };
 
 /**
- * Hydrates Redux from the stored JWT via GET `/profile`.
+ * Hydrates Redux from the stored JWT via GET `/profile` and entitlement.
  */
 function AuthHydrator({ store }: { store: AppStore }) {
   const hydrated = useRef(false);
@@ -54,22 +55,25 @@ function AuthHydrator({ store }: { store: AppStore }) {
         return;
       }
 
-      const response = await profileService.getProfile();
+      const [profileResponse, entitlement] = await Promise.all([
+        profileService.getProfile(),
+        fetchAuthEntitlement(),
+      ]);
 
-      if (isSuccessResponse(response)) {
-        const user = createUserFromProfile(response.data);
-        store.dispatch(setCredentials({ user, token }));
+      if (isSuccessResponse(profileResponse)) {
+        const user = createUserFromProfile(profileResponse.data);
+        store.dispatch(setCredentials({ user, token, entitlement }));
         return;
       }
 
-      if (isUnauthorizedResponse(response)) {
+      if (isUnauthorizedResponse(profileResponse)) {
         clearAuthStorage();
         store.dispatch(clearCredentials());
         return;
       }
 
       storeLogger.warn("Profile hydration failed, keeping stored session", {
-        status: response.status,
+        status: profileResponse.status,
       });
       store.dispatch(setTokenSession({ token }));
     }

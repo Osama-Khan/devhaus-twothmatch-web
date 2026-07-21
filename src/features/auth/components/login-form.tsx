@@ -19,6 +19,7 @@ import { setCredentials } from "@/lib/store/auth-slice";
 import { isSuccessResponse } from "@/lib/types/response";
 import { loginSchema, type LoginFormData } from "@/features/auth/form";
 import { authService } from "@/features/auth/services/auth-service";
+import { fetchAuthEntitlement } from "@/features/auth/utils/refresh-auth-entitlement";
 import { PasswordField } from "@/features/auth/components/password-field";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -70,7 +71,8 @@ export function LoginForm() {
 
     const session = authService.mapLoginResponse(response.data);
     authService.persistAccessToken(session.token);
-    dispatch(setCredentials(session));
+    const entitlement = await fetchAuthEntitlement();
+    dispatch(setCredentials({ ...session, entitlement }));
     toast.success("Welcome back!");
     router.push(getPostAuthPath(session.user));
   };
