@@ -1,6 +1,12 @@
 export type {
   ListPaymentInvoicesParams,
   PaymentEntitlement,
+  PaymentEntitlementFeature,
+  PaymentEntitlementFeatureKey,
+  PaymentEntitlementFeaturePayload,
+  PaymentEntitlementFeatures,
+  PaymentEntitlementFeaturesPayload,
+  PaymentEntitlementPayload,
   PaymentFeatureFlag,
   PaymentFeatureFlags,
   PaymentInvoice,

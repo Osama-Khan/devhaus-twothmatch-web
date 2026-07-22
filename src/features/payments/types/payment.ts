@@ -6,14 +6,53 @@ export type PaymentPriceInterval = "day" | "week" | "month" | "year";
 /** Stripe price billing type */
 export type PaymentPriceType = "recurring" | "one_time";
 
-/** Feature limit / reset config stored on plans and entitlements */
+/** Feature limit / reset config on plan product definitions */
 export type PaymentFeatureFlag = {
   limit: number | null;
   reset: string;
 };
 
-/** Map of feature key → limit config (e.g. `job_posts`) */
+/** Map of feature key → plan limit config (e.g. `job_posts`) */
 export type PaymentFeatureFlags = Record<string, PaymentFeatureFlag>;
+
+/**
+ * Entitlement feature keys from the payments API.
+ */
+export type PaymentEntitlementFeatureKey =
+  | "free_swipes"
+  | "interviews"
+  | "detail_views"
+  | "chat_matches"
+  | "job_posts"
+  | (string & {});
+
+/** Usage / limit fields returned by the payments API for one feature */
+export type PaymentEntitlementFeaturePayload = {
+  /** Max uses in the reset window; `null` means unlimited */
+  limit: number | null;
+  /** Consumed uses in the current window */
+  used: number;
+};
+
+/**
+ * Feature usage snapshot stored in auth state.
+ * `allowed` is derived client-side (`limit === null || used < limit`).
+ */
+export type PaymentEntitlementFeature = PaymentEntitlementFeaturePayload & {
+  allowed: boolean;
+};
+
+/** Map of feature key → API usage/limit payload (no derived fields) */
+export type PaymentEntitlementFeaturesPayload = Record<
+  PaymentEntitlementFeatureKey,
+  PaymentEntitlementFeaturePayload
+>;
+
+/** Map of feature key → usage/limit data with derived `allowed` */
+export type PaymentEntitlementFeatures = Record<
+  PaymentEntitlementFeatureKey,
+  PaymentEntitlementFeature
+>;
 
 /** Opaque string map from Stripe / product metadata */
 export type PaymentMetadata = Record<string, string>;
@@ -68,17 +107,25 @@ export type PaymentPlan = {
   prices: PaymentPrice[];
 };
 
-/** Effective entitlement (paid subscription or role free plan) */
-export type PaymentEntitlement = {
+/** Effective entitlement as returned by the payments API */
+export type PaymentEntitlementPayload = {
   isActive: boolean;
   onFreePlan: boolean;
   status: PaymentSubscriptionStatus | string;
   stripeSubscriptionId: string | null;
   planCode: string;
   tier: string;
-  featureFlags: PaymentFeatureFlags;
   trialEnd: string | null;
   currentPeriodEnd: string | null;
+  features: PaymentEntitlementFeaturesPayload;
+};
+
+/**
+ * Effective entitlement stored in auth state.
+ * Feature `allowed` flags are derived when mapping the API payload.
+ */
+export type PaymentEntitlement = Omit<PaymentEntitlementPayload, "features"> & {
+  features: PaymentEntitlementFeatures;
 };
 
 /** Line item on a local subscription mirror */
@@ -102,7 +149,7 @@ export type PaymentSubscription = {
   canceledAt: string | null;
   cancelAt: string | null;
   items: PaymentSubscriptionItem[];
-  entitlement: PaymentEntitlement;
+  entitlement: PaymentEntitlementPayload;
 };
 
 /** Saved Stripe payment method for the authenticated user */

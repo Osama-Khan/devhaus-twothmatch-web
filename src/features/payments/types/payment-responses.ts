@@ -1,5 +1,5 @@
 import type {
-  PaymentEntitlement,
+  PaymentEntitlementPayload,
   PaymentInvoice,
   PaymentMethod,
   PaymentPlan,
@@ -18,12 +18,12 @@ export type GetPaymentPlansResponse = {
  */
 export type GetMySubscriptionResponse = {
   subscription: PaymentSubscription | null;
-  entitlement: PaymentEntitlement;
+  entitlement: PaymentEntitlementPayload;
 };
 
 /** Response from GET `/payments/me/entitlement` */
 export type GetMyEntitlementResponse = {
-  entitlement: PaymentEntitlement;
+  entitlement: PaymentEntitlementPayload;
 };
 
 /** Response from GET `/payments/me/payment-methods` */

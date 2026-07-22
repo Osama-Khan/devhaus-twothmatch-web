@@ -1,12 +1,13 @@
 import { paymentsService } from "@/features/payments/services/payments-service";
 import type { PaymentEntitlement } from "@/features/payments/types";
+import { mapPaymentEntitlement } from "@/features/payments/utils/map-entitlement";
 import type { AppDispatch } from "@/lib/store";
 import { setEntitlement } from "@/lib/store/auth-slice";
 import { isSuccessResponse } from "@/lib/types/response";
 
 /**
- * Fetches GET `/payments/me/entitlement` for the authenticated user.
- * Returns `null` when the request fails.
+ * Fetches GET `/payments/me/entitlement` for the authenticated user and maps
+ * feature `allowed` from usage limits. Returns `null` when the request fails.
  */
 export async function fetchAuthEntitlement(): Promise<PaymentEntitlement | null> {
   const response = await paymentsService.getMyEntitlement();
@@ -15,7 +16,7 @@ export async function fetchAuthEntitlement(): Promise<PaymentEntitlement | null>
     return null;
   }
 
-  return response.data.entitlement;
+  return mapPaymentEntitlement(response.data.entitlement);
 }
 
 /**
@@ -31,7 +32,7 @@ export async function refreshAuthEntitlement(
     return { entitlement: null, error: response.error };
   }
 
-  const entitlement = response.data.entitlement;
+  const entitlement = mapPaymentEntitlement(response.data.entitlement);
   dispatch(setEntitlement(entitlement));
   return { entitlement };
 }
