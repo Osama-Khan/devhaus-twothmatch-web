@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CrownIcon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { appRoutes } from "@/lib/routes";
+import { openStripeCheckout } from "@/features/payments/utils/open-stripe-hosted-page";
 
 type SubscribeRequiredDialogProps = {
   open: boolean;
@@ -28,7 +28,21 @@ export function SubscribeRequiredDialog({
   open,
   onOpenChange,
 }: SubscribeRequiredDialogProps) {
-  const description = "You've reached the limit on your current plan. Subscribe to unlock more features.";
+  const [isCheckoutPending, setIsCheckoutPending] = useState(false);
+  const description =
+    "You've reached the limit on your current plan. Subscribe to unlock more features.";
+
+  async function handleSubscribe() {
+    if (isCheckoutPending) {
+      return;
+    }
+
+    setIsCheckoutPending(true);
+    const navigated = await openStripeCheckout();
+    if (!navigated) {
+      setIsCheckoutPending(false);
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -48,17 +62,20 @@ export function SubscribeRequiredDialog({
             type="button"
             variant="outline"
             className="sm:flex-1"
+            disabled={isCheckoutPending}
             onClick={() => onOpenChange(false)}
           >
             Not now
           </Button>
-          <Button type="button" className="sm:flex-1" asChild>
-            <Link
-              href={appRoutes.settings._self.path}
-              onClick={() => onOpenChange(false)}
-            >
-              Subscribe
-            </Link>
+          <Button
+            type="button"
+            className="sm:flex-1"
+            disabled={isCheckoutPending}
+            onClick={() => {
+              void handleSubscribe();
+            }}
+          >
+            {isCheckoutPending ? "Opening…" : "Subscribe"}
           </Button>
         </DialogFooter>
       </DialogContent>

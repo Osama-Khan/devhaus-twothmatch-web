@@ -3,6 +3,10 @@
 import type {
   CancelSubscriptionRequest,
   ChangeSubscriptionPlanRequest,
+  CreateBillingPortalSessionRequest,
+  CreateBillingPortalSessionResponse,
+  CreateCheckoutSessionRequest,
+  CreateCheckoutSessionResponse,
   CreateSetupIntentResponse,
   CreateSubscriptionRequest,
   CreateSubscriptionResponse,
@@ -176,6 +180,31 @@ export const paymentsService = {
   ): Promise<AppResponseType<CreateSubscriptionResponse>> {
     return apiFetcher.post<CreateSubscriptionResponse>(
       externalApiRoutes.payments.subscriptions._self.path,
+      body
+    );
+  },
+
+  /**
+   * POST `/payments/checkout` — Stripe-hosted Checkout Session URL for Pro.
+   */
+  createCheckoutSession(
+    body: CreateCheckoutSessionRequest
+  ): Promise<AppResponseType<CreateCheckoutSessionResponse>> {
+    return apiFetcher.post<CreateCheckoutSessionResponse>(
+      externalApiRoutes.payments.checkout._self.path,
+      body
+    );
+  },
+
+  /**
+   * POST `/payments/billing-portal` — Stripe Customer Portal URL to manage
+   * the subscription.
+   */
+  createBillingPortalSession(
+    body: CreateBillingPortalSessionRequest
+  ): Promise<AppResponseType<CreateBillingPortalSessionResponse>> {
+    return apiFetcher.post<CreateBillingPortalSessionResponse>(
+      externalApiRoutes.payments.billingPortal._self.path,
       body
     );
   },

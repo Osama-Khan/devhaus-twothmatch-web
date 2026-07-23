@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import {
   ArrowDown01Icon,
+  CrownIcon,
   Logout01Icon,
   Settings01Icon,
   UserIcon,
@@ -10,6 +12,10 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { isProPlan } from "@/features/payments/utils/is-pro-plan";
+import {
+  openStripeBillingPortal,
+  openStripeCheckout,
+} from "@/features/payments/utils/open-stripe-hosted-page";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -30,11 +36,36 @@ type AccountMenuProps = {
   avatarUrl?: string | null;
 };
 
-/** Account avatar trigger with profile, settings, and logout actions. */
+/** Account avatar trigger with profile, settings, billing, and logout actions. */
 export function AccountMenu({ accountLabel, avatarUrl }: AccountMenuProps) {
   const { logout } = useAuth();
   const { entitlement } = useAuthSelector();
   const showProBadge = isProPlan(entitlement?.planCode);
+  const [isBillingPending, setIsBillingPending] = useState(false);
+
+  async function handleUpgrade() {
+    if (isBillingPending) {
+      return;
+    }
+
+    setIsBillingPending(true);
+    const navigated = await openStripeCheckout();
+    if (!navigated) {
+      setIsBillingPending(false);
+    }
+  }
+
+  async function handleManagePlan() {
+    if (isBillingPending) {
+      return;
+    }
+
+    setIsBillingPending(true);
+    const navigated = await openStripeBillingPortal();
+    if (!navigated) {
+      setIsBillingPending(false);
+    }
+  }
 
   return (
     <div className="flex flex-col items-end gap-1">
@@ -63,7 +94,10 @@ export function AccountMenu({ accountLabel, avatarUrl }: AccountMenuProps) {
               className="hidden size-2.5 shrink-0 text-foreground sm:block"
             />
             {showProBadge ? (
-              <Badge variant="soft" className="h-4 px-1.5 text-[10px] font-semibold uppercase absolute right-6 -bottom-2">
+              <Badge
+                variant="soft"
+                className="absolute right-6 -bottom-2 h-4 px-1.5 text-[10px] font-semibold uppercase"
+              >
                 Pro
               </Badge>
             ) : null}
@@ -84,6 +118,29 @@ export function AccountMenu({ accountLabel, avatarUrl }: AccountMenuProps) {
                 Settings
               </Link>
             </DropdownMenuItem>
+            {showProBadge ? (
+              <DropdownMenuItem
+                disabled={isBillingPending}
+                onSelect={(event) => {
+                  event.preventDefault();
+                  void handleManagePlan();
+                }}
+              >
+                <HugeiconsIcon icon={CrownIcon} strokeWidth={2} />
+                {isBillingPending ? "Opening…" : "Manage plan"}
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem
+                disabled={isBillingPending}
+                onSelect={(event) => {
+                  event.preventDefault();
+                  void handleUpgrade();
+                }}
+              >
+                <HugeiconsIcon icon={CrownIcon} strokeWidth={2} />
+                {isBillingPending ? "Opening…" : "Upgrade"}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
 
           <DropdownMenuSeparator />

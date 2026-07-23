@@ -11,6 +11,28 @@ export type CreateSubscriptionRequest = {
   paymentMethodId?: string;
 };
 
+/**
+ * Body for POST `/payments/checkout`.
+ * Opens Stripe-hosted Checkout for TwothMatch Pro.
+ */
+export type CreateCheckoutSessionRequest = {
+  /** Absolute URL on this app after successful payment */
+  successUrl: string;
+  /** Absolute URL on this app if Checkout is cancelled */
+  cancelUrl: string;
+  /** Optional Stripe Price id (`price_…`); defaults to the role's Pro price */
+  priceId?: string;
+};
+
+/**
+ * Body for POST `/payments/billing-portal`.
+ * Opens Stripe Customer Portal to manage the subscription.
+ */
+export type CreateBillingPortalSessionRequest = {
+  /** Absolute URL on this app when leaving the portal */
+  returnUrl: string;
+};
+
 /** Body for POST `/payments/subscriptions/change` */
 export type ChangeSubscriptionPlanRequest = {
   /** Stripe Price id (`price_…`) */

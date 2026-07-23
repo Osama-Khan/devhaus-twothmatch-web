@@ -61,6 +61,17 @@ export type CreateSubscriptionResponse = {
   clientSecret: string | null;
 };
 
+/** Response from POST `/payments/checkout` */
+export type CreateCheckoutSessionResponse = {
+  url: string;
+  sessionId: string;
+};
+
+/** Response from POST `/payments/billing-portal` */
+export type CreateBillingPortalSessionResponse = {
+  url: string;
+};
+
 /** Generic success ack from payment mutation endpoints */
 export type PaymentOkResponse = {
   ok: true;

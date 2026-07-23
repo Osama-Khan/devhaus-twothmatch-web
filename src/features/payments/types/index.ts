@@ -26,10 +26,14 @@ export type {
 export type {
   CancelSubscriptionRequest,
   ChangeSubscriptionPlanRequest,
+  CreateBillingPortalSessionRequest,
+  CreateCheckoutSessionRequest,
   CreateSubscriptionRequest,
 } from "@/features/payments/types/payment-requests";
 
 export type {
+  CreateBillingPortalSessionResponse,
+  CreateCheckoutSessionResponse,
   CreateSetupIntentResponse,
   CreateSubscriptionResponse,
   GetMyEntitlementResponse,

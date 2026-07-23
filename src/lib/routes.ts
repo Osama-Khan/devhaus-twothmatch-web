@@ -191,6 +191,8 @@ export const externalApiRoutes = {
       },
     },
     subscriptions: { _self: { path: "/payments/subscriptions" } },
+    checkout: { _self: { path: "/payments/checkout" } },
+    billingPortal: { _self: { path: "/payments/billing-portal" } },
     changeSubscription: { _self: { path: "/payments/subscriptions/change" } },
     cancelSubscription: { _self: { path: "/payments/subscriptions/cancel" } },
     resumeSubscription: { _self: { path: "/payments/subscriptions/resume" } },
