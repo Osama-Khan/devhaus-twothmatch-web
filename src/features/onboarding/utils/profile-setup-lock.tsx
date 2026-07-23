@@ -6,7 +6,7 @@ import { useAuthSelector } from "@/lib/store/hooks";
 import { getProfileSetupPath } from "@/features/onboarding/utils/get-profile-setup-path";
 
 /**
- * Redirects users to onboarding or verification when profile setup is incomplete.
+ * Redirects users to a locked route (candidate gate, onboarding, or verification).
  */
 export function ProfileSetupLock() {
   const router = useRouter();

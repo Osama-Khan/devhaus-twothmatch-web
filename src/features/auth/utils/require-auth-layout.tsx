@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { appRoutes } from "@/lib/routes";
 import { useAuthSelector } from "@/lib/store/hooks";
+import { isCandidateUser } from "@/features/auth/utils/is-candidate-user";
 import { needsOnboarding } from "@/features/onboarding/utils/needs-onboarding";
 import { needsVerification } from "@/features/onboarding/utils/needs-verification";
 import { getProfileSetupPath } from "@/features/onboarding/utils/get-profile-setup-path";
@@ -13,7 +14,7 @@ type RequireAuthLayoutProps = {
 };
 
 /**
- * Client guard for authenticated app routes — login required, onboarding enforced.
+ * Client guard for authenticated app routes — login, role, and setup enforced.
  */
 export function RequireAuthLayout({ children }: RequireAuthLayoutProps) {
   const router = useRouter();
@@ -38,6 +39,7 @@ export function RequireAuthLayout({ children }: RequireAuthLayoutProps) {
   if (
     isLoading ||
     !isAuthenticated ||
+    isCandidateUser(user) ||
     needsOnboarding(user) ||
     needsVerification(user)
   ) {
@@ -46,3 +48,4 @@ export function RequireAuthLayout({ children }: RequireAuthLayoutProps) {
 
   return children;
 }
+

@@ -1,12 +1,17 @@
 import { appRoutes } from "@/lib/routes";
 import type { User } from "@/lib/types/entities";
+import { isCandidateUser } from "@/features/auth/utils/is-candidate-user";
 import { needsOnboarding } from "@/features/onboarding/utils/needs-onboarding";
 import { needsVerification } from "@/features/onboarding/utils/needs-verification";
 
 /**
- * Locked setup route for the user, if any — onboarding or verification.
+ * Locked route for the user, if any — candidate gate, onboarding, or verification.
  */
 export function getProfileSetupPath(user: User): string | null {
+  if (isCandidateUser(user)) {
+    return appRoutes.onboarding.candidatesComingSoon._self.path;
+  }
+
   if (needsOnboarding(user)) {
     return appRoutes.onboarding._self.path;
   }
@@ -17,3 +22,4 @@ export function getProfileSetupPath(user: User): string | null {
 
   return null;
 }
+

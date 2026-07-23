@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { appRoutes } from "@/lib/routes";
 import { useAuthSelector } from "@/lib/store/hooks";
+import { isCandidateUser } from "@/features/auth/utils/is-candidate-user";
 import { getPostAuthPath } from "@/features/onboarding/utils/get-post-auth-path";
 import { needsOnboarding } from "@/features/onboarding/utils/needs-onboarding";
 import { needsVerification } from "@/features/onboarding/utils/needs-verification";
@@ -29,6 +30,11 @@ export function RequireVerifying({ children }: RequireVerifyingProps) {
       return;
     }
 
+    if (user && isCandidateUser(user)) {
+      router.replace(appRoutes.onboarding.candidatesComingSoon._self.path);
+      return;
+    }
+
     if (user && needsOnboarding(user)) {
       router.replace(appRoutes.onboarding._self.path);
       return;
@@ -43,6 +49,7 @@ export function RequireVerifying({ children }: RequireVerifyingProps) {
     isLoading ||
     !isAuthenticated ||
     !user ||
+    isCandidateUser(user) ||
     needsOnboarding(user) ||
     !needsVerification(user)
   ) {
@@ -51,3 +58,4 @@ export function RequireVerifying({ children }: RequireVerifyingProps) {
 
   return children;
 }
+

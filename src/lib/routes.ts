@@ -39,7 +39,14 @@ export const appRoutes = {
   onboarding: {
     _self: { path: "/onboarding", label: "Onboarding" },
     verifying: { _self: { path: "/verifying", label: "Verifying" } },
+    candidatesComingSoon: {
+      _self: {
+        path: "/candidates-coming-soon",
+        label: "Candidates Coming Soon",
+      },
+    },
   },
+
   /** Authenticated app header navigation */
   nav: {
     home: { _self: { path: "/", label: "Home" } },
