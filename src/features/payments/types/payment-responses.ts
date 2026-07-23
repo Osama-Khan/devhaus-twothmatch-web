@@ -7,6 +7,11 @@ import type {
   PaymentsPagination,
 } from "@/features/payments/types/payment";
 
+/** Response from GET `/payments/publishable-key` */
+export type GetStripePublishableKeyResponse = {
+  stripePublishableKey: string;
+};
+
 /** Response from GET `/payments/plans` */
 export type GetPaymentPlansResponse = {
   plans: PaymentPlan[];

@@ -156,6 +156,7 @@ export const externalApiRoutes = {
     },
   },
   payments: {
+    publishableKey: { _self: { path: "/payments/publishable-key" } },
     plans: { _self: { path: "/payments/plans" } },
     me: {
       subscription: { _self: { path: "/payments/me/subscription" } },

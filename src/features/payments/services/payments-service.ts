@@ -11,6 +11,7 @@ import type {
   GetMyPaymentMethodsResponse,
   GetMySubscriptionResponse,
   GetPaymentPlansResponse,
+  GetStripePublishableKeyResponse,
   ListMyInvoicesResponse,
   ListPaymentInvoicesParams,
   PaymentOkResponse,
@@ -56,9 +57,22 @@ function paymentMethodByIdPath(stripePaymentMethodId: string): string {
 
 /**
  * Client-side payments / Stripe billing service.
- * Auth required on all endpoints.
+ * Most endpoints require auth; `getPublishableKey` is public.
  */
 export const paymentsService = {
+  /**
+   * GET `/payments/publishable-key` — Stripe publishable key for Elements /
+   * Payment Element. No auth. **503** when Stripe is not configured.
+   */
+  getPublishableKey(): Promise<
+    AppResponseType<GetStripePublishableKeyResponse>
+  > {
+    return apiFetcher.get<GetStripePublishableKeyResponse>(
+      externalApiRoutes.payments.publishableKey._self.path,
+      { skipAuth: true }
+    );
+  },
+
   /**
    * GET `/payments/plans` — active products + prices for the authenticated
    * user's role.

@@ -37,6 +37,7 @@ export type {
   GetMyPaymentMethodsResponse,
   GetMySubscriptionResponse,
   GetPaymentPlansResponse,
+  GetStripePublishableKeyResponse,
   ListMyInvoicesResponse,
   PaymentOkResponse,
 } from "@/features/payments/types/payment-responses";
