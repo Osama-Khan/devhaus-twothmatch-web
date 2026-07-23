@@ -8,9 +8,9 @@ import {
 } from "@hugeicons/core-free-icons";
 import { IconTextRow } from "@/features/home/components/icon-text-row";
 import { CandidateDetailsSidebarSkeleton } from "@/features/home/components/candidate-details-sidebar-skeleton";
+import { CandidateDetailUpgradePrompt } from "@/features/home/components/candidate-detail-upgrade-prompt";
 import type { CandidateDetailResponse } from "@/features/candidates/types/candidate-detail";
 import {
-  formatDisplayDate,
   formatLabelValue,
   formatPayRange,
 } from "@/features/candidates/utils/format-candidate-display";
@@ -20,6 +20,8 @@ type CandidateDetailsSidebarProps = {
   detail: CandidateDetailResponse | null;
   isLoading?: boolean;
   error?: string | null;
+  /** When true, show the upgrade prompt instead of a red error */
+  isPaymentRequired?: boolean;
   className?: string;
 };
 
@@ -28,6 +30,7 @@ export function CandidateDetailsSidebar({
   detail,
   isLoading,
   error,
+  isPaymentRequired,
   className,
 }: CandidateDetailsSidebarProps) {
   return (
@@ -43,6 +46,10 @@ export function CandidateDetailsSidebar({
 
       {isLoading ? (
         <CandidateDetailsSidebarSkeleton />
+      ) : isPaymentRequired ? (
+        <div className="mt-5">
+          <CandidateDetailUpgradePrompt className="border-0 bg-transparent p-0 shadow-none" />
+        </div>
       ) : error ? (
         <SidebarBody message={error} isError />
       ) : detail ? (
@@ -137,7 +144,6 @@ function CandidateDetailsContent({
           </div>
         </section>
       ) : null}
-
 
       {skillNames.length > 0 ? (
         <TagSection title="Skills" items={skillNames} />

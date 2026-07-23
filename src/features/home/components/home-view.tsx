@@ -15,7 +15,8 @@ export function HomeView() {
   const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(
     null
   );
-  const { detail, isLoading, error } = useCandidateDetail(selectedCandidateId);
+  const { detail, isLoading, error, isPaymentRequired } =
+    useCandidateDetail(selectedCandidateId);
 
   return (
     <main
@@ -33,6 +34,7 @@ export function HomeView() {
               profile={detail?.profile ?? null}
               isLoading={isLoading && selectedCandidateId != null}
               error={error}
+              isPaymentRequired={isPaymentRequired}
             />
             {ScrollSpacer}
           </ScrollArea>
@@ -67,6 +69,7 @@ export function HomeView() {
               detail={detail}
               isLoading={isLoading && selectedCandidateId != null}
               error={error}
+              isPaymentRequired={isPaymentRequired}
             />
             {ScrollSpacer}
           </ScrollArea>

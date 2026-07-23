@@ -1,5 +1,6 @@
 import { CandidateProfileCard } from "@/features/home/components/candidate-profile-card";
 import { CandidateProfileCardSkeleton } from "@/features/home/components/candidate-profile-card-skeleton";
+import { CandidateDetailUpgradePrompt } from "@/features/home/components/candidate-detail-upgrade-prompt";
 import type { CandidateProfile } from "@/features/candidates/types/candidate-detail";
 import { cn } from "@/lib/utils";
 
@@ -7,6 +8,8 @@ type CandidateProfileSidebarProps = {
   profile: CandidateProfile | null;
   isLoading?: boolean;
   error?: string | null;
+  /** When true, show the upgrade prompt instead of a red error */
+  isPaymentRequired?: boolean;
   className?: string;
 };
 
@@ -15,12 +18,15 @@ export function CandidateProfileSidebar({
   profile,
   isLoading,
   error,
+  isPaymentRequired,
   className,
 }: CandidateProfileSidebarProps) {
   return (
     <aside className={cn("flex flex-col gap-5", className)}>
       {isLoading ? (
         <CandidateProfileCardSkeleton />
+      ) : isPaymentRequired ? (
+        <CandidateDetailUpgradePrompt compact />
       ) : error ? (
         <SidebarPlaceholder message={error} isError />
       ) : profile ? (
