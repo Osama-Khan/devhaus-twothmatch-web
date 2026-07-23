@@ -13,6 +13,7 @@ export type {
   PaymentMetadata,
   PaymentMethod,
   PaymentPlan,
+  PaymentPlanFeatures,
   PaymentPrice,
   PaymentPriceInterval,
   PaymentPriceType,

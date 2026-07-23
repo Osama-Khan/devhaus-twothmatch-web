@@ -6,7 +6,10 @@ export type PaymentPriceInterval = "day" | "week" | "month" | "year";
 /** Stripe price billing type */
 export type PaymentPriceType = "recurring" | "one_time";
 
-/** Feature limit / reset config on plan product definitions */
+/** Marketing feature bullets from Stripe Product.marketing_features */
+export type PaymentPlanFeatures = string[];
+
+/** Feature limit / reset config on plan entitlement metadata (not marketing copy) */
 export type PaymentFeatureFlag = {
   limit: number | null;
   reset: string;
@@ -102,7 +105,8 @@ export type PaymentPlan = {
   description: string | null;
   active: boolean;
   role: UserRole;
-  features: PaymentFeatureFlags;
+  /** Marketing feature names (JSONB string array from the API) */
+  features: PaymentPlanFeatures | null;
   metadata: PaymentMetadata;
   prices: PaymentPrice[];
 };

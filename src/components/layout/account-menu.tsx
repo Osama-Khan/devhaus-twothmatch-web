@@ -12,10 +12,8 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { isProPlan } from "@/features/payments/utils/is-pro-plan";
-import {
-  openStripeBillingPortal,
-  openStripeCheckout,
-} from "@/features/payments/utils/open-stripe-hosted-page";
+import { openStripeBillingPortal } from "@/features/payments/utils/open-stripe-hosted-page";
+import { openUpgradeDialog } from "@/features/payments/utils/open-upgrade-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -42,18 +40,6 @@ export function AccountMenu({ accountLabel, avatarUrl }: AccountMenuProps) {
   const { entitlement } = useAuthSelector();
   const showProBadge = isProPlan(entitlement?.planCode);
   const [isBillingPending, setIsBillingPending] = useState(false);
-
-  async function handleUpgrade() {
-    if (isBillingPending) {
-      return;
-    }
-
-    setIsBillingPending(true);
-    const navigated = await openStripeCheckout();
-    if (!navigated) {
-      setIsBillingPending(false);
-    }
-  }
 
   async function handleManagePlan() {
     if (isBillingPending) {
@@ -131,14 +117,12 @@ export function AccountMenu({ accountLabel, avatarUrl }: AccountMenuProps) {
               </DropdownMenuItem>
             ) : (
               <DropdownMenuItem
-                disabled={isBillingPending}
-                onSelect={(event) => {
-                  event.preventDefault();
-                  void handleUpgrade();
+                onSelect={() => {
+                  openUpgradeDialog();
                 }}
               >
                 <HugeiconsIcon icon={CrownIcon} strokeWidth={2} />
-                {isBillingPending ? "Opening…" : "Upgrade"}
+                Upgrade
               </DropdownMenuItem>
             )}
           </DropdownMenuGroup>

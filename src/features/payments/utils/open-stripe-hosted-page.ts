@@ -22,11 +22,12 @@ function currentReturnUrl(): string {
  * Opens Stripe-hosted Checkout for TwothMatch Pro.
  * Returns true when the browser is navigating to Stripe.
  */
-export async function openStripeCheckout(): Promise<boolean> {
+export async function openStripeCheckout(priceId?: string): Promise<boolean> {
   const returnUrl = currentReturnUrl();
   const response = await paymentsService.createCheckoutSession({
     successUrl: returnUrl,
     cancelUrl: returnUrl,
+    ...(priceId ? { priceId } : {}),
   });
 
   if (!isSuccessResponse(response)) {
