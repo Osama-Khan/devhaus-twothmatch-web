@@ -44,7 +44,7 @@ export function AccountMenu({ accountLabel, avatarUrl }: AccountMenuProps) {
             type="button"
             variant="ghost"
             className={cn(
-              "flex items-center gap-2 outline-none hover:bg-muted/20! focus:bg-muted/50!",
+              "relative flex items-center gap-2 outline-none hover:bg-muted/20! focus:bg-muted/50!",
               "rounded-lg"
             )}
           >
@@ -62,6 +62,11 @@ export function AccountMenu({ accountLabel, avatarUrl }: AccountMenuProps) {
               strokeWidth={2}
               className="hidden size-2.5 shrink-0 text-foreground sm:block"
             />
+            {showProBadge ? (
+              <Badge variant="soft" className="h-4 px-1.5 text-[10px] font-semibold uppercase absolute right-6 -bottom-2">
+                Pro
+              </Badge>
+            ) : null}
           </Button>
         </DropdownMenuTrigger>
 
@@ -94,12 +99,6 @@ export function AccountMenu({ accountLabel, avatarUrl }: AccountMenuProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {showProBadge ? (
-        <Badge variant="soft" className="h-4 px-1.5 text-[10px] font-semibold uppercase">
-          Pro
-        </Badge>
-      ) : null}
     </div>
   );
 }
