@@ -25,7 +25,10 @@ import {
 } from "@/features/matches/components/match-success-dialog";
 import { matchesService } from "@/features/matches/services/matches-service";
 import type { MatchDecision } from "@/features/matches/types";
-import { isSuccessResponse } from "@/lib/types/response";
+import {
+  isPaymentRequiredResponse,
+  isSuccessResponse,
+} from "@/lib/types/response";
 import { cn } from "@/lib/utils";
 
 const META_ICONS: IconSvgElement[] = [
@@ -74,7 +77,9 @@ export function CandidateListingCard({
     });
 
     if (!isSuccessResponse(response)) {
-      toast.error(response.error);
+      if (!isPaymentRequiredResponse(response)) {
+        toast.error(response.error || "Failed to like candidate");
+      }
       setPendingDecision(null);
       return;
     }
@@ -112,120 +117,126 @@ export function CandidateListingCard({
 
   return (
     <>
-    <article
-      role="button"
-      tabIndex={0}
-      onClick={onSelect}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onSelect?.();
-        }
-      }}
-      className={cn(
-        "cursor-pointer rounded-2xl border bg-card p-5 shadow-sm transition-colors",
-        isSelected ? "border-primary ring-1 ring-primary/20" : "border-border",
-        className
-      )}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          {candidate.isNew ? (
-            <span className="rounded-md bg-accent px-2 py-0.5 text-xs font-bold text-primary uppercase">
-              New
-            </span>
-          ) : null}
-          <Avatar>
-            <AvatarImage src={candidate.avatar} alt={candidate.posterName} />
-            <AvatarFallback>{getInitials(candidate.posterName)}</AvatarFallback>
-          </Avatar>
-          <span className="text-sm font-medium text-muted-foreground">
-            {candidate.posterName}
-          </span>
-        </div>
-        {candidate.matchPercent != null ? (
-          <MatchBadge percent={candidate.matchPercent} />
-        ) : null}
-      </div>
-
-      <h3 className="mt-4 text-lg font-semibold text-foreground">
-        {candidate.title}
-      </h3>
-      <p className="mt-1 text-xl font-semibold text-primary">
-        {candidate.rate}
-      </p>
-
-      {candidate.requirements && candidate.requirements.length > 0 ? (
-        <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-          {candidate.requirements.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      ) : null}
-
-      {candidate.meta.length > 0 ? (
-        <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
-          {candidate.meta.map((item, index) => {
-            const Icon = META_ICONS[index % META_ICONS.length];
-
-            return (
-              <div key={`${item.label}-${item.value}`} className="flex gap-2">
-                <HugeiconsIcon
-                  icon={Icon}
-                  strokeWidth={2}
-                  className="mt-0.5 size-4 shrink-0 text-primary"
-                />
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">{item.label}</p>
-                  <p className="text-sm font-medium text-foreground">
-                    {item.value}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
-
-      <div
-        className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-stretch"
-        onClick={(event) => event.stopPropagation()}
+      <article
+        role="button"
+        tabIndex={0}
+        onClick={onSelect}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onSelect?.();
+          }
+        }}
+        className={cn(
+          "cursor-pointer rounded-2xl border bg-card p-5 shadow-sm transition-colors",
+          isSelected
+            ? "border-primary ring-1 ring-primary/20"
+            : "border-border",
+          className
+        )}
       >
-        <Button
-          type="button"
-          variant="outline"
-          className="sm:flex-1"
-          disabled={isBusy}
-          onClick={() => void handleSwipe("pass")}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2">
+            {candidate.isNew ? (
+              <span className="rounded-md bg-accent px-2 py-0.5 text-xs font-bold text-primary uppercase">
+                New
+              </span>
+            ) : null}
+            <Avatar>
+              <AvatarImage src={candidate.avatar} alt={candidate.posterName} />
+              <AvatarFallback>
+                {getInitials(candidate.posterName)}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm font-medium text-muted-foreground">
+              {candidate.posterName}
+            </span>
+          </div>
+          {candidate.matchPercent != null ? (
+            <MatchBadge percent={candidate.matchPercent} />
+          ) : null}
+        </div>
+
+        <h3 className="mt-4 text-lg font-semibold text-foreground">
+          {candidate.title}
+        </h3>
+        <p className="mt-1 text-xl font-semibold text-primary">
+          {candidate.rate}
+        </p>
+
+        {candidate.requirements && candidate.requirements.length > 0 ? (
+          <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+            {candidate.requirements.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        ) : null}
+
+        {candidate.meta.length > 0 ? (
+          <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
+            {candidate.meta.map((item, index) => {
+              const Icon = META_ICONS[index % META_ICONS.length];
+
+              return (
+                <div key={`${item.label}-${item.value}`} className="flex gap-2">
+                  <HugeiconsIcon
+                    icon={Icon}
+                    strokeWidth={2}
+                    className="mt-0.5 size-4 shrink-0 text-primary"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">
+                      {item.label}
+                    </p>
+                    <p className="text-sm font-medium text-foreground">
+                      {item.value}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+
+        <div
+          className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-stretch"
+          onClick={(event) => event.stopPropagation()}
         >
-          <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
-          {pendingDecision === "pass" ? "Passing…" : "Pass"}
-        </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="sm:flex-1"
+            disabled={isBusy}
+            onClick={() => void handleSwipe("pass")}
+          >
+            <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
+            {pendingDecision === "pass" ? "Passing…" : "Pass"}
+          </Button>
 
-        <ScheduleInterviewButton
-          candidateUserId={candidate.posterUserId}
-          candidateName={candidate.posterName}
-          className="sm:flex-[1.4]"
-        />
+          <ScheduleInterviewButton
+            candidateUserId={candidate.posterUserId}
+            candidateName={candidate.posterName}
+            className="sm:flex-[1.4]"
+          />
 
-        <Button
-          type="button"
-          variant="default"
-          className="sm:flex-1"
-          disabled={isBusy}
-          onClick={() => void handleSwipe("like")}
-        >
-          <HugeiconsIcon icon={FavouriteIcon} strokeWidth={2} />
-          {pendingDecision === "like" ? "Liking…" : "Like"}
-        </Button>
-      </div>
-    </article>
+          <Button
+            type="button"
+            variant="default"
+            className="sm:flex-1"
+            disabled={isBusy}
+            onClick={() => void handleSwipe("like")}
+          >
+            <HugeiconsIcon icon={FavouriteIcon} strokeWidth={2} />
+            {pendingDecision === "like" ? "Liking…" : "Like"}
+          </Button>
+        </div>
+      </article>
 
-    <MatchSuccessDialog
-      open={matchTarget != null}
-      onOpenChange={handleMatchDialogChange}
-      target={matchTarget}
-    />
+      <MatchSuccessDialog
+        open={matchTarget != null}
+        onOpenChange={handleMatchDialogChange}
+        target={matchTarget}
+      />
     </>
   );
 }

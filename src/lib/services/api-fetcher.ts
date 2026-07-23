@@ -9,15 +9,37 @@ import { getAccessToken } from "@/lib/services/token-storage";
 const apiLogger = logger.child("ApiFetcher");
 
 let unauthorizedHandler: (() => void) | null = null;
+let paymentRequiredHandler: ((payload: { message: string }) => void) | null =
+  null;
 
 /** Registers a callback invoked when an authenticated request receives 401. */
 export function registerUnauthorizedHandler(handler: () => void): void {
   unauthorizedHandler = handler;
 }
 
+/**
+ * Registers a callback invoked when an authenticated request receives 402
+ * (payment / subscription required).
+ */
+export function registerPaymentRequiredHandler(
+  handler: ((payload: { message: string }) => void) | null
+): void {
+  paymentRequiredHandler = handler;
+}
+
 function notifyUnauthorized(skipAuth: boolean, status: number): void {
   if (!skipAuth && status === 401) {
     unauthorizedHandler?.();
+  }
+}
+
+function notifyPaymentRequired(
+  skipAuth: boolean,
+  status: number,
+  message: string
+): void {
+  if (!skipAuth && status === 402) {
+    paymentRequiredHandler?.({ message });
   }
 }
 
@@ -98,6 +120,7 @@ export class ApiFetcher {
         const details = extractErrorDetails(json);
         apiLogger.warn("API error", { path, status: response.status, message });
         notifyUnauthorized(skipAuth, response.status);
+        notifyPaymentRequired(skipAuth, response.status, message);
         return details
           ? { error: message, status: response.status, details }
           : { error: message, status: response.status };
@@ -108,6 +131,7 @@ export class ApiFetcher {
           const message = extractErrorMessage(json, response.status);
           const details = extractErrorDetails(json);
           notifyUnauthorized(skipAuth, response.status);
+          notifyPaymentRequired(skipAuth, response.status, message);
           return details
             ? { error: message, status: response.status, details }
             : { error: message, status: response.status };

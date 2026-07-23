@@ -21,7 +21,7 @@ import {
 } from "@/features/interviews/form/interview-schemas";
 import { interviewsService } from "@/features/interviews/services/interviews-service";
 import type { Interview, InterviewMeetingType } from "@/features/interviews/types";
-import { isSuccessResponse } from "@/lib/types/response";
+import { isPaymentRequiredResponse, isSuccessResponse } from "@/lib/types/response";
 import { cn } from "@/lib/utils";
 
 const MEETING_TYPE_OPTIONS: {
@@ -29,10 +29,10 @@ const MEETING_TYPE_OPTIONS: {
   label: string;
   icon: IconSvgElement;
 }[] = [
-  { value: "Video", label: "Video", icon: Video01Icon },
-  { value: "Call", label: "Call", icon: Call02Icon },
-  { value: "In Person", label: "In Person", icon: Building03Icon },
-];
+    { value: "Video", label: "Video", icon: Video01Icon },
+    { value: "Call", label: "Call", icon: Call02Icon },
+    { value: "In Person", label: "In Person", icon: Building03Icon },
+  ];
 
 const LOCATIONS = ["Online", "Office"] as const;
 
@@ -115,7 +115,9 @@ export function ScheduleInterviewForm({
     });
 
     if (!isSuccessResponse(response)) {
-      toast.error(response.error);
+      if (!isPaymentRequiredResponse(response)) {
+        toast.error(response.error || "Failed to schedule interview");
+      }
       return;
     }
 

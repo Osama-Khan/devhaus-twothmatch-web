@@ -4,10 +4,7 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
-} from "@hugeicons/core-free-icons";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/stepper";
 import { PermanentComplianceStep } from "@/features/jobs/components/steps/permanent-compliance-step";
@@ -25,7 +22,10 @@ import {
 } from "@/features/jobs/types/permanent-job-form";
 import { isPermanentJobStepComplete } from "@/features/jobs/utils/is-permanent-job-step-complete";
 import { appRoutes } from "@/lib/routes";
-import { isSuccessResponse } from "@/lib/types/response";
+import {
+  isPaymentRequiredResponse,
+  isSuccessResponse,
+} from "@/lib/types/response";
 import { cn } from "@/lib/utils";
 
 type CreatePermanentJobViewProps = {
@@ -75,7 +75,9 @@ export function CreatePermanentJobView({
       return;
     }
 
-    toast.error(response.error || "Failed to post job");
+    if (!isPaymentRequiredResponse(response)) {
+      toast.error(response.error || "Failed to post job");
+    }
     setIsSubmitting(false);
   };
 
@@ -146,11 +148,7 @@ export function CreatePermanentJobView({
           onClick={goToNextStep}
           disabled={isSubmitting}
         >
-          {isLastStep
-            ? isSubmitting
-              ? "Publishing…"
-              : "Finish"
-            : "Continue"}
+          {isLastStep ? (isSubmitting ? "Publishing…" : "Finish") : "Continue"}
           <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
         </Button>
       </div>

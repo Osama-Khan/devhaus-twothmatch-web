@@ -43,3 +43,10 @@ export function isUnauthorizedResponse(
 ): boolean {
   return isErrorResponse(response) && response.status === 401;
 }
+
+/** True when the API requires a paid subscription (HTTP 402). */
+export function isPaymentRequiredResponse(
+  response: AppResponseType<unknown>
+): response is { error: string; status: 402; details?: AppErrorDetails } {
+  return isErrorResponse(response) && response.status === 402;
+}
