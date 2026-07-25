@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import { getInitials } from "@/features/candidates/utils/format-candidate-display";
+import { UserAvatar } from "@/components/user-avatar";
 import type { ChatListItem } from "@/features/chat/types";
 import {
   formatChatListTime,
@@ -43,12 +38,13 @@ export function ChatThreadItem({
         selected ? "bg-primary/10" : "hover:bg-muted"
       )}
     >
-      <Avatar className="size-12 shrink-0">
-        {chat.otherUser.avatar ? (
-          <AvatarImage src={chat.otherUser.avatar} alt={chat.otherUser.name} />
-        ) : null}
-        <AvatarFallback>{getInitials(chat.otherUser.name)}</AvatarFallback>
-      </Avatar>
+      <UserAvatar
+        userId={chat.otherUser.id}
+        name={chat.otherUser.name}
+        src={chat.otherUser.avatar}
+        showPresence
+        className="size-12 shrink-0"
+      />
 
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">

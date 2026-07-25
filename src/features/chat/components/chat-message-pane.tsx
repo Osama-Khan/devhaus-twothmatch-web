@@ -3,15 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getInitials } from "@/features/candidates/utils/format-candidate-display";
+import { UserAvatar } from "@/components/user-avatar";
 import { ChatComposer } from "@/features/chat/components/chat-composer";
 import { ChatEmptyPane } from "@/features/chat/components/chat-empty-pane";
 import { ChatMessageBubble } from "@/features/chat/components/chat-message-bubble";
@@ -346,12 +341,13 @@ export function ChatMessagePane({
           </Button>
         ) : null}
 
-        <Avatar className="size-10 shrink-0">
-          {activePeer.avatar ? (
-            <AvatarImage src={activePeer.avatar} alt={activePeer.name} />
-          ) : null}
-          <AvatarFallback>{getInitials(activePeer.name)}</AvatarFallback>
-        </Avatar>
+        <UserAvatar
+          userId={activePeer.id}
+          name={activePeer.name}
+          src={activePeer.avatar}
+          showPresence
+          className="size-10 shrink-0"
+        />
 
         <div className="min-w-0 flex-1">
           <h2 className="truncate text-base font-semibold text-foreground">

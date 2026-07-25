@@ -74,7 +74,8 @@ class ChatSocketManager {
   private socket: ChatSocket | null = null;
   private token: string | null = null;
   private readonly threadIds = new Set<string>();
-  private readonly presenceUserIds = new Set<string>();
+  /** Presence subscription refcounts keyed by user id */
+  private readonly presenceUserIds = new Map<string, number>();
   private readonly connectionListeners = new Set<ConnectionListener>();
   private pendingHandlers: PendingHandler[] = [];
 
@@ -224,25 +225,47 @@ class ChatSocketManager {
   /**
    * Subscribe to presence for the given users.
    * Ack includes an initial snapshot. Re-subscribed on reconnect.
+   * Refcounted — safe when multiple UI surfaces watch the same user.
    */
   subscribePresence(userIds: string[]): Promise<PresenceSubscribeAck> {
-    for (const userId of userIds) {
-      this.presenceUserIds.add(userId);
+    const unique = [...new Set(userIds.filter(Boolean))];
+
+    for (const userId of unique) {
+      this.presenceUserIds.set(
+        userId,
+        (this.presenceUserIds.get(userId) ?? 0) + 1
+      );
     }
 
     return this.emitWithAck(ChatSocketClientEvents.presenceSubscribe, {
-      userIds: [...new Set(userIds)],
+      userIds: unique,
     });
   }
 
-  /** Stop receiving presence for the given users. */
+  /**
+   * Stop receiving presence for the given users once the last subscriber
+   * releases them.
+   */
   unsubscribePresence(userIds: string[]): Promise<ChatSocketAck> {
-    for (const userId of userIds) {
-      this.presenceUserIds.delete(userId);
+    const unique = [...new Set(userIds.filter(Boolean))];
+    const toUnsubscribe: string[] = [];
+
+    for (const userId of unique) {
+      const count = this.presenceUserIds.get(userId) ?? 0;
+      if (count <= 1) {
+        this.presenceUserIds.delete(userId);
+        toUnsubscribe.push(userId);
+      } else {
+        this.presenceUserIds.set(userId, count - 1);
+      }
+    }
+
+    if (toUnsubscribe.length === 0) {
+      return Promise.resolve({ ok: true });
     }
 
     return this.emitWithAck(ChatSocketClientEvents.presenceUnsubscribe, {
-      userIds: [...new Set(userIds)],
+      userIds: toUnsubscribe,
     });
   }
 
@@ -280,7 +303,7 @@ class ChatSocketManager {
 
     if (this.presenceUserIds.size > 0) {
       this.socket.emit(ChatSocketClientEvents.presenceSubscribe, {
-        userIds: [...this.presenceUserIds],
+        userIds: [...this.presenceUserIds.keys()],
       });
     }
   }
