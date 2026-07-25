@@ -32,7 +32,7 @@ export type ProfileConfigRef = {
 export type ProfileEducation = {
   id: string;
   userId: string;
-  highestLevel?: string;
+  highestLevel?: ProfileConfigRef | null;
   institution?: string;
   fieldOfStudy?: string;
   startDate?: string;
@@ -48,15 +48,17 @@ export type ProfileWorkExperience = {
   startDate?: string;
   endDate?: string | null;
   isCurrent?: boolean;
+  yearsExperience?: number | string | null;
+  professionalRegNumber?: string | null;
 };
 
 /** Candidate work personality row */
 export type ProfilePersonality = {
   id: string;
   userId: string;
-  workingSuperpower?: string;
-  favoriteWorkVibe?: string;
-  tacklingDifficultSituations?: string;
+  workingSuperpowers?: ProfileConfigRef[];
+  favoriteWorkVibes?: ProfileConfigRef[];
+  tacklingDifficultSituation?: ProfileConfigRef | null;
 };
 
 /** Named skill linked to a candidate profile */
@@ -85,10 +87,10 @@ export type ProfileSpecialization = {
 export type ProfileJobPreferences = {
   id: string;
   userId: string;
-  idealJobTitle?: string;
-  lookingFor?: string;
-  jobType?: string;
-  workingPattern?: string;
+  idealJobTitle?: ProfileConfigRef | null;
+  lookingFor?: ProfileConfigRef[];
+  jobTypes?: ProfileConfigRef[];
+  workingPatterns?: ProfileConfigRef[];
   payMin?: number;
   payMax?: number;
   hourlyRate?: string;
@@ -116,13 +118,46 @@ export type ProfileLocation = {
   address: string;
   postcode: string;
   phone: string | null;
-  parking: boolean | null;
-  publicTransport: boolean | null;
+  /** Free-text parking notes from the practice */
+  parking: string | null;
+  /** Free-text public transport notes from the practice */
+  publicTransport: string | null;
   practiceManagerName: string | null;
   email: string | null;
   practiceManagerPhone: string | null;
-  latitude: string;
-  longitude: string;
-  createdAt: string;
-  updatedAt: string;
+  latitude: string | number;
+  longitude: string | number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+/** Practice compliance section from GET `/profile` */
+export type PracticeCompliance = {
+  id: string;
+  userId: string;
+  yearsOfExperience: number | null;
+  documentsRequired: ProfileConfigRef[];
+  skills: ProfileConfigRef[];
+  software: ProfileConfigRef[];
+};
+
+/** Practice culture section from GET `/profile` */
+export type PracticeCulture = {
+  id: string;
+  userId: string;
+  clinicCultureDescriptors: string | null;
+  benefitsOffered: ProfileConfigRef[];
+  workloadStyle: ProfileConfigRef | null;
+};
+
+/** Practice payment section from GET `/profile` */
+export type PracticePayment = {
+  id: string;
+  userId: string;
+  stripeAccountId: string | null;
+  bankAccountDetails: string | null;
+  invoiceEmail: string | null;
+  billingAddress: string | null;
+  defaultLocationRatesPerRole: unknown | null;
+  cancellationPolicy: ProfileConfigRef | null;
 };

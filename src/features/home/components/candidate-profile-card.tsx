@@ -5,10 +5,8 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { CandidateProfile } from "@/features/candidates/types/candidate-detail";
-import {
-  formatLabelValue,
-  getInitials,
-} from "@/features/candidates/utils/format-candidate-display";
+import { getInitials } from "@/features/candidates/utils/format-candidate-display";
+import { formatConfigRefName } from "@/features/profile/utils/format-config-ref";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useMemo } from "react";
@@ -24,6 +22,8 @@ export function CandidateProfileCard({
   className,
 }: CandidateProfileCardProps) {
   const initials = getInitials(profile.fullName);
+  const jobTitleLabel = formatConfigRefName(profile.jobTitle);
+  const statusLabel = formatConfigRefName(profile.currentStatus);
 
   const validatedLinkedinUrl = useMemo(() => {
     let u = profile.linkedinUrl;
@@ -96,12 +96,10 @@ export function CandidateProfileCard({
               ) : null}
             </div>
             <p className="text-sm font-medium text-primary">
-              {profile.jobTitle}
+              {jobTitleLabel ?? "Role not specified"}
             </p>
-            {profile.currentStatus ? (
-              <p className="mt-1 text-sm text-muted-foreground">
-                {formatLabelValue(profile.currentStatus)}
-              </p>
+            {statusLabel ? (
+              <p className="mt-1 text-sm text-muted-foreground">{statusLabel}</p>
             ) : null}
           </div>
         </div>

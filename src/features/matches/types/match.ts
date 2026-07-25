@@ -1,3 +1,5 @@
+import type { ProfileConfigRef } from "@/features/profile/types/profile-shared";
+
 /** What a swipe/like targets */
 export type MatchTargetType = "locum" | "permanent" | "candidate";
 
@@ -39,7 +41,7 @@ export type MatchTargetPreview = {
 
 /**
  * Candidate who liked one of the current user's jobs.
- * `id` is the liked job id; `jobTitle` is that job's role title.
+ * `id` is the actor's candidate profile id.
  */
 export type LikeActorCandidate = {
   /** Actor's candidate profile id */
@@ -47,7 +49,7 @@ export type LikeActorCandidate = {
   userId: string;
   role: "candidate";
   fullName: string;
-  jobTitle: string;
+  jobTitle: ProfileConfigRef | null;
   avatar: string | null;
 };
 
@@ -56,6 +58,7 @@ export type LikeActorPractice = {
   userId: string;
   role: "practice";
   name: string;
+  clinicType?: ProfileConfigRef | null;
   avatar: string | null;
 };
 
@@ -71,14 +74,16 @@ export type LikeTargetCandidatePreview = {
 
 /**
  * Job target on a sent like.
- * `name` / `avatar` are the practice; `jobId` / `jobTitle` identify the listing.
+ * `name` / `avatar` are the practice; `jobTitle` is the listing role/title label.
  */
 export type LikeTargetJobPreview = {
   id: string;
   name: string;
   avatar: string | null;
-  jobId: string;
-  jobTitle: string;
+  clinicType?: ProfileConfigRef | null;
+  /** @deprecated Prefer resolving from nested job payload when present */
+  jobId?: string;
+  jobTitle: string | null;
 };
 
 /** Preview of the liked entity on a sent like */
@@ -88,12 +93,13 @@ export type LikeTargetPreview =
 
 /**
  * Nested job/target on GET `/matches`.
- * Locum and permanent payloads share common fields; type-specific fields are optional.
+ * v2 returns a slim card; optional fields remain for richer payloads.
  */
 export type MatchListTarget = {
   id: string;
-  userId: string;
-  role: string;
+  type?: MatchTargetType;
+  userId?: string;
+  role: ProfileConfigRef | null;
   /** Display location label (city/address string from the API) */
   location?: string | null;
   status: string;
@@ -139,19 +145,19 @@ export type MatchListCandidate = {
   id: string;
   userId: string;
   fullName: string;
-  jobTitle: string;
+  jobTitle: ProfileConfigRef | null;
   isVerified: boolean;
   avatar: string | null;
   gender?: string | null;
   aboutMe?: string | null;
-  currentStatus?: string | null;
+  currentStatus?: ProfileConfigRef | null;
 };
 
 /** Nested practice profile on a mutual match */
 export type MatchListPractice = {
   id: string;
   userId: string;
-  clinicType: string;
+  clinicType: ProfileConfigRef | null;
   isVerified: boolean;
   avatar: string | null;
   name: string;

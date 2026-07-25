@@ -1,3 +1,5 @@
+import type { ProfileConfigRef } from "@/features/profile/types/profile-shared";
+
 /** Shared location payload on candidate browse cards */
 export type FeedCandidateLocation = {
   address: string;
@@ -29,8 +31,8 @@ export type FeedCandidateBase = {
   userId: string;
   fullName: string;
   avatar: string;
-  jobTitle: string;
-  workingPattern: string;
+  jobTitle: ProfileConfigRef | null;
+  workingPatterns: ProfileConfigRef[];
   distanceMiles: number;
   location: FeedCandidateLocation;
 };

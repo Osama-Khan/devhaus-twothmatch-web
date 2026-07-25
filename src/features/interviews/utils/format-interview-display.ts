@@ -5,6 +5,7 @@ import type {
   InterviewStatus,
   InterviewViewerRole,
 } from "@/features/interviews/types";
+import { formatConfigRefName } from "@/features/profile/utils/format-config-ref";
 
 /** Display fields derived from an interview for the listing card */
 export type InterviewCardDisplay = {
@@ -116,20 +117,28 @@ export function getInterviewCardDisplay(
     name =
       nonEmpty(interview.Candidate.CandidateProfile?.fullName) ?? "Candidate";
     avatar = interview.Candidate.avatar;
-    subtitle = nonEmpty(interview.Candidate.CandidateProfile?.jobTitle);
+    subtitle = formatConfigRefName(
+      interview.Candidate.CandidateProfile?.jobTitle
+    );
   } else if (role === "candidate" && interview.Practice) {
     name = nonEmpty(interview.Practice.fullName) ?? "Practice";
     avatar = interview.Practice.avatar ?? null;
-    subtitle = nonEmpty(interview.Practice.PracticeProfile?.clinicType);
+    subtitle = formatConfigRefName(
+      interview.Practice.PracticeProfile?.clinicType
+    );
   } else if (interview.Candidate) {
     name =
       nonEmpty(interview.Candidate.CandidateProfile?.fullName) ?? "Candidate";
     avatar = interview.Candidate.avatar;
-    subtitle = nonEmpty(interview.Candidate.CandidateProfile?.jobTitle);
+    subtitle = formatConfigRefName(
+      interview.Candidate.CandidateProfile?.jobTitle
+    );
   } else if (interview.Practice) {
     name = nonEmpty(interview.Practice.fullName) ?? "Practice";
     avatar = interview.Practice.avatar ?? null;
-    subtitle = nonEmpty(interview.Practice.PracticeProfile?.clinicType);
+    subtitle = formatConfigRefName(
+      interview.Practice.PracticeProfile?.clinicType
+    );
   }
 
   const rescheduleRequestLabel =

@@ -34,7 +34,7 @@ export function PermanentJobBasicsStep({
       <ConfigIdSelect
         id="permanent-role"
         label="Role"
-        configType={ConfigType.JOB_CREATION_ROLES}
+        configType={ConfigType.JOB_TITLES}
         value={data.roleId}
         onValueChange={(value) => onChange("roleId", value)}
         required

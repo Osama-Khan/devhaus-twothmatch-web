@@ -9,6 +9,7 @@ import {
   formatMatchDate,
   formatMatchTargetTypeLabel,
 } from "@/features/matches/utils/format-match-display";
+import { formatConfigRefName } from "@/features/profile/utils/format-config-ref";
 
 /** Display fields derived from a like for the listing card */
 export type LikeCardDisplay = {
@@ -26,11 +27,11 @@ function nonEmpty(value: string | null | undefined): string | null {
   return trimmed ? trimmed : null;
 }
 
-/** True when a sent-like target is a job listing (has `jobId` + `jobTitle`). */
+/** True when a sent-like target is a job listing (includes `jobTitle`). */
 export function isLikeTargetJob(
   target: LikeTargetPreview
 ): target is LikeTargetJobPreview {
-  return "jobId" in target && typeof target.jobId === "string";
+  return "jobTitle" in target;
 }
 
 /** Display name for a like actor (candidate `fullName` or practice `name`). */
@@ -67,7 +68,7 @@ export function formatLikeBadgeText(like: LikeListItem): string {
 
     const role =
       like.actor.role === "candidate"
-        ? nonEmpty(like.actor.jobTitle)
+        ? formatConfigRefName(like.actor.jobTitle)
         : null;
 
     return `${name} liked ${role ?? formatMatchTargetTypeLabel(like.targetType)} Job posted by you`;
@@ -101,7 +102,7 @@ export function getLikeCardDisplay(like: LikeListItem): LikeCardDisplay {
       return {
         name: getLikeActorName(like.actor),
         avatar: like.actor.avatar,
-        subtitle: nonEmpty(like.actor.jobTitle),
+        subtitle: formatConfigRefName(like.actor.jobTitle),
         targetType: like.targetType,
         badgeText: formatLikeBadgeText(like),
         likedAtLabel: formatMatchDate(like.createdAt),

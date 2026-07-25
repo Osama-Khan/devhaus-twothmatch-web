@@ -4,10 +4,11 @@ import type {
   LocumCandidate,
   PermanentCandidate,
 } from "@/features/home/types/feed-candidates";
+import { formatDisplayDate } from "@/features/candidates/utils/format-candidate-display";
 import {
-  formatDisplayDate,
-  formatLabelValue,
-} from "@/features/candidates/utils/format-candidate-display";
+  formatConfigRefName,
+  formatConfigRefNames,
+} from "@/features/profile/utils/format-config-ref";
 
 /** Format distance in miles for feed card meta rows */
 function formatDistanceMiles(distanceMiles: number): string {
@@ -31,7 +32,7 @@ export function mapLocumCandidateToFeedListing(
     isNew: false,
     posterName: candidate.fullName,
     avatar: candidate.avatar,
-    title: candidate.jobTitle,
+    title: formatConfigRefName(candidate.jobTitle) ?? "Candidate",
     rate: `£${candidate.rate.hourlyRate}/hr`,
     meta: [
       {
@@ -47,7 +48,8 @@ export function mapLocumCandidateToFeedListing(
       },
       {
         label: "Working pattern",
-        value: formatLabelValue(candidate.workingPattern),
+        value:
+          formatConfigRefNames(candidate.workingPatterns) ?? "Not specified",
       },
     ],
   };
@@ -67,7 +69,7 @@ export function mapPermanentCandidateToFeedListing(
     isNew: false,
     posterName: candidate.fullName,
     avatar: candidate.avatar,
-    title: candidate.jobTitle,
+    title: formatConfigRefName(candidate.jobTitle) ?? "Candidate",
     rate: salary,
     meta: [
       {
@@ -78,7 +80,8 @@ export function mapPermanentCandidateToFeedListing(
       { label: "Postcode", value: candidate.postcode },
       {
         label: "Working pattern",
-        value: formatLabelValue(candidate.workingPattern),
+        value:
+          formatConfigRefNames(candidate.workingPatterns) ?? "Not specified",
       },
     ],
   };

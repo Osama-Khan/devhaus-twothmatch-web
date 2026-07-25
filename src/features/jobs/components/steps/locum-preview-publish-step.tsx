@@ -45,7 +45,7 @@ export function LocumPreviewPublishStep({
 }: LocumPreviewPublishStepProps) {
   const { user } = useAuthSelector();
   const { locations } = usePracticeLocations();
-  const roleNames = useIdNameMap(ConfigType.JOB_CREATION_ROLES);
+  const roleNames = useIdNameMap(ConfigType.JOB_TITLES);
   const skillNames = useIdNameMap(ConfigType.SKILLS_REQUIRED);
   const softwareNames = useIdNameMap(ConfigType.SOFTWARE_REQUIRED);
   const specialismNames = useIdNameMap(ConfigType.SPECIALISMS);

@@ -10,10 +10,11 @@ import { IconTextRow } from "@/features/home/components/icon-text-row";
 import { CandidateDetailsSidebarSkeleton } from "@/features/home/components/candidate-details-sidebar-skeleton";
 import { CandidateDetailUpgradePrompt } from "@/features/home/components/candidate-detail-upgrade-prompt";
 import type { CandidateDetailResponse } from "@/features/candidates/types/candidate-detail";
+import { formatPayRange } from "@/features/candidates/utils/format-candidate-display";
 import {
-  formatLabelValue,
-  formatPayRange,
-} from "@/features/candidates/utils/format-candidate-display";
+  formatConfigRefName,
+  formatConfigRefNames,
+} from "@/features/profile/utils/format-config-ref";
 import { cn } from "@/lib/utils";
 
 type CandidateDetailsSidebarProps = {
@@ -101,22 +102,24 @@ function CandidateDetailsContent({
             <IconTextRow
               icon={Briefcase07Icon}
               label="Ideal role"
-              value={prefs.idealJobTitle}
+              value={formatConfigRefName(prefs.idealJobTitle) ?? "Not specified"}
             />
             <IconTextRow
               icon={Briefcase07Icon}
               label="Looking for"
-              value={formatLabelValue(prefs.lookingFor)}
+              value={formatConfigRefNames(prefs.lookingFor) ?? "Not specified"}
             />
             <IconTextRow
               icon={Clock01Icon}
               label="Job type"
-              value={prefs.jobType}
+              value={formatConfigRefNames(prefs.jobTypes) ?? "Not specified"}
             />
             <IconTextRow
               icon={Clock01Icon}
               label="Working pattern"
-              value={formatLabelValue(prefs.workingPattern)}
+              value={
+                formatConfigRefNames(prefs.workingPatterns) ?? "Not specified"
+              }
             />
             <IconTextRow
               icon={MoneyBag02Icon}

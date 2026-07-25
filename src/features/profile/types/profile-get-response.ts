@@ -1,4 +1,7 @@
 import type {
+  PracticeCompliance,
+  PracticeCulture,
+  PracticePayment,
   ProfileAvailabilitySlot,
   ProfileCompletionSection,
   ProfileConfigRef,
@@ -32,8 +35,8 @@ export type CandidateProfile = {
   userId: string;
   fullName?: string;
   gender?: string;
-  jobTitle?: string;
-  currentStatus?: string;
+  jobTitle?: ProfileConfigRef | null;
+  currentStatus?: ProfileConfigRef | null;
   linkedinUrl?: string;
   aboutMe?: string;
   avatar?: string | null;
@@ -87,6 +90,9 @@ export type PracticeProfileResponse = {
   userId: string;
   kind: "practice";
   profile?: PracticeProfile;
+  compliance?: PracticeCompliance | null;
+  culture?: PracticeCulture | null;
+  payment?: PracticePayment | null;
   media: ProfileMedia[];
   locations: ProfileLocation[];
   documents: ProfileDocument[];

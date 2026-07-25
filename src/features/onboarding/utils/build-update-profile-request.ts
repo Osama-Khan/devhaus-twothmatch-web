@@ -31,8 +31,13 @@ function buildLocation(data: OnboardingFormData): UpdateProfileLocation {
     location.phone = phone;
   }
 
-  location.parking = data.parking;
-  location.publicTransport = data.publicTransport;
+  if (data.parking) {
+    location.parking = "Available";
+  }
+
+  if (data.publicTransport) {
+    location.publicTransport = "Available";
+  }
 
   const practiceManagerName = optionalString(data.branchManagerName);
   if (practiceManagerName) {

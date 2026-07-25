@@ -1,6 +1,6 @@
 /** Education row for PUT `/profile` — replaces all rows when present */
 export type UpdateProfileEducation = {
-  highestLevel?: string;
+  highestLevelId?: string;
   institution?: string;
   fieldOfStudy?: string;
   startDate?: string;
@@ -35,8 +35,10 @@ export type UpdateProfileLocation = {
   address?: string;
   postcode?: string;
   phone?: string;
-  parking?: boolean;
-  publicTransport?: boolean;
+  /** Free-text parking notes */
+  parking?: string;
+  /** Free-text public transport notes */
+  publicTransport?: string;
   practiceManagerName?: string;
   email?: string;
   practiceManagerPhone?: string;
@@ -46,10 +48,10 @@ export type UpdateProfileLocation = {
 
 /** Partial job preferences object for PUT `/profile` */
 export type UpdateProfileJobPreferences = {
-  idealJobTitle?: string;
-  lookingFor?: string;
-  jobType?: string;
-  workingPattern?: string;
+  idealJobTitleId?: string;
+  lookingForIds?: string[];
+  jobTypeIds?: string[];
+  workingPatternIds?: string[];
   payMin?: number;
   payMax?: number;
   hourlyRate?: number;
@@ -72,6 +74,8 @@ export type UpdateProfileAvailabilitySlot = {
  * Request body for PUT `/profile`.
  * Send only the sections to update; omitted keys are left unchanged.
  * Array sections replace all existing rows when present.
+ *
+ * Config-backed fields use `*Id` / `*Ids` only — legacy label strings are rejected.
  */
 export type UpdateProfileRequest = {
   /** Practice — basic business info */
@@ -84,21 +88,31 @@ export type UpdateProfileRequest = {
   linkedin?: string;
   phoneNumber?: string;
   hideFromPublic?: boolean;
+  /** Practice — compliance */
+  yearsOfExperience?: number;
+  documentsRequiredIds?: string[];
+  /** Practice skills from `skills_required` (candidate skills also use this key) */
+  skillIds?: string[];
+  softwareIds?: string[];
+  /** Practice — culture */
+  clinicCultureDescriptors?: string;
+  benefitsOfferedIds?: string[];
+  workloadStyleId?: string;
+  /** Practice — payment */
+  cancellationPolicyId?: string;
   /** Candidate — basic profile info */
   fullName?: string;
   gender?: string;
-  jobTitle?: string;
-  currentStatus?: string;
+  jobTitleId?: string;
+  currentStatusId?: string;
   linkedinUrl?: string;
   aboutMe?: string;
   educations?: UpdateProfileEducation[];
   workExperiences?: UpdateProfileWorkExperience[];
-  workingSuperpower?: string;
-  favoriteWorkVibe?: string;
-  tacklingDifficultSituations?: string;
-  /** Skill names — replaces all user skills when present */
-  skillIds?: string[];
-  /** Specialization names — replaces all user specializations when present */
+  workingSuperpowerIds?: string[];
+  favoriteWorkVibeIds?: string[];
+  tacklingDifficultSituationId?: string;
+  /** Candidate specializations from `specialisations` */
   specializationIds?: string[];
   media?: UpdateProfileMedia[];
   documents?: UpdateProfileDocument[];

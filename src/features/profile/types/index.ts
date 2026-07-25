@@ -1,4 +1,7 @@
 export type {
+  PracticeCompliance,
+  PracticeCulture,
+  PracticePayment,
   ProfileAvailabilitySlot,
   ProfileCompletionSection,
   ProfileConfigRef,

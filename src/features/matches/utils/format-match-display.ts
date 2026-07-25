@@ -14,6 +14,7 @@ import type {
   MatchListTarget,
   MatchTargetType,
 } from "@/features/matches/types";
+import { formatConfigRefName } from "@/features/profile/utils/format-config-ref";
 import type { UserRole } from "@/lib/types/entities";
 
 /** Icon + label pill in the Job Details section */
@@ -259,7 +260,8 @@ export function getMatchCardDisplay(
   viewerRole: UserRole | undefined
 ): MatchCardDisplay {
   const isPracticeViewer = viewerRole === "practice";
-  const roleLabel = nonEmpty(match.target.role) ?? "";
+  const roleLabel = formatConfigRefName(match.target.role) ?? "";
+  const candidateTitle = formatConfigRefName(match.candidate.jobTitle);
   const hasComplianceDocs =
     Array.isArray(match.target.complianceDocuments) &&
     match.target.complianceDocuments.length > 0;
@@ -272,9 +274,11 @@ export function getMatchCardDisplay(
       ? match.candidate.avatar
       : match.practice.avatar,
     subtitle: isPracticeViewer
-      ? match.candidate.jobTitle || roleLabel
+      ? candidateTitle || roleLabel
       : roleLabel,
-    badgeLabel: isPracticeViewer ? null : nonEmpty(match.practice.clinicType),
+    badgeLabel: isPracticeViewer
+      ? null
+      : formatConfigRefName(match.practice.clinicType),
     targetType: match.targetType,
     score: match.score,
     detailPills: buildDetailPills(match),

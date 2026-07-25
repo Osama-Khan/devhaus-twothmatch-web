@@ -1,11 +1,13 @@
+import type { ProfileConfigRef } from "@/features/profile/types/profile-shared";
+
 /** Candidate profile summary from GET `/candidates/:id` */
 export type CandidateProfile = {
   id: string;
   userId: string;
   fullName: string;
   gender?: string;
-  jobTitle: string;
-  currentStatus?: string;
+  jobTitle: ProfileConfigRef | null;
+  currentStatus?: ProfileConfigRef | null;
   linkedinUrl?: string | null;
   aboutMe?: string | null;
   isVerified: boolean;
@@ -15,7 +17,7 @@ export type CandidateProfile = {
 export type CandidateEducation = {
   id: string;
   userId: string;
-  highestLevel: string;
+  highestLevel: ProfileConfigRef | null;
   institution: string;
   fieldOfStudy: string;
   startDate: string;
@@ -30,16 +32,16 @@ export type CandidateWorkExperience = {
   startDate: string;
   endDate: string | null;
   isCurrent: boolean;
-  yearsExperience: string;
+  yearsExperience: string | number | null;
   professionalRegNumber: string | null;
 };
 
 export type CandidatePersonality = {
   id: string;
   userId: string;
-  workingSuperpower: string;
-  favoriteWorkVibe: string;
-  tacklingDifficultSituations: string;
+  workingSuperpowers: ProfileConfigRef[];
+  favoriteWorkVibes: ProfileConfigRef[];
+  tacklingDifficultSituation: ProfileConfigRef | null;
 };
 
 export type NamedEntity = {
@@ -64,10 +66,10 @@ export type CandidateSpecialization = {
 export type CandidateJobPreferences = {
   id: string;
   userId: string;
-  idealJobTitle: string;
-  lookingFor: string;
-  jobType: string;
-  workingPattern: string;
+  idealJobTitle: ProfileConfigRef | null;
+  lookingFor: ProfileConfigRef[];
+  jobTypes: ProfileConfigRef[];
+  workingPatterns: ProfileConfigRef[];
   payMin: number | null;
   payMax: number | null;
   hourlyRate: string | null;

@@ -1,3 +1,5 @@
+import type { ProfileConfigRef } from "@/features/profile/types/profile-shared";
+
 /** Interview lifecycle status from `/interviews` */
 export type InterviewStatus =
   | "pending"
@@ -18,7 +20,7 @@ export type InterviewViewerRole = "practice" | "candidate";
 export type InterviewCandidateProfile = {
   id: string;
   fullName: string;
-  jobTitle: string;
+  jobTitle: ProfileConfigRef | null;
 };
 
 /** Nested candidate user on interview payloads (practice view) */
@@ -32,7 +34,7 @@ export type InterviewCandidate = {
 /** Nested practice profile on interview payloads (candidate view) */
 export type InterviewPracticeProfile = {
   id: string;
-  clinicType: string;
+  clinicType: ProfileConfigRef | null;
   phoneNumber: string;
 };
 

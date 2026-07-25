@@ -3,7 +3,6 @@ export enum ConfigType {
   IDEAL_JOB_TITLES = "ideal_job_titles",
   SALARY_PREFERENCE_RANGE = "salary_preference_range",
   JOB_TYPES = "job_types",
-  JOB_CREATION_ROLES = "job_creation_roles",
   FAVOURITE_WORK_VIBE = "favourite_work_vibe",
   CANCELLATION_POLICIES = "cancellation_policies",
   WORKING_HOURS = "working_hours",
