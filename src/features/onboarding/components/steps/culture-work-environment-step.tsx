@@ -1,12 +1,12 @@
 "use client";
 
+import { useCallback } from "react";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { OnboardingSelectField } from "@/features/onboarding/components/onboarding-select-field";
-import {
-  BENEFITS_OFFERED_OPTIONS,
-  WORKLOAD_STYLE_OPTIONS,
-} from "@/features/onboarding/constants";
+import { ConfigIdSelect } from "@/features/jobs/components/config-id-select";
+import { ConfigMultiSelect } from "@/features/jobs/components/config-multi-select";
+import { useConfigByType } from "@/features/config/hooks/use-config-by-type";
+import { ConfigType } from "@/features/config/types/config-type";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
 
 /** Step 6 — optional culture, benefits, and workload preferences */
@@ -14,6 +14,17 @@ export function CultureWorkEnvironmentStep({
   data,
   onChange,
 }: OnboardingStepProps) {
+  const { items: workloadOptions } = useConfigByType(ConfigType.WORK_LOAD);
+
+  const handleWorkloadChange = useCallback(
+    (id: string) => {
+      const selected = workloadOptions.find((item) => item.id === id);
+      onChange("workloadStyleId", id);
+      onChange("workloadStyleName", selected?.name ?? "");
+    },
+    [onChange, workloadOptions]
+  );
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
@@ -39,20 +50,20 @@ export function CultureWorkEnvironmentStep({
           />
         </Field>
 
-        <OnboardingSelectField
-          id="benefitsOffered"
+        <ConfigMultiSelect
           label="Benefits Offered"
-          options={BENEFITS_OFFERED_OPTIONS}
-          value={data.benefitsOffered}
-          onValueChange={(value) => onChange("benefitsOffered", value)}
+          configType={ConfigType.BENEFITS_OFFERED}
+          value={data.benefitsOfferedIds}
+          onValueChange={(value) => onChange("benefitsOfferedIds", value)}
         />
 
-        <OnboardingSelectField
+        <ConfigIdSelect
           id="workloadStyle"
           label="Workload style"
-          options={WORKLOAD_STYLE_OPTIONS}
-          value={data.workloadStyle}
-          onValueChange={(value) => onChange("workloadStyle", value)}
+          configType={ConfigType.WORK_LOAD}
+          value={data.workloadStyleId}
+          onValueChange={handleWorkloadChange}
+          placeholder="Select (optional)"
         />
       </div>
     </div>

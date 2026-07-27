@@ -6,6 +6,9 @@ import { Stepper } from "@/components/ui/stepper";
 import { AboutYourBusinessStep } from "@/features/onboarding/components/steps/about-your-business-step";
 import { ContactBrandInfoStep } from "@/features/onboarding/components/steps/contact-brand-info-step";
 import { LocationBranchesStep } from "@/features/onboarding/components/steps/location-branches-step";
+import { ComplianceRequirementsStep } from "@/features/onboarding/components/steps/compliance-requirements-step";
+import { PaymentsInvoicingStep } from "@/features/onboarding/components/steps/payments-invoicing-step";
+import { CultureWorkEnvironmentStep } from "@/features/onboarding/components/steps/culture-work-environment-step";
 import { ProfilePreviewPublishStep } from "@/features/onboarding/components/steps/profile-preview-publish-step";
 import { OnboardingPublishDialog } from "@/features/onboarding/components/onboarding-publish-dialog";
 import { ONBOARDING_TOTAL_STEPS } from "@/features/onboarding/constants";
@@ -26,7 +29,7 @@ import { isOnboardingStepComplete } from "@/features/onboarding/utils/is-onboard
 
 const DONE_STEP_CLOSE_DELAY_MS = 800;
 
-/** Four-step onboarding wizard with shared form state */
+/** Practice onboarding wizard with shared form state */
 export function OnboardingFlow() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -34,7 +37,9 @@ export function OnboardingFlow() {
   const { user } = useAuthSelector();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(createInitialOnboardingFormData);
-  const [validatedSteps, setValidatedSteps] = useState<Set<number>>(() => new Set());
+  const [validatedSteps, setValidatedSteps] = useState<Set<number>>(
+    () => new Set()
+  );
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishStep, setPublishStep] =
     useState<OnboardingPublishStep>("clinic-images");
@@ -137,6 +142,12 @@ export function OnboardingFlow() {
       case 3:
         return <LocationBranchesStep {...stepProps} />;
       case 4:
+        return <ComplianceRequirementsStep {...stepProps} />;
+      case 5:
+        return <PaymentsInvoicingStep {...stepProps} />;
+      case 6:
+        return <CultureWorkEnvironmentStep {...stepProps} />;
+      case 7:
         return (
           <ProfilePreviewPublishStep
             data={formData}

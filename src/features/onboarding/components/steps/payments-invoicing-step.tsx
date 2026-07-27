@@ -1,14 +1,37 @@
 "use client";
 
+import { useCallback } from "react";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ConfigIdSelect } from "@/features/jobs/components/config-id-select";
+import { useConfigByType } from "@/features/config/hooks/use-config-by-type";
+import { ConfigType } from "@/features/config/types/config-type";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
 
-/** Step 5 — Stripe, billing, rates, and cancellation policy */
+/** Step 5 — billing notes and cancellation policy */
 export function PaymentsInvoicingStep({
   data,
   onChange,
+  showValidation = false,
 }: OnboardingStepProps) {
+  const { items: policyOptions } = useConfigByType(
+    ConfigType.CANCELLATION_POLICIES
+  );
+
+  const handlePolicyChange = useCallback(
+    (id: string) => {
+      const selected = policyOptions.find((item) => item.id === id);
+      onChange("cancellationPolicyId", id);
+      onChange("cancellationPolicyName", selected?.name ?? "");
+    },
+    [onChange, policyOptions]
+  );
+
+  const cancellationError =
+    showValidation && data.cancellationPolicyId.trim().length === 0
+      ? "Cancellation policy is required"
+      : null;
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold tracking-tight text-foreground">
@@ -61,23 +84,15 @@ export function PaymentsInvoicingStep({
           />
         </Field>
 
-        <Field>
-          <FieldLabel htmlFor="cancellationPolicy">
-            Cancellation Policy{" "}
-            <span className="font-normal text-muted-foreground">
-              (Hours/Days Notice, Fees)
-            </span>
-          </FieldLabel>
-          <Input
-            id="cancellationPolicy"
-            type="text"
-            placeholder="Enter"
-            value={data.cancellationPolicy}
-            onChange={(event) =>
-              onChange("cancellationPolicy", event.target.value)
-            }
-          />
-        </Field>
+        <ConfigIdSelect
+          id="cancellationPolicy"
+          label="Cancellation Policy"
+          configType={ConfigType.CANCELLATION_POLICIES}
+          value={data.cancellationPolicyId}
+          onValueChange={handlePolicyChange}
+          required
+          error={cancellationError}
+        />
       </div>
     </div>
   );

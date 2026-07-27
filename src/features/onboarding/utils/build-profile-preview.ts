@@ -17,37 +17,62 @@ export type ProfilePreviewModel = {
   photoCount: number;
 };
 
+/** Resolved config labels for id-backed onboarding fields */
+export type ProfilePreviewLabels = {
+  documentNames: string[];
+  skillNames: string[];
+  softwareNames: string[];
+  benefitNames: string[];
+};
+
 function withFallback(value: string, fallback: string): string {
   return value.trim() || fallback;
 }
 
-function buildRequirements(data: OnboardingFormData): string[] {
+function joinNames(names: string[]): string {
+  return names.map((name) => name.trim()).filter(Boolean).join(", ");
+}
+
+function buildRequirements(
+  data: OnboardingFormData,
+  labels: ProfilePreviewLabels
+): string[] {
   const items: string[] = [];
+  const documents = joinNames(labels.documentNames);
+  const skills = joinNames(labels.skillNames);
+  const software = joinNames(labels.softwareNames);
 
-  if (data.documentsRequired.trim()) {
-    items.push(`${data.documentsRequired} required.`);
+  if (documents) {
+    items.push(`${documents} required.`);
   }
 
-  if (data.yearsOfExperience.trim()) {
-    items.push(`${data.yearsOfExperience} experience preferred.`);
+  if (skills) {
+    items.push(`${skills} proficiency required.`);
   }
 
-  if (data.skillsSoftwareRequired.trim()) {
-    items.push(`${data.skillsSoftwareRequired} proficiency required.`);
+  if (software) {
+    items.push(`${software} proficiency required.`);
   }
 
   if (data.clinicCultureDescriptors.trim()) {
     items.push(data.clinicCultureDescriptors.trim());
   }
 
-  if (data.cancellationPolicy.trim()) {
-    items.push(`Cancellation policy: ${data.cancellationPolicy.trim()}.`);
+  if (data.cancellationPolicyName.trim()) {
+    items.push(
+      `Cancellation policy: ${data.cancellationPolicyName.trim()}.`
+    );
   }
 
   return items;
 }
 
-function buildMeta(data: OnboardingFormData): ProfilePreviewMetaItem[] {
+function buildMeta(
+  data: OnboardingFormData,
+  labels: ProfilePreviewLabels
+): ProfilePreviewMetaItem[] {
+  const benefits = joinNames(labels.benefitNames);
+
   const items: ProfilePreviewMetaItem[] = [
     {
       label: "Location",
@@ -74,11 +99,11 @@ function buildMeta(data: OnboardingFormData): ProfilePreviewMetaItem[] {
     },
     {
       label: "Benefits",
-      value: withFallback(data.benefitsOffered, "Not specified"),
+      value: withFallback(benefits, "Not specified"),
     },
     {
       label: "Workload",
-      value: withFallback(data.workloadStyle, "Not specified"),
+      value: withFallback(data.workloadStyleName, "Not specified"),
     },
   ];
 
@@ -90,7 +115,13 @@ function buildMeta(data: OnboardingFormData): ProfilePreviewMetaItem[] {
  */
 export function buildProfilePreview(
   data: OnboardingFormData,
-  practiceName: string
+  practiceName: string,
+  labels: ProfilePreviewLabels = {
+    documentNames: [],
+    skillNames: [],
+    softwareNames: [],
+    benefitNames: [],
+  }
 ): ProfilePreviewModel {
   const name = withFallback(data.clinicName || practiceName, "Your Practice");
   const locationSummary = [data.address, data.postcode]
@@ -102,8 +133,8 @@ export function buildProfilePreview(
     practiceName: name,
     locationSummary: withFallback(locationSummary, "Location not set"),
     rate: withFallback(data.defaultLocumRates, "Rates not set"),
-    requirements: buildRequirements(data),
-    meta: buildMeta(data),
+    requirements: buildRequirements(data, labels),
+    meta: buildMeta(data, labels),
     hasLogo: data.logoFileName !== "Choose File",
     logoInitial: name.charAt(0).toUpperCase(),
     photoCount: data.clinicPictureCount,

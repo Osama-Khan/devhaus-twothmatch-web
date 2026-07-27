@@ -26,16 +26,24 @@ export type OnboardingFormData = {
   branchManagerName: string;
   branchManagerContact: string;
   branchManagerEmail: string;
-  documentsRequired: string;
-  yearsOfExperience: string;
-  skillsSoftwareRequired: string;
+  /** Config ids from `documents_required` */
+  documentsRequiredIds: string[];
+  /** Config ids from `skills_required` */
+  skillIds: string[];
+  /** Config ids from `software_required` */
+  softwareIds: string[];
   stripeBankDetails: string;
   invoiceEmailBilling: string;
   defaultLocumRates: string;
-  cancellationPolicy: string;
+  /** Config id from `cancellation_policies` */
+  cancellationPolicyId: string;
+  cancellationPolicyName: string;
   clinicCultureDescriptors: string;
-  benefitsOffered: string;
-  workloadStyle: string;
+  /** Config ids from `benefits_offered` */
+  benefitsOfferedIds: string[];
+  /** Config id from `work_load` */
+  workloadStyleId: string;
+  workloadStyleName: string;
 };
 
 export type OnboardingStepProps = {
@@ -74,15 +82,17 @@ export function createInitialOnboardingFormData(): OnboardingFormData {
     branchManagerName: "",
     branchManagerContact: "",
     branchManagerEmail: "",
-    documentsRequired: "",
-    yearsOfExperience: "",
-    skillsSoftwareRequired: "",
+    documentsRequiredIds: [],
+    skillIds: [],
+    softwareIds: [],
     stripeBankDetails: "",
     invoiceEmailBilling: "",
     defaultLocumRates: "",
-    cancellationPolicy: "",
+    cancellationPolicyId: "",
+    cancellationPolicyName: "",
     clinicCultureDescriptors: "",
-    benefitsOffered: "",
-    workloadStyle: "",
+    benefitsOfferedIds: [],
+    workloadStyleId: "",
+    workloadStyleName: "",
   };
 }

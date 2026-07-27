@@ -76,7 +76,29 @@ export function buildUpdateProfileRequest(
     phoneNumber: data.phoneNumber.trim(),
     hideFromPublic: data.hideFromPublic,
     locations: [buildLocation(data)],
+    documentsRequiredIds: data.documentsRequiredIds,
+    skillIds: data.skillIds,
+    softwareIds: data.softwareIds,
   };
+
+  if (data.cancellationPolicyId.trim()) {
+    request.cancellationPolicyId = data.cancellationPolicyId;
+  }
+
+  const clinicCultureDescriptors = optionalString(
+    data.clinicCultureDescriptors
+  );
+  if (clinicCultureDescriptors) {
+    request.clinicCultureDescriptors = clinicCultureDescriptors;
+  }
+
+  if (data.benefitsOfferedIds.length > 0) {
+    request.benefitsOfferedIds = data.benefitsOfferedIds;
+  }
+
+  if (data.workloadStyleId.trim()) {
+    request.workloadStyleId = data.workloadStyleId;
+  }
 
   const instagram = optionalString(data.instagram);
   if (instagram) {

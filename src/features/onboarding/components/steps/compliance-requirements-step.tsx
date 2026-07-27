@@ -1,18 +1,20 @@
 "use client";
 
-import { OnboardingSelectField } from "@/features/onboarding/components/onboarding-select-field";
-import {
-  DOCUMENTS_REQUIRED_OPTIONS,
-  SKILLS_SOFTWARE_OPTIONS,
-  YEARS_OF_EXPERIENCE_OPTIONS,
-} from "@/features/onboarding/constants";
+import { ConfigMultiSelect } from "@/features/jobs/components/config-multi-select";
+import { ConfigType } from "@/features/config/types/config-type";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
 
-/** Step 4 — documents, experience, and skills requirements */
+/** Step 4 — documents, skills, and software requirements */
 export function ComplianceRequirementsStep({
   data,
   onChange,
+  showValidation = false,
 }: OnboardingStepProps) {
+  const documentsError =
+    showValidation && data.documentsRequiredIds.length === 0
+      ? "Select at least one required document"
+      : null;
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold tracking-tight text-foreground">
@@ -20,26 +22,25 @@ export function ComplianceRequirementsStep({
       </h1>
 
       <div className="flex flex-col gap-5">
-        <OnboardingSelectField
-          id="documentsRequired"
+        <ConfigMultiSelect
           label="Documents Required"
-          options={DOCUMENTS_REQUIRED_OPTIONS}
-          value={data.documentsRequired}
-          onValueChange={(value) => onChange("documentsRequired", value)}
+          configType={ConfigType.DOCUMENTS_REQUIRED}
+          value={data.documentsRequiredIds}
+          onValueChange={(value) => onChange("documentsRequiredIds", value)}
+          required
+          error={documentsError}
         />
-        <OnboardingSelectField
-          id="yearsOfExperience"
-          label="Years of Experience"
-          options={YEARS_OF_EXPERIENCE_OPTIONS}
-          value={data.yearsOfExperience}
-          onValueChange={(value) => onChange("yearsOfExperience", value)}
+        <ConfigMultiSelect
+          label="Skills Required"
+          configType={ConfigType.SKILLS_REQUIRED}
+          value={data.skillIds}
+          onValueChange={(value) => onChange("skillIds", value)}
         />
-        <OnboardingSelectField
-          id="skillsSoftwareRequired"
-          label="Skills/Software Required"
-          options={SKILLS_SOFTWARE_OPTIONS}
-          value={data.skillsSoftwareRequired}
-          onValueChange={(value) => onChange("skillsSoftwareRequired", value)}
+        <ConfigMultiSelect
+          label="Software Required"
+          configType={ConfigType.SOFTWARE_REQUIRED}
+          value={data.softwareIds}
+          onValueChange={(value) => onChange("softwareIds", value)}
         />
       </div>
     </div>

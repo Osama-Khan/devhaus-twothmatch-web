@@ -32,6 +32,13 @@ export function isOnboardingStepComplete(
         }).success &&
         onboardingPostcodeSchema.safeParse(data.postcode).success
       );
+    case 4:
+      return data.documentsRequiredIds.length > 0;
+    case 5:
+      return data.cancellationPolicyId.trim().length > 0;
+    case 6:
+      // Culture step is optional
+      return true;
     default:
       return true;
   }
