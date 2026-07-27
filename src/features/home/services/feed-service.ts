@@ -25,6 +25,9 @@ function buildCandidatesPath(
   if (params.limit != null) {
     searchParams.set("limit", String(params.limit));
   }
+  if (params.roleId) {
+    searchParams.set("roleId", params.roleId);
+  }
   if (params.workingPattern) {
     searchParams.set("workingPattern", params.workingPattern);
   }

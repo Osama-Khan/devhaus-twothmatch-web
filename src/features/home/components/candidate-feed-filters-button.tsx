@@ -1,13 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { FilterHorizontalIcon } from "@hugeicons/core-free-icons";
+import {
+  ArrowDown01Icon,
+  FilterHorizontalIcon,
+} from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
 } from "@/components/ui/collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Popover,
   PopoverContent,
@@ -18,6 +28,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { LeafletMap } from "@/features/location/components/leaflet-map";
+import { useConfigByType } from "@/features/config/hooks/use-config-by-type";
+import { ConfigType } from "@/features/config/types/config-type";
 import { profileService } from "@/features/profile/services/profile-service";
 import { isPracticeProfileResponse } from "@/features/profile/types/profile-get-response";
 import type {
@@ -26,7 +38,8 @@ import type {
 } from "@/features/home/types/feed-candidates";
 import { hasCoordinates } from "@/features/location/utils/has-coordinates";
 import { isSuccessResponse } from "@/lib/types/response";
-import { cn } from "@/lib/utils";
+
+const ANY_FILTER_VALUE = "__any__";
 
 const WORKING_PATTERN_OPTIONS = [
   "Monday To Friday",
@@ -52,6 +65,7 @@ type ProfileCoordinates = {
 };
 
 type DraftFilters = {
+  roleId: string | null;
   workingPattern: string | null;
   payRange: [number, number];
   searchRadius: number;
@@ -81,6 +95,7 @@ function createDraftFromValue(
   const bounds = getPayBounds(activeTab);
 
   return {
+    roleId: value?.roleId ?? null,
     workingPattern: value?.workingPattern ?? null,
     payRange: [
       value?.payRangeMin ?? bounds.min,
@@ -119,6 +134,10 @@ function buildAppliedFilters(
   const bounds = getPayBounds(activeTab);
   const [payMin, payMax] = draft.payRange;
 
+  if (draft.roleId) {
+    filters.roleId = draft.roleId;
+  }
+
   if (draft.workingPattern) {
     filters.workingPattern = draft.workingPattern;
   }
@@ -144,6 +163,89 @@ function buildAppliedFilters(
   return filters;
 }
 
+type FilterDropdownOption = {
+  value: string;
+  label: string;
+};
+
+type FilterDropdownProps = {
+  label: string;
+  value: string | null;
+  options: FilterDropdownOption[];
+  placeholder: string;
+  emptyLabel?: string;
+  isLoading?: boolean;
+  error?: string | null;
+  onValueChange: (value: string | null) => void;
+};
+
+/** Single-select filter dropdown using the shared DropdownMenu primitive */
+function FilterDropdown({
+  label,
+  value,
+  options,
+  placeholder,
+  emptyLabel = "No options available.",
+  isLoading = false,
+  error = null,
+  onValueChange,
+}: FilterDropdownProps) {
+  const selectedLabel =
+    options.find((option) => option.value === value)?.label ?? placeholder;
+
+  return (
+    <section className="flex flex-col gap-3">
+      <h3 className="text-sm font-semibold text-foreground">{label}</h3>
+      {isLoading ? (
+        <p className="text-xs text-muted-foreground">Loading…</p>
+      ) : error ? (
+        <p className="text-xs text-destructive">{error}</p>
+      ) : options.length === 0 ? (
+        <p className="text-xs text-muted-foreground">{emptyLabel}</p>
+      ) : (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 w-full justify-between border-border px-3 font-medium text-foreground"
+            >
+              <span className="truncate">{selectedLabel}</span>
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                strokeWidth={2}
+                className="size-4 shrink-0 text-muted-foreground"
+              />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            className="w-(--radix-dropdown-menu-trigger-width) max-h-64"
+          >
+            <DropdownMenuRadioGroup
+              value={value ?? ANY_FILTER_VALUE}
+              onValueChange={(nextValue) =>
+                onValueChange(
+                  nextValue === ANY_FILTER_VALUE ? null : nextValue
+                )
+              }
+            >
+              <DropdownMenuRadioItem value={ANY_FILTER_VALUE}>
+                {placeholder}
+              </DropdownMenuRadioItem>
+              {options.map((option) => (
+                <DropdownMenuRadioItem key={option.value} value={option.value}>
+                  {option.label}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+    </section>
+  );
+}
+
 /** Filter icon button with popover for candidate feed search filters */
 export function CandidateFeedFiltersButton({
   activeTab,
@@ -157,6 +259,11 @@ export function CandidateFeedFiltersButton({
     createDraftFromValue(value, activeTab, null)
   );
   const previousActiveTabRef = useRef(activeTab);
+  const {
+    items: roleOptions,
+    isLoading: isLoadingRoles,
+    error: rolesError,
+  } = useConfigByType(ConfigType.JOB_TITLES);
 
   const payBounds = getPayBounds(activeTab);
   const hasLocation = hasCoordinates({
@@ -262,6 +369,24 @@ export function CandidateFeedFiltersButton({
       ? `${formatPayValue(draft.payRange[0], activeTab)} - ${formatPayValue(draft.payRange[1], activeTab)} per hour`
       : `${formatPayValue(draft.payRange[0], activeTab)} - ${formatPayValue(draft.payRange[1], activeTab)}`;
 
+  const roleDropdownOptions = useMemo(
+    () =>
+      roleOptions.map((role) => ({
+        value: role.id,
+        label: role.name,
+      })),
+    [roleOptions]
+  );
+
+  const workingPatternOptions = useMemo(
+    () =>
+      WORKING_PATTERN_OPTIONS.map((pattern) => ({
+        value: pattern,
+        label: pattern,
+      })),
+    []
+  );
+
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
@@ -288,37 +413,28 @@ export function CandidateFeedFiltersButton({
 
         <ScrollArea viewportClassName="max-h-96">
           <div className="flex flex-col gap-6 px-4 py-4">
-            <section className="flex flex-col gap-3">
-              <h3 className="text-sm font-semibold text-foreground">
-                Preferred Working Pattern
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {WORKING_PATTERN_OPTIONS.map((pattern) => {
-                  const isSelected = draft.workingPattern === pattern;
+            <FilterDropdown
+              label="Role"
+              value={draft.roleId}
+              options={roleDropdownOptions}
+              placeholder="Any role"
+              emptyLabel="No roles available."
+              isLoading={isLoadingRoles}
+              error={rolesError}
+              onValueChange={(roleId) =>
+                setDraft((current) => ({ ...current, roleId }))
+              }
+            />
 
-                  return (
-                    <button
-                      key={pattern}
-                      type="button"
-                      onClick={() =>
-                        setDraft((current) => ({
-                          ...current,
-                          workingPattern: isSelected ? null : pattern,
-                        }))
-                      }
-                      className={cn(
-                        "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
-                        isSelected
-                          ? "border-primary bg-primary/5 text-primary"
-                          : "border-border bg-card text-foreground hover:bg-muted"
-                      )}
-                    >
-                      {pattern}
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
+            <FilterDropdown
+              label="Preferred Working Pattern"
+              value={draft.workingPattern}
+              options={workingPatternOptions}
+              placeholder="Any working pattern"
+              onValueChange={(workingPattern) =>
+                setDraft((current) => ({ ...current, workingPattern }))
+              }
+            />
 
             <section className="flex flex-col gap-3">
               <h3 className="text-sm font-semibold text-foreground">

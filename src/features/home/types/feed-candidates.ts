@@ -71,6 +71,7 @@ export type BrowsePermanentCandidatesResponse = {
 export type BrowseFeedCandidatesParams = {
   page?: number;
   limit?: number;
+  roleId?: string;
   workingPattern?: string;
   payRangeMin?: number;
   payRangeMax?: number;
@@ -86,6 +87,7 @@ export type CandidateFeedTab = "locum" | "permanent";
 
 /** Applied candidate feed filters emitted by the filters popover */
 export type CandidateFeedFilters = {
+  roleId?: string;
   workingPattern?: string;
   payRangeMin?: number;
   payRangeMax?: number;
