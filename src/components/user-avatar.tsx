@@ -58,7 +58,7 @@ export function UserAvatar({
           title={isOnline ? "Online" : "Offline"}
           className={cn(
             "ring-background",
-            isOnline ? "bg-chart-2" : "bg-muted-foreground"
+            isOnline ? "bg-success" : "bg-muted"
           )}
         />
       ) : null}
