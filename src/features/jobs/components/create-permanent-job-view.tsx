@@ -4,9 +4,15 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
+import {
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  InformationCircleIcon,
+} from "@hugeicons/core-free-icons";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/stepper";
+import { AiJdPublishingDialog } from "@/features/jobs/components/ai-jd-publishing-dialog";
 import { PermanentComplianceStep } from "@/features/jobs/components/steps/permanent-compliance-step";
 import { PermanentInterviewStep } from "@/features/jobs/components/steps/permanent-interview-step";
 import { PermanentJobBasicsStep } from "@/features/jobs/components/steps/permanent-job-basics-step";
@@ -43,6 +49,8 @@ export function CreatePermanentJobView({
     () => new Set()
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAiJdPublishingDialog, setShowAiJdPublishingDialog] =
+    useState(false);
 
   const updateField = useCallback(
     <K extends keyof PermanentJobFormData>(
@@ -53,6 +61,10 @@ export function CreatePermanentJobView({
     },
     []
   );
+
+  const goToMyJobs = () => {
+    router.push(appRoutes.nav.myJobs._self.path);
+  };
 
   const goToPreviousStep = () => {
     setCurrentStep((step) => Math.max(step - 1, 1));
@@ -70,8 +82,14 @@ export function CreatePermanentJobView({
     );
 
     if (isSuccessResponse(response)) {
+      if (formData.useAiJd) {
+        setShowAiJdPublishingDialog(true);
+        setIsSubmitting(false);
+        return;
+      }
+
       toast.success("Job posted successfully");
-      router.push(appRoutes.nav.myJobs._self.path);
+      goToMyJobs();
       return;
     }
 
@@ -130,6 +148,16 @@ export function CreatePermanentJobView({
         currentStep={currentStep}
         totalSteps={CREATE_PERMANENT_JOB_TOTAL_STEPS}
       />
+      {isLastStep && formData.useAiJd ? (
+        <Alert
+          variant="default"
+          className="-my-4 border-none bg-primary/10 text-sm text-primary"
+        >
+          <HugeiconsIcon icon={InformationCircleIcon} />
+          Since you are generating the job description with AI, it may take a
+          minute to publish the job.
+        </Alert>
+      ) : null}
       <div className="rounded-3xl bg-card p-6 shadow-lg">{renderStep()}</div>
       <div className="flex flex-row gap-2">
         <Button
@@ -152,6 +180,17 @@ export function CreatePermanentJobView({
           <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
         </Button>
       </div>
+
+      <AiJdPublishingDialog
+        open={showAiJdPublishingDialog}
+        onOpenChange={(open) => {
+          setShowAiJdPublishingDialog(open);
+          if (!open) {
+            goToMyJobs();
+          }
+        }}
+        onConfirm={goToMyJobs}
+      />
     </div>
   );
 }

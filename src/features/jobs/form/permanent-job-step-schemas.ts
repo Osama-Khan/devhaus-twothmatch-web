@@ -17,16 +17,27 @@ export const permanentStep1Schema = z.object({
 });
 
 /** Step 2 — job details */
-export const permanentStep2Schema = z.object({
-  jobTitle: z.string().trim().min(1, "Job title is required"),
-  jobDescription: z.string().trim().min(1, "Job description is required"),
-  skills: z.array(z.string()).min(1, "Select at least one skill"),
-  software: z.array(z.string()).min(1, "Select at least one software"),
-  experienceLevels: z
-    .array(z.string())
-    .min(1, "Select at least one experience level"),
-  specialisms: z.array(z.string()).min(1, "Select at least one specialism"),
-});
+export const permanentStep2Schema = z
+  .object({
+    jobTitle: z.string().trim().min(1, "Job title is required"),
+    jobDescription: z.string(),
+    useAiJd: z.boolean(),
+    skills: z.array(z.string()).min(1, "Select at least one skill"),
+    software: z.array(z.string()).min(1, "Select at least one software"),
+    experienceLevels: z
+      .array(z.string())
+      .min(1, "Select at least one experience level"),
+    specialisms: z.array(z.string()).min(1, "Select at least one specialism"),
+  })
+  .superRefine((value, ctx) => {
+    if (!value.useAiJd && value.jobDescription.trim().length < 1) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Job description is required",
+        path: ["jobDescription"],
+      });
+    }
+  });
 
 /** Step 3 — salary & benefits */
 export const permanentStep3Schema = z
@@ -101,6 +112,7 @@ export function getPermanentStep2FieldError(
   const result = permanentStep2Schema.safeParse({
     jobTitle: data.jobTitle,
     jobDescription: data.jobDescription,
+    useAiJd: data.useAiJd,
     skills: data.skills,
     software: data.software,
     experienceLevels: data.experienceLevels,

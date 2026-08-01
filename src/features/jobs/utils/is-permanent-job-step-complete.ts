@@ -25,6 +25,7 @@ export function isPermanentJobStepComplete(
       return permanentStep2Schema.safeParse({
         jobTitle: data.jobTitle,
         jobDescription: data.jobDescription,
+        useAiJd: data.useAiJd,
         skills: data.skills,
         software: data.software,
         experienceLevels: data.experienceLevels,

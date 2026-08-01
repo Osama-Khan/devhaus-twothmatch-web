@@ -62,6 +62,11 @@ export type PermanentJobFields = {
   /** When true, only candidates with the required docs can apply */
   autoFilterValidDocs?: boolean;
   boostListing?: boolean;
+  /**
+   * When true, the backend generates the job description after publish.
+   * Omit or leave false when the client supplies `jobDescription`.
+   */
+  useAiJd?: boolean;
   status?: JobStatus;
 };
 

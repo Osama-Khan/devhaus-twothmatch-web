@@ -7,6 +7,10 @@ export const CREATE_PERMANENT_JOB_TOTAL_STEPS = 6;
 /** @deprecated Prefer CREATE_LOCUM_JOB_TOTAL_STEPS / CREATE_PERMANENT_JOB_TOTAL_STEPS */
 export const CREATE_JOB_TOTAL_STEPS = CREATE_LOCUM_JOB_TOTAL_STEPS;
 
+/** Inclusive character range required by POST `/ai/jobs/refine-jd` */
+export const REFINE_JD_MIN_CHARS = 100;
+export const REFINE_JD_MAX_CHARS = 1000;
+
 /** Valid job create route types */
 export const CREATE_JOB_TYPES = ["locum", "permanent"] as const;
 

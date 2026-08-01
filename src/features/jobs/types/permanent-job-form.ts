@@ -9,6 +9,8 @@ export type PermanentJobFormData = {
   startDate: string;
   jobTitle: string;
   jobDescription: string;
+  /** When true, backend generates JD after publish (`useAiJd` on create body) */
+  useAiJd: boolean;
   skills: string[];
   software: string[];
   experienceLevels: string[];
@@ -43,6 +45,7 @@ export function createInitialPermanentJobFormData(): PermanentJobFormData {
     startDate: "",
     jobTitle: "",
     jobDescription: "",
+    useAiJd: false,
     skills: [],
     software: [],
     experienceLevels: [],
@@ -72,7 +75,10 @@ export function buildCreatePermanentJobRequest(
     interviewTypeId: data.interviewTypeId || undefined,
     startDate: data.startDate || undefined,
     jobTitle: data.jobTitle.trim() || undefined,
-    jobDescription: data.jobDescription.trim() || undefined,
+    jobDescription: data.useAiJd
+      ? undefined
+      : data.jobDescription.trim() || undefined,
+    useAiJd: data.useAiJd || undefined,
     workingHoursStart: data.workingHoursStart || undefined,
     workingHoursEnd: data.workingHoursEnd || undefined,
     isWorkingHoursFlexible: data.isWorkingHoursFlexible,
