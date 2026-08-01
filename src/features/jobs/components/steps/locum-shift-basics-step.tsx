@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import {
-  Field,
-  FieldError,
-  RequiredFieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, RequiredFieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ConfigIdSelect } from "@/features/jobs/components/config-id-select";
 import { NumberInputField } from "@/features/jobs/components/job-form-fields";
 import { PracticeLocationSelect } from "@/features/jobs/components/practice-location-select";
+import { ShiftTimeStats } from "@/features/jobs/components/shift-time-stats";
 import { ConfigType } from "@/features/config/types/config-type";
 import { getLocumStep1FieldError } from "@/features/jobs/form/locum-job-step-schemas";
 import { usePracticeLocations } from "@/features/jobs/hooks/use-practice-locations";
@@ -128,6 +125,8 @@ export function LocumShiftBasicsStep({
           <FieldError>{timeEndError}</FieldError>
         </Field>
       </div>
+
+      <ShiftTimeStats start={data.timeStart} end={data.timeEnd} />
 
       <NumberInputField
         id="locum-break"

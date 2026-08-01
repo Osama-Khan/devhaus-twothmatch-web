@@ -1,16 +1,13 @@
 "use client";
 
-import {
-  Field,
-  FieldError,
-  RequiredFieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, RequiredFieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ConfigMultiSelect } from "@/features/jobs/components/config-multi-select";
 import {
   BooleanSwitchField,
   NumberInputField,
 } from "@/features/jobs/components/job-form-fields";
+import { ShiftTimeStats } from "@/features/jobs/components/shift-time-stats";
 import { ConfigType } from "@/features/config/types/config-type";
 import { getPermanentStep3FieldError } from "@/features/jobs/form/permanent-job-step-schemas";
 import type { PermanentJobStepProps } from "@/features/jobs/types/permanent-job-form";
@@ -62,9 +59,7 @@ export function PermanentSalaryBenefitsStep({
         onValueChange={(value) => onChange("benefits", value)}
         required
         error={
-          showValidation
-            ? getPermanentStep3FieldError(data, "benefits")
-            : null
+          showValidation ? getPermanentStep3FieldError(data, "benefits") : null
         }
       />
 
@@ -101,6 +96,11 @@ export function PermanentSalaryBenefitsStep({
           <FieldError>{endError}</FieldError>
         </Field>
       </div>
+
+      <ShiftTimeStats
+        start={data.workingHoursStart}
+        end={data.workingHoursEnd}
+      />
 
       <BooleanSwitchField
         id="permanent-flexible"
