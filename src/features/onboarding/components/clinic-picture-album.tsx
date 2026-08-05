@@ -16,16 +16,21 @@ const CLINIC_PICTURE_TILE_CLASS = "size-20 shrink-0 rounded-xl";
 
 type ClinicPictureAlbumProps = {
   files: File[];
+  /** Already-uploaded clinic photo URLs (from resume / prior step save) */
+  persistedUrls?: string[];
   onFilesSelected: (files: FileList) => void;
   onRemove: (index: number) => void;
+  onRemovePersistedUrl?: (index: number) => void;
   className?: string;
 };
 
 /** Clinic photo picker — full dropzone when empty, compact album row when photos exist */
 export function ClinicPictureAlbum({
   files,
+  persistedUrls = [],
   onFilesSelected,
   onRemove,
+  onRemovePersistedUrl,
   className,
 }: ClinicPictureAlbumProps) {
   const addInputRef = useRef<HTMLInputElement>(null);
@@ -40,7 +45,9 @@ export function ClinicPictureAlbum({
     };
   }, [files]);
 
-  const canAddMore = files.length < MAX_CLINIC_PICTURES;
+  const totalCount = persistedUrls.length + files.length;
+  const canAddMore = totalCount < MAX_CLINIC_PICTURES;
+  const isEmpty = totalCount === 0;
 
   const handleAddMoreChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selected = event.target.files;
@@ -50,7 +57,7 @@ export function ClinicPictureAlbum({
     event.target.value = "";
   };
 
-  if (files.length === 0) {
+  if (isEmpty) {
     return (
       <OnboardingUploadZone
         className={className}
@@ -70,6 +77,31 @@ export function ClinicPictureAlbum({
       )}
     >
       <div className="w-4 shrink-0"></div>
+      {persistedUrls.map((url, index) => (
+        <div key={`persisted-${url}-${index}`} className="relative shrink-0">
+          {/* eslint-disable-next-line @next/next/no-img-element -- remote clinic photo URLs */}
+          <img
+            src={url}
+            alt={`Clinic photo ${index + 1}`}
+            className={cn(
+              CLINIC_PICTURE_TILE_CLASS,
+              "border border-border object-cover"
+            )}
+          />
+          {onRemovePersistedUrl ? (
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon-xs"
+              aria-label={`Remove clinic photo ${index + 1}`}
+              className="absolute -top-1.5 -right-1.5 shadow-sm"
+              onClick={() => onRemovePersistedUrl(index)}
+            >
+              <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
+            </Button>
+          ) : null}
+        </div>
+      ))}
       {files.map((file, index) => (
         <div
           key={`${file.name}-${file.lastModified}-${index}`}

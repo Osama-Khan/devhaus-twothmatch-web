@@ -7,8 +7,12 @@ export type OnboardingFormData = {
   clinicTypeName: string;
   logoFileName: string;
   logoFile: File | null;
+  /** Persisted logo URL from a prior step save or GET `/profile` */
+  logoUrl: string | null;
   clinicPictureCount: number;
   clinicPictureFiles: File[];
+  /** Persisted clinic photo URLs from prior saves or GET `/profile` */
+  clinicPictureUrls: string[];
   clinicWebsite: string;
   instagram: string;
   facebook: string;
@@ -38,6 +42,8 @@ export type OnboardingFormData = {
   /** Config id from `cancellation_policies` */
   cancellationPolicyId: string;
   cancellationPolicyName: string;
+  /** Practice about / bio text (PUT `about`) */
+  about: string;
   clinicCultureDescriptors: string;
   /** Config ids from `benefits_offered` */
   benefitsOfferedIds: string[];
@@ -63,8 +69,10 @@ export function createInitialOnboardingFormData(): OnboardingFormData {
     clinicTypeName: "",
     logoFileName: "Choose File",
     logoFile: null,
+    logoUrl: null,
     clinicPictureCount: 0,
     clinicPictureFiles: [],
+    clinicPictureUrls: [],
     clinicWebsite: "",
     instagram: "",
     facebook: "",
@@ -90,6 +98,7 @@ export function createInitialOnboardingFormData(): OnboardingFormData {
     defaultLocumRates: "",
     cancellationPolicyId: "",
     cancellationPolicyName: "",
+    about: "",
     clinicCultureDescriptors: "",
     benefitsOfferedIds: [],
     workloadStyleId: "",

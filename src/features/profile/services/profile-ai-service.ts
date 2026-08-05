@@ -9,15 +9,13 @@ import {
 import { appEnv } from "@/lib/utils/env";
 import { logger } from "@/lib/utils/logger";
 
-const aiLogger = logger.child("JobsAiService");
+const aiLogger = logger.child("ProfileAiService");
 
-/** Callbacks for SSE from job description AI endpoints */
-export type JobDescriptionStreamHandlers = {
-  /** Incremental text chunk from `event: delta` */
+/** Callbacks for SSE from profile about AI endpoints */
+export type AboutStreamHandlers = {
   onDelta: (text: string) => void;
-  /** Final description from `event: done` */
-  onDone: (jobDescription: string) => void;
-  /** Stream or pre-stream error */
+  /** Final about text (practice `about` or candidate `aboutMe`) */
+  onDone: (aboutText: string) => void;
   onError: (message: string) => void;
 };
 
@@ -25,17 +23,13 @@ type StreamOptions = {
   signal?: AbortSignal;
 };
 
-/** Body for POST `/ai/jobs/generate-jd` — draft job id only */
-export type GenerateJdRequestBody = {
-  id: string;
-};
-
-async function postAiJobStream(
+async function postProfileAboutStream(
   path: string,
   body: unknown,
-  handlers: JobDescriptionStreamHandlers,
+  handlers: AboutStreamHandlers,
   options: StreamOptions,
-  label: string
+  label: string,
+  doneKey: "about" | "aboutMe"
 ): Promise<void> {
   const token = getAccessToken();
   const url = `${appEnv.apiUrl.replace(/\/$/, "")}${apiPath(path)}`;
@@ -76,11 +70,11 @@ async function postAiJobStream(
     {
       onDelta: handlers.onDelta,
       onDone: (payload) => {
-        const jobDescription = payload.jobDescription;
-        if (typeof jobDescription === "string") {
-          handlers.onDone(jobDescription);
+        const text = payload[doneKey] ?? payload.about ?? payload.aboutMe;
+        if (typeof text === "string") {
+          handlers.onDone(text);
         } else {
-          handlers.onError(`${label} ended without a job description`);
+          handlers.onError(`${label} ended without about text`);
         }
       },
       onError: handlers.onError,
@@ -90,37 +84,43 @@ async function postAiJobStream(
 }
 
 /**
- * Generate a permanent job description from a draft job via SSE.
- * Does not persist — client must PATCH `jobDescription` onto the draft.
+ * Generate practice/candidate about text from saved profile via SSE.
+ * Sends an empty body — the server seeds from the authenticated profile.
+ * Does not persist — client must PUT `/profile` with the result.
  */
-export async function generateJobDescriptionStream(
-  body: GenerateJdRequestBody,
-  handlers: JobDescriptionStreamHandlers,
+export async function generateAboutStream(
+  handlers: AboutStreamHandlers,
   options: StreamOptions = {}
 ): Promise<void> {
-  return postAiJobStream(
-    externalApiRoutes.ai.jobs.generateJd._self.path,
-    body,
+  return postProfileAboutStream(
+    externalApiRoutes.ai.profile.generateAbout._self.path,
+    {},
     handlers,
     options,
-    "Generate JD"
+    "Generate about",
+    "about"
   );
 }
 
 /**
- * Stream-refine a permanent job description draft via SSE.
- * Draft must be 100–1000 characters (enforced by the API).
+ * Refine practice about text via SSE (50–2000 chars).
+ * Practice body uses `{ about }`; candidate uses `{ aboutMe }`.
  */
-export async function refineJobDescriptionStream(
-  jobDescription: string,
-  handlers: JobDescriptionStreamHandlers,
-  options: StreamOptions = {}
+export async function refineAboutStream(
+  about: string,
+  handlers: AboutStreamHandlers,
+  options: StreamOptions & { kind?: "practice" | "candidate" } = {}
 ): Promise<void> {
-  return postAiJobStream(
-    externalApiRoutes.ai.jobs.refineJd._self.path,
-    { jobDescription },
+  const kind = options.kind ?? "practice";
+  const body =
+    kind === "candidate" ? { aboutMe: about } : { about };
+
+  return postProfileAboutStream(
+    externalApiRoutes.ai.profile.refineAbout._self.path,
+    body,
     handlers,
     options,
-    "Refine JD"
+    "Refine about",
+    kind === "candidate" ? "aboutMe" : "about"
   );
 }

@@ -54,7 +54,9 @@ function buildRequirements(
     items.push(`${software} proficiency required.`);
   }
 
-  if (data.clinicCultureDescriptors.trim()) {
+  if (data.about.trim()) {
+    items.push(data.about.trim());
+  } else if (data.clinicCultureDescriptors.trim()) {
     items.push(data.clinicCultureDescriptors.trim());
   }
 
@@ -135,8 +137,9 @@ export function buildProfilePreview(
     rate: withFallback(data.defaultLocumRates, "Rates not set"),
     requirements: buildRequirements(data, labels),
     meta: buildMeta(data, labels),
-    hasLogo: data.logoFileName !== "Choose File",
+    hasLogo:
+      Boolean(data.logoUrl) || data.logoFileName !== "Choose File",
     logoInitial: name.charAt(0).toUpperCase(),
-    photoCount: data.clinicPictureCount,
+    photoCount: data.clinicPictureCount || data.clinicPictureUrls.length,
   };
 }

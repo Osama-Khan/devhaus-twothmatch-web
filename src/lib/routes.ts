@@ -119,10 +119,16 @@ export const externalApiRoutes = {
   },
   jobs: {
     _self: { path: "/jobs" },
+    byId: { _self: { path: "/jobs/[id]" } },
   },
   ai: {
     jobs: {
+      generateJd: { _self: { path: "/ai/jobs/generate-jd" } },
       refineJd: { _self: { path: "/ai/jobs/refine-jd" } },
+    },
+    profile: {
+      generateAbout: { _self: { path: "/ai/profile/generate-about" } },
+      refineAbout: { _self: { path: "/ai/profile/refine-about" } },
     },
   },
   events: {

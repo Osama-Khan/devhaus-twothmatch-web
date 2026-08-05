@@ -35,6 +35,7 @@ export function useJobs(params?: Omit<ListJobsParams, "page" | "limit">): UseJob
 
   const status = params?.status;
   const type = params?.type;
+  const isDraft = params?.isDraft;
 
   const fetchPage = useCallback(
     (pageNumber: number) => {
@@ -43,9 +44,10 @@ export function useJobs(params?: Omit<ListJobsParams, "page" | "limit">): UseJob
         limit: PAGE_SIZE,
         ...(status ? { status } : {}),
         ...(type ? { type } : {}),
+        ...(isDraft != null ? { isDraft } : {}),
       });
     },
-    [status, type]
+    [isDraft, status, type]
   );
 
   useEffect(() => {

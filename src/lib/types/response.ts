@@ -6,12 +6,20 @@ export type ResponseMetadata = {
   page?: number;
 };
 
+/** API error codes for draft/publish latch failures and quota. */
+export const API_ERROR_CODES = {
+  PUBLISH_REQUIREMENTS_NOT_MET: "PUBLISH_REQUIREMENTS_NOT_MET",
+  ENTITLEMENT_LIMIT: "ENTITLEMENT_LIMIT",
+} as const;
+
 /**
  * Extra fields from an API error body beyond `message` / `error`
  * (e.g. entitlement limit payloads with `code`, `key`, `limit`).
  */
 export type AppErrorDetails = {
   code?: string;
+  /** Field paths missing for publish / profile completion */
+  missingFields?: string[];
   [key: string]: unknown;
 };
 
@@ -49,4 +57,35 @@ export function isPaymentRequiredResponse(
   response: AppResponseType<unknown>
 ): response is { error: string; status: 402; details?: AppErrorDetails } {
   return isErrorResponse(response) && response.status === 402;
+}
+
+/**
+ * True when publish/complete was requested but minima are not met.
+ * Request data may still have been saved; latch stays draft/incomplete.
+ */
+export function isPublishRequirementsNotMet(
+  response: AppResponseType<unknown>
+): response is {
+  error: string;
+  status: 400;
+  details?: AppErrorDetails;
+} {
+  return (
+    isErrorResponse(response) &&
+    response.status === 400 &&
+    response.details?.code === API_ERROR_CODES.PUBLISH_REQUIREMENTS_NOT_MET
+  );
+}
+
+/** Extracts `missingFields` from a publish-requirements error response. */
+export function getMissingFields(
+  response: AppResponseType<unknown>
+): string[] {
+  if (!isErrorResponse(response)) {
+    return [];
+  }
+  const fields = response.details?.missingFields;
+  return Array.isArray(fields)
+    ? fields.filter((field): field is string => typeof field === "string")
+    : [];
 }

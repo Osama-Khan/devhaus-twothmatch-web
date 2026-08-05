@@ -12,12 +12,18 @@ export function isOnboardingStepComplete(
   data: OnboardingFormData
 ): boolean {
   switch (step) {
-    case 1:
-      return onboardingStep1Schema.safeParse({
-        clinicName: data.clinicName,
-        clinicType: data.clinicType,
-        logoFileName: data.logoFileName,
-      }).success;
+    case 1: {
+      const hasLogo =
+        Boolean(data.logoUrl) ||
+        (data.logoFileName.length > 0 && data.logoFileName !== "Choose File");
+      return (
+        onboardingStep1Schema.safeParse({
+          clinicName: data.clinicName,
+          clinicType: data.clinicType,
+          logoFileName: hasLogo ? "logo" : "Choose File",
+        }).success
+      );
+    }
     case 2:
       return onboardingStep2Schema.safeParse({
         clinicWebsite: data.clinicWebsite,

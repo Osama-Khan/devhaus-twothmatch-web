@@ -5,21 +5,24 @@ import { isCreateJobRouteType } from "@/features/jobs/constants";
 
 type CreateJobByTypePageProps = {
   params: Promise<{ type: string }>;
+  searchParams: Promise<{ draftId?: string }>;
 };
 
-/** Locum or permanent create-job wizard */
+/** Locum or permanent create-job wizard (supports `?draftId=` resume) */
 export default async function CreateJobByTypePage({
   params,
+  searchParams,
 }: CreateJobByTypePageProps) {
   const { type } = await params;
+  const { draftId } = await searchParams;
 
   if (!isCreateJobRouteType(type)) {
     notFound();
   }
 
   if (type === "locum") {
-    return <CreateLocumJobView />;
+    return <CreateLocumJobView draftId={draftId} />;
   }
 
-  return <CreatePermanentJobView />;
+  return <CreatePermanentJobView draftId={draftId} />;
 }

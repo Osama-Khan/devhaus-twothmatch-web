@@ -62,22 +62,27 @@ export type PermanentJobFields = {
   /** When true, only candidates with the required docs can apply */
   autoFilterValidDocs?: boolean;
   boostListing?: boolean;
-  /**
-   * When true, the backend generates the job description after publish.
-   * Omit or leave false when the client supplies `jobDescription`.
-   */
-  useAiJd?: boolean;
   status?: JobStatus;
 };
 
 /** Body for POST `/jobs` with `type: "locum"` */
 export type CreateLocumJobRequest = LocumJobFields & {
   type: "locum";
+  /**
+   * Draft latch: `true` creates a free draft; omit/`false` publishes (uses POSTS quota).
+   * Prefer explicit `true`/`false` in the client.
+   */
+  isDraft?: boolean;
 };
 
 /** Body for POST `/jobs` with `type: "permanent"` */
 export type CreatePermanentJobRequest = PermanentJobFields & {
   type: "permanent";
+  /**
+   * Draft latch: `true` creates a free draft; omit/`false` publishes (uses POSTS quota).
+   * Prefer explicit `true`/`false` in the client.
+   */
+  isDraft?: boolean;
 };
 
 /** Discriminated create body for POST `/jobs` (`type` required) */
@@ -89,10 +94,13 @@ export type CreateJobRequest =
  * Partial update body for PATCH `/jobs`.
  * `id` is required. Optional `type` disambiguates locum vs permanent;
  * otherwise the API checks both tables. Updatable fields match create for that type.
+ * Send `isDraft: false` to publish a draft; cannot revert to draft.
  */
 export type UpdateJobRequest = {
   id: string;
   type?: JobType;
+  /** One-way latch: `false` publishes a draft. Never send `true` on a live job. */
+  isDraft?: boolean;
 } & LocumJobFields &
   PermanentJobFields;
 

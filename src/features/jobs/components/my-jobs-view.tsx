@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Briefcase07Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
+import { PillTabs } from "@/components/ui/pill-tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { JobListingCard } from "@/features/jobs/components/job-listing-card";
 import { JobListingCardSkeleton } from "@/features/jobs/components/job-listing-card-skeleton";
@@ -12,15 +14,25 @@ import { useAuthSelector } from "@/lib/store/hooks";
 import { appRoutes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
+type MyJobsTab = "live" | "drafts";
+
+const TABS = [
+  { id: "live" as const, label: "Live" },
+  { id: "drafts" as const, label: "Drafts" },
+];
+
 type MyJobsViewProps = {
   className?: string;
 };
 
-/** Authenticated practice job listings page */
+/** Authenticated practice job listings page with Live / Drafts tabs */
 export function MyJobsView({ className }: MyJobsViewProps) {
   const { user } = useAuthSelector();
+  const [tab, setTab] = useState<MyJobsTab>("live");
+  const isDrafts = tab === "drafts";
+
   const { jobs, isLoading, isLoadingMore, error, hasMore, loadMore, refetch } =
-    useJobs();
+    useJobs({ isDraft: isDrafts });
 
   const practiceName = user?.fullName?.trim() || "Your practice";
   const practice = {
@@ -32,10 +44,12 @@ export function MyJobsView({ className }: MyJobsViewProps) {
     <main className={cn("flex h-full min-h-0 w-full flex-col", className)}>
       <ScrollArea className="h-full w-full">
         <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-          <div className="flex flex-row justify-between items-center">
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              My Jobs
-            </h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            My Jobs
+          </h1>
+
+          <div className="mt-6 flex flex-row items-center justify-between gap-3">
+            <PillTabs tabs={TABS} activeTab={tab} onTabChange={setTab} />
             <Button type="button" variant="default" asChild>
               <Link href={appRoutes.nav.myJobs.create._self.path}>
                 <HugeiconsIcon
@@ -66,13 +80,21 @@ export function MyJobsView({ className }: MyJobsViewProps) {
                   className="size-14 text-primary"
                 />
                 <p className="text-center text-base font-medium text-muted-foreground">
-                  No jobs posted yet.
+                  {isDrafts ? "No drafts yet." : "No jobs posted yet."}
                 </p>
               </div>
             ) : (
               <div className="flex flex-col gap-4">
                 {jobs.map((job) => (
-                  <JobListingCard key={job.id} job={job} practice={practice} />
+                  <JobListingCard
+                    key={job.id}
+                    job={
+                      isDrafts
+                        ? { ...job, isDraft: true }
+                        : { ...job, isDraft: false }
+                    }
+                    practice={practice}
+                  />
                 ))}
 
                 {error ? (

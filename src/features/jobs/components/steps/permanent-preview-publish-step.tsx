@@ -32,7 +32,7 @@ function formatAnnualSalary(salaryRange: string): string {
   return `£${amount.toLocaleString("en-GB")}`;
 }
 
-/** Step 6 — listing preview and boost toggle */
+/** Step 7 — listing preview and boost toggle */
 export function PermanentPreviewPublishStep({
   data,
   onChange,
@@ -124,6 +124,12 @@ export function PermanentPreviewPublishStep({
         <p className="mt-4 text-2xl font-semibold text-primary">
           {formatAnnualSalary(data.salaryRange)}
         </p>
+
+        {data.jobDescription.trim() ? (
+          <p className="mt-4 whitespace-pre-wrap text-sm text-muted-foreground">
+            {data.jobDescription.trim()}
+          </p>
+        ) : null}
 
         {requirements.length > 0 ? (
           <div className="mt-5 border-t border-border pt-4">

@@ -16,28 +16,16 @@ export const permanentStep1Schema = z.object({
     .refine(isFutureDateInputValue, "Start date must be in the future"),
 });
 
-/** Step 2 — job details */
-export const permanentStep2Schema = z
-  .object({
-    jobTitle: z.string().trim().min(1, "Job title is required"),
-    jobDescription: z.string(),
-    useAiJd: z.boolean(),
-    skills: z.array(z.string()).min(1, "Select at least one skill"),
-    software: z.array(z.string()).min(1, "Select at least one software"),
-    experienceLevels: z
-      .array(z.string())
-      .min(1, "Select at least one experience level"),
-    specialisms: z.array(z.string()).min(1, "Select at least one specialism"),
-  })
-  .superRefine((value, ctx) => {
-    if (!value.useAiJd && value.jobDescription.trim().length < 1) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Job description is required",
-        path: ["jobDescription"],
-      });
-    }
-  });
+/** Step 2 — title and role requirements (JD is a later step) */
+export const permanentStep2Schema = z.object({
+  jobTitle: z.string().trim().min(1, "Job title is required"),
+  skills: z.array(z.string()).min(1, "Select at least one skill"),
+  software: z.array(z.string()).min(1, "Select at least one software"),
+  experienceLevels: z
+    .array(z.string())
+    .min(1, "Select at least one experience level"),
+  specialisms: z.array(z.string()).min(1, "Select at least one specialism"),
+});
 
 /** Step 3 — salary & benefits */
 export const permanentStep3Schema = z
@@ -80,6 +68,14 @@ export const permanentStep5Schema = z.object({
   interviewTypeId: z.string().trim().min(1, "Interview type is required"),
 });
 
+/** Step 6 — job description (required before publish) */
+export const permanentStep6Schema = z.object({
+  jobDescription: z
+    .string()
+    .trim()
+    .min(1, "Job description is required"),
+});
+
 function firstFieldError(
   issues: { path: PropertyKey[]; message: string }[],
   field: string
@@ -111,8 +107,6 @@ export function getPermanentStep2FieldError(
 ): string | null {
   const result = permanentStep2Schema.safeParse({
     jobTitle: data.jobTitle,
-    jobDescription: data.jobDescription,
-    useAiJd: data.useAiJd,
     skills: data.skills,
     software: data.software,
     experienceLevels: data.experienceLevels,
@@ -158,6 +152,18 @@ export function getPermanentStep5FieldError(
 ): string | null {
   const result = permanentStep5Schema.safeParse({
     interviewTypeId: data.interviewTypeId,
+  });
+  if (result.success) return null;
+  return firstFieldError(result.error.issues, field);
+}
+
+/** Field error helper for step 6 (job description) */
+export function getPermanentStep6FieldError(
+  data: PermanentJobFormData,
+  field: keyof PermanentJobFormData
+): string | null {
+  const result = permanentStep6Schema.safeParse({
+    jobDescription: data.jobDescription,
   });
   if (result.success) return null;
   return firstFieldError(result.error.issues, field);

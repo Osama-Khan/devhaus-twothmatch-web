@@ -1,4 +1,6 @@
 export type {
+  JobDetail,
+  JobDetailTag,
   JobListItem,
   JobListLocation,
   JobNamedRef,
@@ -7,9 +9,11 @@ export type {
   JobsPagination,
   ListJobsParams,
   LocumJob,
+  LocumJobDetail,
   LocumJobListItem,
   LocumJobRate,
   PermanentJob,
+  PermanentJobDetail,
   PermanentJobListItem,
   PermanentJobRate,
 } from "@/features/jobs/types/job";
@@ -30,6 +34,7 @@ export type {
   CreateLocumJobResponse,
   CreatePermanentJobResponse,
   DeleteJobResponse,
+  GetJobResponse,
   ListJobsResponse,
   UpdateJobResponse,
 } from "@/features/jobs/types/job-responses";

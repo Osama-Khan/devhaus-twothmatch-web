@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,8 @@ import {
   formatJobListRate,
   formatJobPostedDate,
 } from "@/features/jobs/utils/format-job-display";
+import { appRoutes } from "@/lib/routes";
+import { createRoute } from "@/lib/utils/route";
 import { isSuccessResponse } from "@/lib/types/response";
 import { cn } from "@/lib/utils";
 
@@ -47,12 +50,19 @@ export function JobListingCard({
   const [pendingAction, setPendingAction] = useState<CardAction | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
+  const isDraft = job.isDraft === true;
   const isActive = status === "active";
   const isBusy = pendingAction != null;
   const isDeleting = pendingAction === "delete";
 
+  const continueEditingHref = `${
+    createRoute(appRoutes.nav.myJobs.create.byType._self, {
+      type: job.type,
+    }).path
+  }?draftId=${encodeURIComponent(job.id)}`;
+
   async function updateStatus(nextStatus: "active" | "paused") {
-    if (pendingAction != null || status === nextStatus) {
+    if (pendingAction != null || status === nextStatus || isDraft) {
       return;
     }
 
@@ -106,11 +116,14 @@ export function JobListingCard({
   return (
     <>
       <article className={cn("rounded-3xl bg-card p-5 shadow-sm", className)}>
-        <div className="flex flex-row items-center justify-between">
+        <div className="flex flex-row items-center justify-between gap-2">
           <h3 className="text-xl font-semibold text-foreground">{job.title}</h3>
-          <Badge variant="soft">
-            {job.type === "locum" ? "Locum" : "Permanent"}
-          </Badge>
+          <div className="flex shrink-0 flex-row items-center gap-2">
+            {isDraft ? <Badge variant="outline">Draft</Badge> : null}
+            <Badge variant="soft">
+              {job.type === "locum" ? "Locum" : "Permanent"}
+            </Badge>
+          </div>
         </div>
 
         <div className="mt-3 flex items-center gap-2.5">
@@ -132,7 +145,7 @@ export function JobListingCard({
         </div>
 
         <p className="mt-2 text-sm text-muted-foreground">
-          Posted on: {formatJobPostedDate(job.createdAt)}
+          {isDraft ? "Draft saved" : `Posted on: ${formatJobPostedDate(job.createdAt)}`}
         </p>
 
         <div className="mt-5 grid grid-cols-2 gap-3">
@@ -145,7 +158,11 @@ export function JobListingCard({
           >
             Delete
           </Button>
-          {isActive ? (
+          {isDraft ? (
+            <Button type="button" variant="default" asChild disabled={isBusy}>
+              <Link href={continueEditingHref}>Continue editing</Link>
+            </Button>
+          ) : isActive ? (
             <Button
               type="button"
               variant="outline"
@@ -178,10 +195,11 @@ export function JobListingCard({
       >
         <DialogContent showCloseButton={!isDeleting}>
           <DialogHeader>
-            <DialogTitle>Delete job?</DialogTitle>
+            <DialogTitle>Delete {isDraft ? "draft" : "job"}?</DialogTitle>
             <DialogDescription>
-              This will permanently delete &ldquo;{job.title}&rdquo; and its
-              related matches. This action cannot be undone.
+              This will permanently delete &ldquo;{job.title}&rdquo;
+              {isDraft ? "" : " and its related matches"}. This action cannot be
+              undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -199,7 +217,11 @@ export function JobListingCard({
               disabled={isDeleting}
               onClick={() => void deleteJob()}
             >
-              {isDeleting ? "Deleting…" : "Delete job"}
+              {isDeleting
+                ? "Deleting…"
+                : isDraft
+                  ? "Delete draft"
+                  : "Delete job"}
             </Button>
           </DialogFooter>
         </DialogContent>

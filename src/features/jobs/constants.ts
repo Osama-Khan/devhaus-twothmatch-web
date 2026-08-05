@@ -2,7 +2,7 @@
 export const CREATE_LOCUM_JOB_TOTAL_STEPS = 6;
 
 /** Total steps in the permanent create-job wizard */
-export const CREATE_PERMANENT_JOB_TOTAL_STEPS = 6;
+export const CREATE_PERMANENT_JOB_TOTAL_STEPS = 7;
 
 /** @deprecated Prefer CREATE_LOCUM_JOB_TOTAL_STEPS / CREATE_PERMANENT_JOB_TOTAL_STEPS */
 export const CREATE_JOB_TOTAL_STEPS = CREATE_LOCUM_JOB_TOTAL_STEPS;

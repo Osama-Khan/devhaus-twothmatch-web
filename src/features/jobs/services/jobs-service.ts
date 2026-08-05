@@ -5,6 +5,8 @@ import type {
   CreateJobResponse,
   DeleteJobRequest,
   DeleteJobResponse,
+  GetJobResponse,
+  JobType,
   ListJobsParams,
   ListJobsResponse,
   UpdateJobRequest,
@@ -29,11 +31,22 @@ function buildJobsPath(params?: ListJobsParams): string {
   if (params?.type) {
     searchParams.set("type", params.type);
   }
+  if (params?.isDraft != null) {
+    searchParams.set("isDraft", String(params.isDraft));
+  }
 
   const query = searchParams.toString();
   const base = externalApiRoutes.jobs._self.path;
 
   return query ? `${base}?${query}` : base;
+}
+
+function buildJobByIdPath(id: string, type?: JobType): string {
+  const base = `${externalApiRoutes.jobs._self.path}/${encodeURIComponent(id)}`;
+  if (!type) {
+    return base;
+  }
+  return `${base}?type=${encodeURIComponent(type)}`;
 }
 
 /**
@@ -52,8 +65,20 @@ export const jobsService = {
   },
 
   /**
+   * GET `/jobs/:id` — full detail for a single job (owner can fetch drafts).
+   * Optional `type` disambiguates locum vs permanent.
+   */
+  getJob(
+    id: string,
+    type?: JobType
+  ): Promise<AppResponseType<GetJobResponse>> {
+    return apiFetcher.get<GetJobResponse>(buildJobByIdPath(id, type));
+  },
+
+  /**
    * POST `/jobs` — create a locum shift or permanent job (201).
-   * Body must include `type` (`locum` | `permanent`). Consumes a POSTS entitlement.
+   * Body must include `type` (`locum` | `permanent`).
+   * Drafts (`isDraft: true`) do not consume POSTS; publish does.
    */
   createJob(
     body: CreateJobRequest

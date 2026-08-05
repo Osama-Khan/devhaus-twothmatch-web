@@ -40,6 +40,8 @@ export type LocumJobListItem = {
   type: "locum";
   title: string;
   status: JobStatus;
+  /** True when the job is a draft (not yet published) */
+  isDraft?: boolean;
   createdAt: string;
   date: string;
   role: JobNamedRef;
@@ -47,7 +49,8 @@ export type LocumJobListItem = {
   timeStart: string;
   timeEnd: string;
   breakDurationMins: number;
-  rate: LocumJobRate;
+  /** May be incomplete on drafts */
+  rate?: LocumJobRate | null;
   isOvertimePaid: boolean;
   paymentTerms: JobNamedRef;
   cancellationPolicy: JobNamedRef;
@@ -61,6 +64,8 @@ export type PermanentJobListItem = {
   type: "permanent";
   title: string;
   status: JobStatus;
+  /** True when the job is a draft (not yet published) */
+  isDraft?: boolean;
   createdAt: string;
   jobTitle: string;
   startDate: string;
@@ -72,11 +77,52 @@ export type PermanentJobListItem = {
   workingHoursStart: string;
   workingHoursEnd: string;
   isWorkingHoursFlexible: boolean;
-  rate: PermanentJobRate;
+  /** May be incomplete on drafts */
+  rate?: PermanentJobRate | null;
 };
 
 /** Combined list item from GET `/jobs` */
 export type JobListItem = LocumJobListItem | PermanentJobListItem;
+
+/**
+ * Label or id string arrays on shaped job detail (GET `/jobs/:id`).
+ * Prefer `JobNamedRef` when the API returns `{ id, name }`.
+ */
+export type JobDetailTag = string | JobNamedRef;
+
+/** Locum detail from GET `/jobs/:id` — list card fields plus compliance/skills/etc. */
+export type LocumJobDetail = LocumJobListItem & {
+  skills?: JobDetailTag[];
+  software?: JobDetailTag[];
+  specialisms?: JobDetailTag[];
+  ppeProvided?: boolean;
+  autoblockUnverified?: boolean;
+  mandatoryDocsForBooking?: boolean;
+  complianceText?: string | null;
+  complianceDocuments?: JobDetailTag[];
+  preapprovedCandidates?: boolean;
+  candidateExpressesInterest?: boolean;
+  instantBook?: boolean;
+  approvalRequired?: boolean;
+};
+
+/** Permanent detail from GET `/jobs/:id` */
+export type PermanentJobDetail = PermanentJobListItem & {
+  jobDescription?: string | null;
+  skills?: JobDetailTag[];
+  software?: JobDetailTag[];
+  experienceLevels?: JobDetailTag[];
+  specialisms?: JobDetailTag[];
+  benefits?: JobDetailTag[];
+  screeningQuestions?: string[];
+  autoRejectIfQuestionsNotAnswered?: boolean;
+  complianceDocuments?: JobDetailTag[];
+  autoFilterValidDocs?: boolean;
+  boostListing?: boolean;
+};
+
+/** Discriminated job detail from GET `/jobs/:id` */
+export type JobDetail = LocumJobDetail | PermanentJobDetail;
 
 /**
  * Locum shift entity returned by create/update.
@@ -104,6 +150,8 @@ export type LocumJob = {
   specialisms: string[] | null;
   ppeProvided: boolean | null;
   status: JobStatus;
+  /** True when the job is a draft (not yet published) */
+  isDraft?: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -137,6 +185,8 @@ export type PermanentJob = {
   complianceDocuments: string[] | null;
   boostListing: boolean | null;
   status: JobStatus;
+  /** True when the job is a draft (not yet published) */
+  isDraft?: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -159,4 +209,6 @@ export type ListJobsParams = {
   status?: JobStatus;
   /** Optional type filter: `locum` | `permanent` */
   type?: JobType;
+  /** Optional draft filter: `true` = drafts only, `false` = published only */
+  isDraft?: boolean;
 };

@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 type RefineJobDescriptionBadgeProps = {
   jobDescription: string;
   onJobDescriptionChange: (value: string) => void;
-  /** When true (e.g. AI generate toggle on), hide the refine control */
+  /** When true (e.g. while generating), hide the refine control */
   hidden?: boolean;
 };
 

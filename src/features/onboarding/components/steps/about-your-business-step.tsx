@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 import { ClinicTypeSelect } from "@/features/onboarding/components/clinic-type-select";
 import { ClinicPictureAlbum } from "@/features/onboarding/components/clinic-picture-album";
+import { MAX_CLINIC_PICTURES } from "@/features/onboarding/constants";
 import { appendClinicPictureFiles } from "@/features/onboarding/utils/clinic-picture-files";
 import { getClinicNameError } from "@/features/onboarding/form/onboarding-step-schemas";
 import type { OnboardingStepProps } from "@/features/onboarding/types/onboarding-form";
@@ -24,10 +25,10 @@ export function AboutYourBusinessStep({
 }: OnboardingStepProps) {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const clinicNameError = getClinicNameError(data.clinicName);
+  const hasLogo =
+    Boolean(data.logoUrl) || data.logoFileName !== "Choose File";
   const logoError =
-    showValidation && data.logoFileName === "Choose File"
-      ? "Logo is required"
-      : null;
+    showValidation && !hasLogo ? "Logo is required" : null;
 
   const handleClinicTypeSelect = useCallback(
     ({ id, name }: { id: string; name: string }) => {
@@ -41,12 +42,16 @@ export function AboutYourBusinessStep({
     const file = event.target.files?.[0];
     onChange("logoFile", file ?? null);
     onChange("logoFileName", file?.name ?? "Choose File");
+    if (file) {
+      onChange("logoUrl", null);
+    }
   };
 
   const handleClinicPicturesSelected = (files: FileList) => {
     const { files: nextFiles, skippedCount } = appendClinicPictureFiles(
       data.clinicPictureFiles,
-      Array.from(files)
+      Array.from(files),
+      MAX_CLINIC_PICTURES - data.clinicPictureUrls.length
     );
 
     if (skippedCount > 0) {
@@ -54,13 +59,32 @@ export function AboutYourBusinessStep({
     }
 
     onChange("clinicPictureFiles", nextFiles);
-    onChange("clinicPictureCount", nextFiles.length);
+    onChange(
+      "clinicPictureCount",
+      data.clinicPictureUrls.length + nextFiles.length
+    );
   };
 
   const handleRemoveClinicPicture = (index: number) => {
-    const nextFiles = data.clinicPictureFiles.filter((_, fileIndex) => fileIndex !== index);
+    const nextFiles = data.clinicPictureFiles.filter(
+      (_, fileIndex) => fileIndex !== index
+    );
     onChange("clinicPictureFiles", nextFiles);
-    onChange("clinicPictureCount", nextFiles.length);
+    onChange(
+      "clinicPictureCount",
+      data.clinicPictureUrls.length + nextFiles.length
+    );
+  };
+
+  const handleRemovePersistedUrl = (index: number) => {
+    const nextUrls = data.clinicPictureUrls.filter(
+      (_, urlIndex) => urlIndex !== index
+    );
+    onChange("clinicPictureUrls", nextUrls);
+    onChange(
+      "clinicPictureCount",
+      nextUrls.length + data.clinicPictureFiles.length
+    );
   };
 
   return (
@@ -92,8 +116,10 @@ export function AboutYourBusinessStep({
         <h2 className="text-lg font-semibold text-foreground">Upload Media</h2>
         <ClinicPictureAlbum
           files={data.clinicPictureFiles}
+          persistedUrls={data.clinicPictureUrls}
           onFilesSelected={handleClinicPicturesSelected}
           onRemove={handleRemoveClinicPicture}
+          onRemovePersistedUrl={handleRemovePersistedUrl}
         />
       </section>
 
@@ -109,7 +135,9 @@ export function AboutYourBusinessStep({
         />
         <InputGroup className="flex flex-row items-center justify-between">
           <InputGroupAddon className="text-foreground">
-            {data.logoFileName}
+            {data.logoUrl && data.logoFileName === "Choose File"
+              ? "Logo uploaded"
+              : data.logoFileName}
           </InputGroupAddon>
           <InputGroupAddon align="inline-end">
             <Button

@@ -5,6 +5,7 @@ import {
   permanentStep3Schema,
   permanentStep4Schema,
   permanentStep5Schema,
+  permanentStep6Schema,
 } from "@/features/jobs/form/permanent-job-step-schemas";
 
 /** Whether the current permanent create step has required fields filled and valid */
@@ -24,8 +25,6 @@ export function isPermanentJobStepComplete(
     case 2:
       return permanentStep2Schema.safeParse({
         jobTitle: data.jobTitle,
-        jobDescription: data.jobDescription,
-        useAiJd: data.useAiJd,
         skills: data.skills,
         software: data.software,
         experienceLevels: data.experienceLevels,
@@ -49,6 +48,10 @@ export function isPermanentJobStepComplete(
         interviewTypeId: data.interviewTypeId,
       }).success;
     case 6:
+      return permanentStep6Schema.safeParse({
+        jobDescription: data.jobDescription,
+      }).success;
+    case 7:
       return true;
     default:
       return false;

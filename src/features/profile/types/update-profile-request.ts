@@ -76,8 +76,14 @@ export type UpdateProfileAvailabilitySlot = {
  * Array sections replace all existing rows when present.
  *
  * Config-backed fields use `*Id` / `*Ids` only — legacy label strings are rejected.
+ * Send `profileCompletion: true` only on the final complete/submit — never `false`.
  */
 export type UpdateProfileRequest = {
+  /**
+   * One-way latch: `true` completes onboarding when minima pass.
+   * Omit for draft/step saves. Sending `false` after complete is rejected.
+   */
+  profileCompletion?: boolean;
   /** Practice — basic business info */
   clinicName?: string;
   clinicTypeId?: string;
