@@ -57,7 +57,6 @@ export function OnboardingFlow() {
   const closeDialogTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
-  const hasHydratedRef = useRef(false);
 
   const updateField = useCallback(
     <K extends keyof OnboardingFormData>(
@@ -90,11 +89,6 @@ export function OnboardingFlow() {
   }, [clearCloseDialogTimeout]);
 
   useEffect(() => {
-    if (hasHydratedRef.current) {
-      return;
-    }
-    hasHydratedRef.current = true;
-
     let cancelled = false;
 
     async function hydrate() {
@@ -121,6 +115,7 @@ export function OnboardingFlow() {
         return;
       }
 
+      // Empty profile (`profile: null`) maps to blank initial form — step 1
       const mapped = mapProfileToOnboardingForm(response.data);
       setFormData(mapped);
       setCurrentStep(getFirstIncompleteOnboardingStep(mapped));

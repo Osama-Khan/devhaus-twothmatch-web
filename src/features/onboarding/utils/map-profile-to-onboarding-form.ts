@@ -17,13 +17,16 @@ function parseCoordinate(value: string | number | null | undefined): number | nu
 
 /**
  * Maps a practice GET `/profile` response into onboarding form state for resume.
+ * Handles brand-new accounts where `profile` / sections are `null` and arrays empty.
  */
 export function mapProfileToOnboardingForm(
   response: PracticeProfileResponse
 ): OnboardingFormData {
   const data = createInitialOnboardingFormData();
   const profile = response.profile;
-  const location = response.locations[0];
+  const locations = response.locations ?? [];
+  const media = response.media ?? [];
+  const location = locations[0];
   const compliance = response.compliance;
   const culture = response.culture;
   const payment = response.payment;
@@ -41,15 +44,13 @@ export function mapProfileToOnboardingForm(
     data.about = profile.about ?? "";
   }
 
-  const logo = response.media.find(
-    (item) => item.kind === UploadMediaKind.LOGO
-  );
+  const logo = media.find((item) => item.kind === UploadMediaKind.LOGO);
   if (logo?.url) {
     data.logoUrl = logo.url;
     data.logoFileName = "Logo uploaded";
   }
 
-  const clinicPhotos = response.media.filter(
+  const clinicPhotos = media.filter(
     (item) => item.kind === UploadMediaKind.CLINIC_PHOTO
   );
   data.clinicPictureUrls = clinicPhotos.map((item) => item.url);
@@ -69,11 +70,11 @@ export function mapProfileToOnboardingForm(
   }
 
   if (compliance) {
-    data.documentsRequiredIds = compliance.documentsRequired.map(
+    data.documentsRequiredIds = (compliance.documentsRequired ?? []).map(
       (item) => item.id
     );
-    data.skillIds = compliance.skills.map((item) => item.id);
-    data.softwareIds = compliance.software.map((item) => item.id);
+    data.skillIds = (compliance.skills ?? []).map((item) => item.id);
+    data.softwareIds = (compliance.software ?? []).map((item) => item.id);
   }
 
   if (payment?.cancellationPolicy) {
@@ -83,7 +84,9 @@ export function mapProfileToOnboardingForm(
 
   if (culture) {
     data.clinicCultureDescriptors = culture.clinicCultureDescriptors ?? "";
-    data.benefitsOfferedIds = culture.benefitsOffered.map((item) => item.id);
+    data.benefitsOfferedIds = (culture.benefitsOffered ?? []).map(
+      (item) => item.id
+    );
     data.workloadStyleId = culture.workloadStyle?.id ?? "";
     data.workloadStyleName = culture.workloadStyle?.name ?? "";
   }

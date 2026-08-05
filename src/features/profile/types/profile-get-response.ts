@@ -89,7 +89,8 @@ export type CandidateProfileResponse = {
 export type PracticeProfileResponse = {
   userId: string;
   kind: "practice";
-  profile?: PracticeProfile;
+  /** Null for a brand-new practice that has never saved a profile section */
+  profile?: PracticeProfile | null;
   compliance?: PracticeCompliance | null;
   culture?: PracticeCulture | null;
   payment?: PracticePayment | null;
